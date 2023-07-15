@@ -2,28 +2,22 @@
 {
     internal class GameConstants
     {
-        public GameConstants()
-        {
-            FrameDelay = 1000 / FramePerSecond;
-        }
+        public const int ScreenHeight = 162;
+        public const int ScreenWidth = 324;
 
-        public int ScreenHeight { get; } = 64;
+        public const int GridCellSize = 18;
 
-        public int ScreenWidth { get; } = 128;
+        public const ConsoleColor SnakeHeadColor = ConsoleColor.DarkYellow;
+        public const ConsoleColor SnakeBodyColor = ConsoleColor.Yellow;
+        public const ConsoleColor BackgroundColor = ConsoleColor.Black;
+        public const ConsoleColor FoodColor = ConsoleColor.DarkRed;
+        public const ConsoleColor BoarderColor = ConsoleColor.White;
 
-        public int GridCellSize { get; } = 8;
+        public const double SnakeSpeed = 4;
 
-        public ConsoleColor SnakeHeadColor { get; } = ConsoleColor.DarkYellow;
+        public const int FramePerSecond = 60;
+        public const double FrameDelay = 1000 / FramePerSecond;
 
-        public ConsoleColor SnakeBodyColor { get; } = ConsoleColor.Yellow;
-
-        public ConsoleColor BackgroundColor { get; } = ConsoleColor.Black;
-
-        public double SnakeSpeed { get; } = 4;
-
-        public int FramePerSecond { get; } = 60;
-
-        public double FrameDelay { get; }
-
+        public const char PixelModel = '█';
     }
 }

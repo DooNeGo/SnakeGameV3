@@ -44,15 +44,12 @@ namespace SnakeGameV3.Data
                 && direction != Direction.Nowhere)
                 throw new Exception();
 
-            if (direction == Direction.Nowhere)
-            {
-                _stopwatch.Restart();
-                return;
-            }
-
             LostMoves += _stopwatch.ElapsedMilliseconds / MoveLatency - 1;
 
             _stopwatch.Restart();
+
+            if (direction == Direction.Nowhere)
+                return;
 
             Body.Dequeue();
             Body.Enqueue(new Point(Head.X, Head.Y));

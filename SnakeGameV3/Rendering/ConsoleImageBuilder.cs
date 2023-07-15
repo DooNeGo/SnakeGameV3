@@ -1,5 +1,6 @@
 ﻿using SnakeGameV3.Data;
-using SnakeGameV3.Interfaces;
+using System.Drawing;
+using static SnakeGameV3.Constants.GameConstants;
 
 namespace SnakeGameV3.Rendering
 {
@@ -18,25 +19,25 @@ namespace SnakeGameV3.Rendering
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
 
-        public void BuildImage(List<IRenderable> renderList)
+        public void BuildImage(List<ConsoleObject> renderList)
         {
             _frames[_activeFrame].Clear();
 
-            foreach (IRenderable gameObject in renderList)
+            foreach (ConsoleObject gameObject in renderList)
                 _frames[_activeFrame].Add(gameObject.Coordinates, gameObject.Model);
         }
 
         public void DrawImage()
         {
-            for (int y = 0;  y < _frames[_activeFrame].Height; y++)
+            for (var y = 0; y < _frames[_activeFrame].Height; y++)
             {
-                for (int x = 0; x <  _frames[_activeFrame].Width; x++)
+                for (var x = 0; x < _frames[_activeFrame].Width; x++)
                 {
                     if (_frames[_activeFrame].GetPixel(x, y) != _frames[_inactiveFrame].GetPixel(x, y))
                     {
                         Console.SetCursorPosition(x, y);
-                        Console.ForegroundColor = _frames[_activeFrame].GetPixel(x, y).Color;
-                        Console.Write(_frames[_activeFrame].GetPixel(x, y).Model);
+                        Console.ForegroundColor = _frames[_activeFrame].GetPixel(x, y);
+                        Console.Write(PixelModel);
                     }
                 }
             }
