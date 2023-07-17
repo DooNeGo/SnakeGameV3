@@ -4,7 +4,7 @@ namespace SnakeGameV3.Interfaces
 {
     internal interface IMovable
     {
-        public void Move(Direction direction);
+        public void Move(Direction? direction);
 
         public bool IsReadyForMove { get; }
 

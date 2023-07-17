@@ -14,7 +14,7 @@ namespace SnakeGameV3.Controllers
         {
             PrepareConsole();
 
-            Direction currentDirection = Direction.Null;
+            Direction? currentDirection = null;
 
             Stopwatch stopwatch = Stopwatch.StartNew();
 
@@ -47,13 +47,13 @@ namespace SnakeGameV3.Controllers
                 if (snake.IsCrashed)
                     return;
 
-                if (stopwatch.ElapsedMilliseconds < FrameDelay)
-                    continue;
+                if (stopwatch.ElapsedMilliseconds >= FrameDelay)
+                {
+                    stopwatch.Restart();
 
-                stopwatch.Restart();
-
-                builder.BuildImage();
-                builder.DrawImage();
+                    builder.BuildImage();
+                    builder.DrawImage();
+                }
             }
         }
 
@@ -64,7 +64,7 @@ namespace SnakeGameV3.Controllers
             Console.SetBufferSize(ScreenWidth, ScreenHeight);
         }
 
-        private Direction ReadMovement(Direction lastDirection)
+        private Direction? ReadMovement(Direction? lastDirection)
         {
             if (Console.KeyAvailable)
                 _pressedKey = Console.ReadKey().Key;
@@ -75,7 +75,7 @@ namespace SnakeGameV3.Controllers
                 ConsoleKey.DownArrow when lastDirection != Direction.Up => Direction.Down,
                 ConsoleKey.LeftArrow when lastDirection != Direction.Right => Direction.Left,
                 ConsoleKey.RightArrow when lastDirection != Direction.Left => Direction.Right,
-                ConsoleKey.Spacebar => Direction.Null,
+                ConsoleKey.Spacebar => null,
                 _ => lastDirection
             };
         }

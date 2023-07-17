@@ -41,7 +41,7 @@ namespace SnakeGameV3.Data
 
         public PassType Type => PassType.Impassable;
 
-        public void Move(Direction direction)
+        public void Move(Direction? direction)
         {
             if (direction != Direction.Up
                 && direction != Direction.Down
@@ -54,7 +54,7 @@ namespace SnakeGameV3.Data
 
             _stopwatch.Restart();
 
-            if (direction == Direction.Null)
+            if (direction == null)
                 return;
 
             Body.Dequeue();
