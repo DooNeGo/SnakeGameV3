@@ -61,5 +61,10 @@ namespace SnakeGameV3.Data
         {
             _gridObjects.Add(gridObject);
         }
+
+        public void Remove(IGridObject gridObject)
+        {
+            _gridObjects.Remove(gridObject);
+        }
     }
 }

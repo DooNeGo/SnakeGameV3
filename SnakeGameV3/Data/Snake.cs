@@ -43,11 +43,11 @@ namespace SnakeGameV3.Data
 
         public void Move(Direction? direction)
         {
-            if (direction != Direction.Up
-                && direction != Direction.Down
-                && direction != Direction.Left
-                && direction != Direction.Right
-                && direction != Direction.Null)
+            if (direction is not Direction.Up
+                and not Direction.Down
+                and not Direction.Left
+                and not Direction.Right
+                and not null)
                 throw new Exception();
 
             LostMoves += _stopwatch.ElapsedMilliseconds / MoveLatency - 1;

@@ -11,7 +11,6 @@ namespace SnakeGameV3.Rendering
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
             _frames[1] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
-
         }
 
         private readonly ConsoleFrame[] _frames;
@@ -51,6 +50,11 @@ namespace SnakeGameV3.Rendering
         public void Add(IEnumerable<IConsoleRenderable> frameObject)
         {
             _frameObjects.Add(frameObject);
+        }
+
+        public void Remove(IEnumerable<IConsoleRenderable> frameObject)
+        {
+            _frameObjects.Remove(frameObject);
         }
     }
 }
