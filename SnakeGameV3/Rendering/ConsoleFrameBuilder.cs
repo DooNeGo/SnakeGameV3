@@ -1,12 +1,12 @@
 ﻿using SnakeGameV3.Data;
-using System.Drawing;
+using SnakeGameV3.Interfaces;
 using static SnakeGameV3.Constants.GameConstants;
 
 namespace SnakeGameV3.Rendering
 {
-    internal class ConsoleImageBuilder
+    internal class ConsoleFrameBuilder
     {
-        public ConsoleImageBuilder(Grid grid, int screenHeight, int screenWidth, ConsoleColor backgroundColor)
+        public ConsoleFrameBuilder(Grid grid, int screenHeight, int screenWidth, ConsoleColor backgroundColor)
         {
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
@@ -19,12 +19,15 @@ namespace SnakeGameV3.Rendering
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
 
-        public void BuildImage(List<ConsoleObject> renderList)
+        private readonly List<IEnumerable<IConsoleRenderable>> _frameObjects = new();
+
+        public void BuildImage()
         {
             _frames[_activeFrame].Clear();
 
-            foreach (ConsoleObject gameObject in renderList)
-                _frames[_activeFrame].Add(gameObject.Coordinates, gameObject.Model);
+            foreach (IEnumerable<IConsoleRenderable> frameObject in _frameObjects)
+                foreach (IConsoleRenderable objectPart in frameObject)
+                    _frames[_activeFrame].Add(objectPart.Point, objectPart.Model);
         }
 
         public void DrawImage()
@@ -43,6 +46,11 @@ namespace SnakeGameV3.Rendering
             }
 
             (_activeFrame, _inactiveFrame) = (_inactiveFrame, _activeFrame);
+        }
+
+        public void Add(IEnumerable<IConsoleRenderable> frameObject)
+        {
+            _frameObjects.Add(frameObject);
         }
     }
 }

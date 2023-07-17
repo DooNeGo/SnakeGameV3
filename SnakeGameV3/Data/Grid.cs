@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using SnakeGameV3.Enums;
+using SnakeGameV3.Interfaces;
+using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
@@ -9,10 +11,12 @@ namespace SnakeGameV3.Data
             CellSize = cellSize;
             Height = screenHeight / cellSize;
             Width = screenWidth / cellSize;
-            IsOccupiedCell = new bool[Height, Width];
+            _cells = new PassType?[Height, Width];
         }
 
-        public List<IEnumerable<Point>> GameObjectsCoordinates { get; private set; } = new();
+        private readonly List<IGridObject> _gridObjects = new();
+
+        private readonly PassType?[,] _cells;
 
         public int Height { get; }
 
@@ -20,27 +24,42 @@ namespace SnakeGameV3.Data
 
         public int CellSize { get; }
 
-        public bool[,] IsOccupiedCell { get; private set; }
+        public bool IsOccupiedCell(int x, int y) => _cells[y, x] != null;
 
-        private void OccupyCell(Point coordinates)
+        private void OccupyCell(Point coordinates, PassType type)
         {
-            IsOccupiedCell[coordinates.Y, coordinates.X] = true;
+            _cells[coordinates.Y, coordinates.X] = type;
+        }
+
+        private void InitializeCells()
+        {
+            for (var y = 0; y < Height; y++)
+                for (var x = 0; x < Width; x++)
+                    _cells[y, x] = null;
         }
 
         public void Update()
         {
-            Clear();
+            InitializeCells();
 
-            foreach(IEnumerable<Point> gameObjectCoordinates in GameObjectsCoordinates)
-                foreach(Point coordinates in gameObjectCoordinates)
-                    OccupyCell(coordinates);
+            foreach (IGridObject gridObject in _gridObjects)
+            {
+                foreach (Point coordinates in gridObject)
+                {
+                    if (_cells[coordinates.Y, coordinates.X] == PassType.Impassable)
+                    {
+                        gridObject.IsCrashed = true;
+                        break;
+                    }
+
+                    OccupyCell(coordinates, gridObject.Type);
+                }
+            }
         }
 
-        public void Clear()
+        public void Add(IGridObject gridObject)
         {
-            for (var y = 0; y < Height; y++)
-                for (var x = 0; x < Width; x++)
-                    IsOccupiedCell[y, x] = false;
+            _gridObjects.Add(gridObject);
         }
     }
 }

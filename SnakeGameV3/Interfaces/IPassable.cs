@@ -1,7 +1,9 @@
-﻿namespace SnakeGameV3.Interfaces
+﻿using SnakeGameV3.Enums;
+
+namespace SnakeGameV3.Interfaces
 {
     internal interface IPassable
     {
-        public bool IsPassable { get; }
+        public PassType Type { get; }
     }
 }

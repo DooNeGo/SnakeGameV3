@@ -1,6 +1,5 @@
-﻿using System;
+﻿using SnakeGameV3.Data;
 using System.Drawing;
-using SnakeGameV3.Data;
 
 namespace SnakeGameV3.Rendering
 {
@@ -42,17 +41,17 @@ namespace SnakeGameV3.Rendering
                         _frame[y, x] = _backgroundColor;
         }
 
-        public void Add(Point gridCoordinates, ConsoleColor[,] gameObject)
+        public void Add(Point coordinates, ConsoleColor[,] model)
         {
-            if (gridCoordinates.X >= _grid.Width
-                || gridCoordinates.X < 0
-                || gridCoordinates.Y >= _grid.Height
-                || gridCoordinates.Y < 0)
+            if (coordinates.X >= _grid.Width
+                || coordinates.X < 0
+                || coordinates.Y >= _grid.Height
+                || coordinates.Y < 0)
                 throw new Exception();
 
-            for (var y = 0; y < gameObject.GetLength(0); y++)
-                for (var x = 0; x < gameObject.GetLength(1); x++)
-                    _frame[gridCoordinates.Y * _grid.CellSize + y, gridCoordinates.X * _grid.CellSize + x] = gameObject[y, x];
+            for (var y = 0; y < model.GetLength(0); y++)
+                for (var x = 0; x < model.GetLength(1); x++)
+                    _frame[coordinates.Y * _grid.CellSize + y, coordinates.X * _grid.CellSize + x] = model[y, x];
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Enums;
+using SnakeGameV3.Interfaces;
 using System.Collections;
 using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Food : IEnumerable<Point>, IPassable
+    internal class Food : IGridObject, IEnumerable<IConsoleRenderable>
     {
         public Food(ConsoleColor color, Grid grid)
         {
@@ -17,28 +18,35 @@ namespace SnakeGameV3.Data
 
         private readonly Grid _grid;
 
-        public Point Coordinates { get; private set; }
+        public Point Point { get; private set; }
 
         public ConsoleColor Color { get; }
 
-        public bool IsPassable { get; } = true;
+        public bool IsCrashed { get; set; } = false;
+
+        public PassType Type => PassType.Passable;
 
         public void RandCoordinates()
         {
             do
             {
-                Coordinates = new Point(_random.Next(1, _grid.Width - 2), _random.Next(1, _grid.Height - 2));
-            } while (_grid.IsOccupiedCell[Coordinates.Y, Coordinates.X] == true);
+                Point = new Point(_random.Next(1, _grid.Width - 2), _random.Next(1, _grid.Height - 2));
+            } while (_grid.IsOccupiedCell(Point.X, Point.Y) == true);
         }
 
         public IEnumerator<Point> GetEnumerator()
         {
-            yield return Coordinates;
+            yield return Point;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            yield return Coordinates;
+            yield return Point;
+        }
+
+        IEnumerator<IConsoleRenderable> IEnumerable<IConsoleRenderable>.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 }

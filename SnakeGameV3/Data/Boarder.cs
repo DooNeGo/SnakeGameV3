@@ -1,10 +1,11 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Enums;
+using SnakeGameV3.Interfaces;
 using System.Collections;
 using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Boarder : IEnumerable<Point>, IPassable
+    internal class Boarder : IGridObject, IEnumerable<IConsoleRenderable>
     {
         public Boarder(Grid grid, ConsoleColor color)
         {
@@ -13,13 +14,15 @@ namespace SnakeGameV3.Data
             InitializeBoarder();
         }
 
-        private List<Point> _points = new();
+        private readonly List<Point> _points = new();
 
-        private Grid _grid;
+        private readonly Grid _grid;
 
         public ConsoleColor Color { get; }
 
-        public bool IsPassable { get; } = false;
+        public bool IsCrashed { get; set; } = false;
+
+        public PassType Type => PassType.Impassable;
 
         private void InitializeBoarder()
         {
@@ -36,9 +39,13 @@ namespace SnakeGameV3.Data
             }
         }
 
-
         public IEnumerator<Point> GetEnumerator() => _points.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => _points.GetEnumerator();
+
+        IEnumerator<IConsoleRenderable> IEnumerable<IConsoleRenderable>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

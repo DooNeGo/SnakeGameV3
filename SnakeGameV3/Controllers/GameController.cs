@@ -2,7 +2,6 @@
 using SnakeGameV3.Enums;
 using SnakeGameV3.Rendering;
 using System.Diagnostics;
-using System.Drawing;
 using static SnakeGameV3.Constants.GameConstants;
 
 namespace SnakeGameV3.Controllers
@@ -15,20 +14,26 @@ namespace SnakeGameV3.Controllers
         {
             PrepareConsole();
 
-            Direction currentDirection = Direction.Nowhere;
+            Direction currentDirection = Direction.Null;
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             Grid grid = new(ScreenHeight, ScreenWidth, GridCellSize);
+
             Snake snake = new(3, 4, SnakeHeadColor, SnakeBodyColor, SnakeSpeed);
             Food food = new(FoodColor, grid);
             Boarder boarder = new(grid, BoarderColor);
-            ConsoleImageBuilder builder = new(grid, ScreenHeight, ScreenWidth, BackgroundColor);
-            ShapeFactory factory = new(grid.CellSize);
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            List<ConsoleObject> renderList = new();
 
-            grid.GameObjectsCoordinates.Add(snake);
-            grid.GameObjectsCoordinates.Add(food);
-            grid.GameObjectsCoordinates.Add(boarder);
+            ConsoleFrameBuilder builder = new(grid, ScreenHeight, ScreenWidth, BackgroundColor);
+            ShapeFactory factory = new(grid.CellSize);
+
+            grid.Add(boarder);
+            grid.Add(food);
+            grid.Add(snake);
+
+            builder.Add(boarder);
+            builder.Add(food);
+            builder.Add(snake);
 
             while (true)
             {
@@ -39,22 +44,16 @@ namespace SnakeGameV3.Controllers
                     grid.Update();
                 }
 
+                if (snake.IsCrashed)
+                    return;
+
                 if (stopwatch.ElapsedMilliseconds < FrameDelay)
                     continue;
 
                 stopwatch.Restart();
 
-                foreach (Point coordinates in boarder)
-                    renderList.Add(new ConsoleObject(coordinates, factory.GetSquare(boarder.Color)));
-                renderList.Add(new ConsoleObject(food.Coordinates, factory.GetSquare(food.Color)));
-                renderList.Add(new ConsoleObject(snake.Head, factory.GetSquare(snake.HeadColor)));
-                foreach (Point coordinates in snake.Body)
-                    renderList.Add(new ConsoleObject(coordinates, factory.GetSquare(snake.BodyColor)));
-
-                builder.BuildImage(renderList);
+                builder.BuildImage();
                 builder.DrawImage();
-
-                renderList.Clear();
             }
         }
 
@@ -76,7 +75,7 @@ namespace SnakeGameV3.Controllers
                 ConsoleKey.DownArrow when lastDirection != Direction.Up => Direction.Down,
                 ConsoleKey.LeftArrow when lastDirection != Direction.Right => Direction.Left,
                 ConsoleKey.RightArrow when lastDirection != Direction.Left => Direction.Right,
-                ConsoleKey.Spacebar => Direction.Nowhere,
+                ConsoleKey.Spacebar => Direction.Null,
                 _ => lastDirection
             };
         }

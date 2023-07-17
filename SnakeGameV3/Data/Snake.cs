@@ -6,16 +6,17 @@ using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Snake : IMovable, IEnumerable<Point>
+    internal class Snake : IMovable, IGridObject, IEnumerable<IConsoleRenderable>
     {
         public Snake(int x, int y, ConsoleColor headColor, ConsoleColor bodyColor, double speed)
         {
             Head = new Point(x, y);
-            Body.Enqueue(new Point(Head.X - 2, Head.Y));
-            Body.Enqueue(new Point(Head.X - 1, Head.Y));
             HeadColor = headColor;
             BodyColor = bodyColor;
             Speed = speed;
+
+            Body.Enqueue(new Point(Head.X - 2, Head.Y));
+            Body.Enqueue(new Point(Head.X - 1, Head.Y));
         }
 
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
@@ -24,16 +25,21 @@ namespace SnakeGameV3.Data
 
         public Queue<Point> Body { get; } = new();
 
-        public double LostMoves { get; private set; } = 0;
-
         public ConsoleColor HeadColor { get; }
+
         public ConsoleColor BodyColor { get; }
+
+        public double LostMoves { get; private set; } = 0;
 
         public double Speed { get; }
 
+        public double MoveLatency => 1000 / Speed;
+
         public bool IsReadyForMove => _stopwatch.ElapsedMilliseconds >= MoveLatency;
 
-        public double MoveLatency => 1000 / Speed;
+        public bool IsCrashed { get; set; } = false;
+
+        public PassType Type => PassType.Impassable;
 
         public void Move(Direction direction)
         {
@@ -41,14 +47,14 @@ namespace SnakeGameV3.Data
                 && direction != Direction.Down
                 && direction != Direction.Left
                 && direction != Direction.Right
-                && direction != Direction.Nowhere)
+                && direction != Direction.Null)
                 throw new Exception();
 
             LostMoves += _stopwatch.ElapsedMilliseconds / MoveLatency - 1;
 
             _stopwatch.Restart();
 
-            if (direction == Direction.Nowhere)
+            if (direction == Direction.Null)
                 return;
 
             Body.Dequeue();
@@ -72,14 +78,17 @@ namespace SnakeGameV3.Data
                 yield return point;
         }
 
-
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             yield return Head;
 
             foreach (Point point in Body)
                 yield return point;
+        }
+
+        IEnumerator<IConsoleRenderable> IEnumerable<IConsoleRenderable>.GetEnumerator()
+        {
+            throw new NotImplementedException();
         }
     }
 }
