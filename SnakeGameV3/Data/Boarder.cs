@@ -1,11 +1,12 @@
 ﻿using SnakeGameV3.Enums;
 using SnakeGameV3.Interfaces;
+using SnakeGameV3.Rendering;
 using System.Collections;
 using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Boarder : IGridObject, IEnumerable<IConsoleRenderable>
+    internal class Boarder : IGridObject, IEnumerable<PointWithColor>
     {
         public Boarder(Grid grid, ConsoleColor color)
         {
@@ -43,9 +44,10 @@ namespace SnakeGameV3.Data
 
         IEnumerator IEnumerable.GetEnumerator() => _points.GetEnumerator();
 
-        IEnumerator<IConsoleRenderable> IEnumerable<IConsoleRenderable>.GetEnumerator()
+        IEnumerator<PointWithColor> IEnumerable<PointWithColor>.GetEnumerator()
         {
-            throw new NotImplementedException();
+            foreach (Point point in _points)
+                yield return new PointWithColor(point, Color);
         }
     }
 }

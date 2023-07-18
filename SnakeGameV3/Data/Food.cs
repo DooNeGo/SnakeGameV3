@@ -1,11 +1,12 @@
 ﻿using SnakeGameV3.Enums;
 using SnakeGameV3.Interfaces;
+using SnakeGameV3.Rendering;
 using System.Collections;
 using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Food : IGridObject, IEnumerable<IConsoleRenderable>
+    internal class Food : IGridObject, IEnumerable<PointWithColor>
     {
         public Food(ConsoleColor color, Grid grid)
         {
@@ -44,9 +45,9 @@ namespace SnakeGameV3.Data
             yield return Point;
         }
 
-        IEnumerator<IConsoleRenderable> IEnumerable<IConsoleRenderable>.GetEnumerator()
+        IEnumerator<PointWithColor> IEnumerable<PointWithColor>.GetEnumerator()
         {
-            throw new NotImplementedException();
+            yield return new PointWithColor(Point, Color);
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using SnakeGameV3.Enums;
 using SnakeGameV3.Interfaces;
+using SnakeGameV3.Rendering;
 using System.Collections;
 using System.Diagnostics;
 using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Snake : IMovable, IGridObject, IEnumerable<IConsoleRenderable>
+    internal class Snake : IMovable, IGridObject, IEnumerable<PointWithColor>
     {
         public Snake(int x, int y, ConsoleColor headColor, ConsoleColor bodyColor, double speed)
         {
@@ -86,9 +87,12 @@ namespace SnakeGameV3.Data
                 yield return point;
         }
 
-        IEnumerator<IConsoleRenderable> IEnumerable<IConsoleRenderable>.GetEnumerator()
+        IEnumerator<PointWithColor> IEnumerable<PointWithColor>.GetEnumerator()
         {
-            throw new NotImplementedException();
+            yield return new PointWithColor(Head, HeadColor);
+
+            foreach (Point point in Body)
+                yield return new PointWithColor(point, BodyColor);
         }
     }
 }

@@ -2,8 +2,6 @@
 
 namespace SnakeGameV3.Interfaces
 {
-    internal interface IGridObject : IPassable, IEnumerable<Point>
-    {
-        public bool IsCrashed { get; set; }
-    }
+    internal interface IGridObject : IEnumerable<Point>, ICellObject
+    { }
 }

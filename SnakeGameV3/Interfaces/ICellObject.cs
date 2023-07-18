@@ -2,8 +2,10 @@
 
 namespace SnakeGameV3.Interfaces
 {
-    internal interface IPassable
+    internal interface ICellObject
     {
+        public bool IsCrashed { get; set; }
+
         public PassType Type { get; }
     }
 }

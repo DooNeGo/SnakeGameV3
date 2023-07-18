@@ -11,12 +11,12 @@ namespace SnakeGameV3.Data
             CellSize = cellSize;
             Height = screenHeight / cellSize;
             Width = screenWidth / cellSize;
-            _cells = new PassType?[Height, Width];
+            _cells = new ICellObject?[Height, Width];
         }
 
         private readonly List<IGridObject> _gridObjects = new();
 
-        private readonly PassType?[,] _cells;
+        private readonly ICellObject?[,] _cells;
 
         public int Height { get; }
 
@@ -26,9 +26,9 @@ namespace SnakeGameV3.Data
 
         public bool IsOccupiedCell(int x, int y) => _cells[y, x] != null;
 
-        private void OccupyCell(Point coordinates, PassType type)
+        private void OccupyCell(Point point, ICellObject cellObject)
         {
-            _cells[coordinates.Y, coordinates.X] = type;
+            _cells[point.Y, point.X] = cellObject;
         }
 
         private void InitializeCells()
@@ -44,15 +44,16 @@ namespace SnakeGameV3.Data
 
             foreach (IGridObject gridObject in _gridObjects)
             {
-                foreach (Point coordinates in gridObject)
+                foreach (Point point in gridObject)
                 {
-                    if (_cells[coordinates.Y, coordinates.X] == PassType.Impassable)
+                    if (_cells[point.Y, point.X] != null && _cells[point.Y, point.X]!.Type == PassType.Impassable)
                     {
                         gridObject.IsCrashed = true;
+                        _cells[point.Y, point.X]!.IsCrashed = true;
                         break;
                     }
 
-                    OccupyCell(coordinates, gridObject.Type);
+                    OccupyCell(point, gridObject);
                 }
             }
         }

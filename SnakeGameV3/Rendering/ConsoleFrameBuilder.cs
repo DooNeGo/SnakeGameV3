@@ -1,5 +1,4 @@
 ﻿using SnakeGameV3.Data;
-using SnakeGameV3.Interfaces;
 using static SnakeGameV3.Constants.GameConstants;
 
 namespace SnakeGameV3.Rendering
@@ -11,22 +10,26 @@ namespace SnakeGameV3.Rendering
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
             _frames[1] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
+
+            _shapeFactory = new ShapeFactory(grid.CellSize);
         }
 
         private readonly ConsoleFrame[] _frames;
 
+        private readonly List<IEnumerable<PointWithColor>> _gameObjects = new();
+
+        private readonly ShapeFactory _shapeFactory;
+
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
-
-        private readonly List<IEnumerable<IConsoleRenderable>> _frameObjects = new();
 
         public void BuildImage()
         {
             _frames[_activeFrame].Clear();
 
-            foreach (IEnumerable<IConsoleRenderable> frameObject in _frameObjects)
-                foreach (IConsoleRenderable objectPart in frameObject)
-                    _frames[_activeFrame].Add(objectPart.Point, objectPart.Model);
+            foreach (IEnumerable<PointWithColor> frameObject in _gameObjects)
+                foreach (PointWithColor objectPart in frameObject)
+                    _frames[_activeFrame].Add(objectPart.Point, _shapeFactory.GetSquare(objectPart.Color));
         }
 
         public void DrawImage()
@@ -47,14 +50,14 @@ namespace SnakeGameV3.Rendering
             (_activeFrame, _inactiveFrame) = (_inactiveFrame, _activeFrame);
         }
 
-        public void Add(IEnumerable<IConsoleRenderable> frameObject)
+        public void Add(IEnumerable<PointWithColor> frameObject)
         {
-            _frameObjects.Add(frameObject);
+            _gameObjects.Add(frameObject);
         }
 
-        public void Remove(IEnumerable<IConsoleRenderable> frameObject)
+        public void Remove(IEnumerable<PointWithColor> frameObject)
         {
-            _frameObjects.Remove(frameObject);
+            _gameObjects.Remove(frameObject);
         }
     }
 }
