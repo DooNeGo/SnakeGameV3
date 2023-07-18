@@ -1,4 +1,5 @@
 ﻿using SnakeGameV3.Data;
+using System.Drawing;
 using static SnakeGameV3.Constants.GameConstants;
 
 namespace SnakeGameV3.Rendering
@@ -16,7 +17,7 @@ namespace SnakeGameV3.Rendering
 
         private readonly ConsoleFrame[] _frames;
 
-        private readonly List<IEnumerable<PointWithColor>> _gameObjects = new();
+        private readonly List<IEnumerable<KeyValuePair<Point, ConsoleColor>>> _gameObjects = new();
 
         private readonly ShapeFactory _shapeFactory;
 
@@ -27,9 +28,9 @@ namespace SnakeGameV3.Rendering
         {
             _frames[_activeFrame].Clear();
 
-            foreach (IEnumerable<PointWithColor> frameObject in _gameObjects)
-                foreach (PointWithColor objectPart in frameObject)
-                    _frames[_activeFrame].Add(objectPart.Point, _shapeFactory.GetSquare(objectPart.Color));
+            foreach (IEnumerable<KeyValuePair<Point, ConsoleColor>> frameObject in _gameObjects)
+                foreach (KeyValuePair<Point, ConsoleColor> objectPart in frameObject)
+                    _frames[_activeFrame].Add(objectPart.Key, _shapeFactory.GetSquare(objectPart.Value));
         }
 
         public void DrawImage()
@@ -50,12 +51,12 @@ namespace SnakeGameV3.Rendering
             (_activeFrame, _inactiveFrame) = (_inactiveFrame, _activeFrame);
         }
 
-        public void Add(IEnumerable<PointWithColor> frameObject)
+        public void Add(IEnumerable<KeyValuePair<Point, ConsoleColor>> frameObject)
         {
             _gameObjects.Add(frameObject);
         }
 
-        public void Remove(IEnumerable<PointWithColor> frameObject)
+        public void Remove(IEnumerable<KeyValuePair<Point, ConsoleColor>> frameObject)
         {
             _gameObjects.Remove(frameObject);
         }

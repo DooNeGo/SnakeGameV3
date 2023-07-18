@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Food : IGridObject, IEnumerable<PointWithColor>
+    internal class Food : IGridObject, IEnumerable<KeyValuePair<Point, ConsoleColor>>
     {
         public Food(ConsoleColor color, Grid grid)
         {
@@ -45,9 +45,9 @@ namespace SnakeGameV3.Data
             yield return Point;
         }
 
-        IEnumerator<PointWithColor> IEnumerable<PointWithColor>.GetEnumerator()
+        IEnumerator<KeyValuePair<Point, ConsoleColor>> IEnumerable<KeyValuePair<Point, ConsoleColor>>.GetEnumerator()
         {
-            yield return new PointWithColor(Point, Color);
+            yield return new KeyValuePair<Point, ConsoleColor>(Point, Color);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Boarder : IGridObject, IEnumerable<PointWithColor>
+    internal class Boarder : IGridObject, IEnumerable<KeyValuePair<Point, ConsoleColor>>
     {
         public Boarder(Grid grid, ConsoleColor color)
         {
@@ -44,10 +44,10 @@ namespace SnakeGameV3.Data
 
         IEnumerator IEnumerable.GetEnumerator() => _points.GetEnumerator();
 
-        IEnumerator<PointWithColor> IEnumerable<PointWithColor>.GetEnumerator()
+        IEnumerator<KeyValuePair<Point, ConsoleColor>> IEnumerable<KeyValuePair<Point, ConsoleColor>>.GetEnumerator()
         {
             foreach (Point point in _points)
-                yield return new PointWithColor(point, Color);
+                yield return new KeyValuePair<Point, ConsoleColor>(point, Color);
         }
     }
 }

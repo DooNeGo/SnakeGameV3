@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace SnakeGameV3.Data
 {
-    internal class Snake : IMovable, IGridObject, IEnumerable<PointWithColor>
+    internal class Snake : IMovable, IGridObject, IEnumerable<KeyValuePair<Point, ConsoleColor>>
     {
         public Snake(int x, int y, ConsoleColor headColor, ConsoleColor bodyColor, double speed)
         {
@@ -87,12 +87,12 @@ namespace SnakeGameV3.Data
                 yield return point;
         }
 
-        IEnumerator<PointWithColor> IEnumerable<PointWithColor>.GetEnumerator()
+        IEnumerator<KeyValuePair<Point, ConsoleColor>> IEnumerable<KeyValuePair<Point, ConsoleColor>>.GetEnumerator()
         {
-            yield return new PointWithColor(Head, HeadColor);
+            yield return new KeyValuePair<Point, ConsoleColor>(Head, HeadColor);
 
             foreach (Point point in Body)
-                yield return new PointWithColor(point, BodyColor);
+                yield return new KeyValuePair<Point, ConsoleColor>(point, BodyColor);
         }
     }
 }
