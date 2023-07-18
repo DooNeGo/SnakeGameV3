@@ -1,6 +1,5 @@
 ﻿using SnakeGameV3.Enums;
 using SnakeGameV3.Interfaces;
-using SnakeGameV3.Rendering;
 using System.Collections;
 using System.Diagnostics;
 using System.Drawing;
@@ -21,6 +20,8 @@ namespace SnakeGameV3.Data
         }
 
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+
+        private bool _isAte = false;
 
         public Point Head { get; private set; }
 
@@ -58,7 +59,11 @@ namespace SnakeGameV3.Data
             if (direction == null)
                 return;
 
-            Body.Dequeue();
+            if (!_isAte)
+                Body.Dequeue();
+            else
+                _isAte = false;
+
             Body.Enqueue(new Point(Head.X, Head.Y));
 
             Head = direction switch
@@ -69,6 +74,16 @@ namespace SnakeGameV3.Data
                 Direction.Right => new Point(Head.X + 1, Head.Y),
                 _ => throw new NotImplementedException(),
             };
+        }
+
+        public bool TryToEat(Food food)
+        {
+            if (Head != food.Point)
+                return false;
+
+            _isAte = true;
+
+            return true;
         }
 
         public IEnumerator<Point> GetEnumerator()

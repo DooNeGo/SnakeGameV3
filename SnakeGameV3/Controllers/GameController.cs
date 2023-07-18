@@ -25,7 +25,6 @@ namespace SnakeGameV3.Controllers
             Boarder boarder = new(grid, BoarderColor);
 
             ConsoleFrameBuilder builder = new(grid, ScreenHeight, ScreenWidth, BackgroundColor);
-            ShapeFactory factory = new(grid.CellSize);
 
             grid.Add(boarder);
             grid.Add(food);
@@ -40,7 +39,11 @@ namespace SnakeGameV3.Controllers
                 while (snake.IsReadyForMove || snake.LostMoves >= 1)
                 {
                     currentDirection = ReadMovement(currentDirection);
+
                     snake.Move(currentDirection);
+                    if (snake.TryToEat(food))
+                        food.RandCoordinates();
+
                     grid.Update();
                 }
 
