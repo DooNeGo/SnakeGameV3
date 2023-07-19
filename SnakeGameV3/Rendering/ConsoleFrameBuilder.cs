@@ -26,7 +26,7 @@ namespace SnakeGameV3.Rendering
 
         public void BuildImage()
         {
-            _frames[_activeFrame].Clear();
+            _frames[_activeFrame].Prepare();
 
             foreach (IEnumerable<KeyValuePair<Point, ConsoleColor>> frameObject in _gameObjects)
                 foreach (KeyValuePair<Point, ConsoleColor> objectPart in frameObject)

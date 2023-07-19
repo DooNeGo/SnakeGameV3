@@ -11,8 +11,6 @@ namespace SnakeGameV3.Rendering
             Size = new Size(screenWidth, screenHeight);
             _backgroundColor = backGroundColor;
             _frame = new ConsoleColor[Size.Height, Size.Width];
-
-            InitializeFrame();
         }
 
         private readonly Grid _grid;
@@ -25,14 +23,7 @@ namespace SnakeGameV3.Rendering
 
         public ConsoleColor GetPixel(int x, int y) => _frame[y, x];
 
-        private void InitializeFrame()
-        {
-            for (var y = 0; y < Size.Height; y++)
-                for (var x = 0; x < Size.Width; x++)
-                    _frame[y, x] = _backgroundColor;
-        }
-
-        public void Clear()
+        public void Prepare()
         {
             for (var y = 0; y < Size.Height; y++)
                 for (var x = 0; x < Size.Width; x++)
