@@ -35,9 +35,9 @@ namespace SnakeGameV3.Rendering
 
         public void DrawImage()
         {
-            for (var y = 0; y < _frames[_activeFrame].Height; y++)
+            for (var y = 0; y < _frames[_activeFrame].Size.Height; y++)
             {
-                for (var x = 0; x < _frames[_activeFrame].Width; x++)
+                for (var x = 0; x < _frames[_activeFrame].Size.Width; x++)
                 {
                     if (_frames[_activeFrame].GetPixel(x, y) != _frames[_inactiveFrame].GetPixel(x, y))
                     {

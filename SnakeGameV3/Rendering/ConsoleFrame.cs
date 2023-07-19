@@ -8,8 +8,9 @@ namespace SnakeGameV3.Rendering
         public ConsoleFrame(Grid grid, int screenHeight, int screenWidth, ConsoleColor backGroundColor)
         {
             _grid = grid;
-            _frame = new ConsoleColor[screenHeight, screenWidth];
+            Size = new Size(screenWidth, screenHeight);
             _backgroundColor = backGroundColor;
+            _frame = new ConsoleColor[Size.Height, Size.Width];
 
             InitializeFrame();
         }
@@ -20,23 +21,21 @@ namespace SnakeGameV3.Rendering
 
         private readonly ConsoleColor[,] _frame;
 
-        public int Height => _frame.GetLength(0);
-
-        public int Width => _frame.GetLength(1);
+        public Size Size { get; }
 
         public ConsoleColor GetPixel(int x, int y) => _frame[y, x];
 
         private void InitializeFrame()
         {
-            for (var y = 0; y < Height; y++)
-                for (var x = 0; x < Width; x++)
+            for (var y = 0; y < Size.Height; y++)
+                for (var x = 0; x < Size.Width; x++)
                     _frame[y, x] = _backgroundColor;
         }
 
         public void Clear()
         {
-            for (var y = 0; y < Height; y++)
-                for (var x = 0; x < Width; x++)
+            for (var y = 0; y < Size.Height; y++)
+                for (var x = 0; x < Size.Width; x++)
                     if (_frame[y, x] != _backgroundColor)
                         _frame[y, x] = _backgroundColor;
         }
