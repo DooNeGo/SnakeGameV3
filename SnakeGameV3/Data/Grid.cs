@@ -9,18 +9,17 @@ namespace SnakeGameV3.Data
         public Grid(int screenHeight, int screenWidth, int cellSize)
         {
             CellSize = cellSize;
-            Height = screenHeight / cellSize;
-            Width = screenWidth / cellSize;
-            _cells = new ICellObject?[Height, Width];
+            Size = new(screenWidth / cellSize, screenHeight / cellSize);
+            _cells = new ICellObject?[Size.Height, Size.Width];
+
+            InitializeCells();
         }
 
         private readonly List<IGridObject> _gridObjects = new();
 
         private readonly ICellObject?[,] _cells;
 
-        public int Height { get; }
-
-        public int Width { get; }
+        public Size Size { get; }
 
         public int CellSize { get; }
 
@@ -33,14 +32,22 @@ namespace SnakeGameV3.Data
 
         private void InitializeCells()
         {
-            for (var y = 0; y < Height; y++)
-                for (var x = 0; x < Width; x++)
+            for (var y = 0; y < Size.Height; y++)
+                for (var x = 0; x < Size.Width; x++)
                     _cells[y, x] = null;
+        }
+
+        private void Clear()
+        {
+            for (var y = 0; y < Size.Height; y++)
+                for (var x = 0; x < Size.Width; x++)
+                    if (_cells[y, x] != null)
+                        _cells[y, x] = null;
         }
 
         public void Update()
         {
-            InitializeCells();
+            Clear();
 
             foreach (IGridObject gridObject in _gridObjects)
             {

@@ -28,24 +28,24 @@ namespace SnakeGameV3.Rendering
 
         private void InitializeFrame()
         {
-            for (var y = 0; y < _frame.GetLength(0); y++)
-                for (var x = 0; x < _frame.GetLength(1); x++)
+            for (var y = 0; y < Height; y++)
+                for (var x = 0; x < Width; x++)
                     _frame[y, x] = _backgroundColor;
         }
 
         public void Clear()
         {
-            for (var y = 0; y < _frame.GetLength(0); y++)
-                for (var x = 0; x < _frame.GetLength(1); x++)
+            for (var y = 0; y < Height; y++)
+                for (var x = 0; x < Width; x++)
                     if (_frame[y, x] != _backgroundColor)
                         _frame[y, x] = _backgroundColor;
         }
 
         public void Add(Point coordinates, ConsoleColor[,] model)
         {
-            if (coordinates.X >= _grid.Width
+            if (coordinates.X >= _grid.Size.Width
                 || coordinates.X < 0
-                || coordinates.Y >= _grid.Height
+                || coordinates.Y >= _grid.Size.Height
                 || coordinates.Y < 0)
                 throw new Exception();
 

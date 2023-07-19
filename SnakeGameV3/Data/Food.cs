@@ -1,6 +1,5 @@
 ﻿using SnakeGameV3.Enums;
 using SnakeGameV3.Interfaces;
-using SnakeGameV3.Rendering;
 using System.Collections;
 using System.Drawing;
 
@@ -31,7 +30,7 @@ namespace SnakeGameV3.Data
         {
             do
             {
-                Point = new Point(_random.Next(1, _grid.Width - 2), _random.Next(1, _grid.Height - 2));
+                Point = new Point(_random.Next(1, _grid.Size.Width - 2), _random.Next(1, _grid.Size.Height - 2));
             } while (_grid.IsOccupiedCell(Point.X, Point.Y) == true);
         }
 

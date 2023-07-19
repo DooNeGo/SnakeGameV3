@@ -1,6 +1,5 @@
 ﻿using SnakeGameV3.Enums;
 using SnakeGameV3.Interfaces;
-using SnakeGameV3.Rendering;
 using System.Collections;
 using System.Drawing;
 
@@ -27,16 +26,16 @@ namespace SnakeGameV3.Data
 
         private void InitializeBoarder()
         {
-            for (var i = 0; i < _grid.Width; i++)
+            for (var i = 1; i < _grid.Size.Width - 1; i++)
             {
                 _points.Add(new Point(i, 0));
-                _points.Add(new Point(i, _grid.Height - 1));
+                _points.Add(new Point(i, _grid.Size.Height - 1));
             }
 
-            for (var i = 0; i < _grid.Height; i++)
+            for (var i = 0; i < _grid.Size.Height; i++)
             {
                 _points.Add(new Point(0, i));
-                _points.Add(new Point(_grid.Width - 1, i));
+                _points.Add(new Point(_grid.Size.Width - 1, i));
             }
         }
 
