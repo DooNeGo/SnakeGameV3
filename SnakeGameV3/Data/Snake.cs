@@ -8,6 +8,10 @@ namespace SnakeGameV3.Data
 {
     internal class Snake : IMovable, IGridObject, IEnumerable<KeyValuePair<Point, ConsoleColor>>
     {
+        private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+
+        private bool _isAte = false;
+
         public Snake(int x, int y, ConsoleColor headColor, ConsoleColor bodyColor, double speed)
         {
             Head = new Point(x, y);
@@ -18,10 +22,6 @@ namespace SnakeGameV3.Data
             Body.Enqueue(new Point(Head.X - 2, Head.Y));
             Body.Enqueue(new Point(Head.X - 1, Head.Y));
         }
-
-        private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
-
-        private bool _isAte = false;
 
         public Point Head { get; private set; }
 

@@ -6,15 +6,6 @@ namespace SnakeGameV3.Rendering
 {
     internal class ConsoleFrameBuilder
     {
-        public ConsoleFrameBuilder(Grid grid, int screenHeight, int screenWidth, ConsoleColor backgroundColor)
-        {
-            _frames = new ConsoleFrame[2];
-            _frames[0] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
-            _frames[1] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
-
-            _shapeFactory = new ShapeFactory(grid.CellSize);
-        }
-
         private readonly ConsoleFrame[] _frames;
 
         private readonly List<IEnumerable<KeyValuePair<Point, ConsoleColor>>> _gameObjects = new();
@@ -23,6 +14,15 @@ namespace SnakeGameV3.Rendering
 
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
+
+        public ConsoleFrameBuilder(Grid grid, int screenHeight, int screenWidth, ConsoleColor backgroundColor)
+        {
+            _frames = new ConsoleFrame[2];
+            _frames[0] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
+            _frames[1] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
+
+            _shapeFactory = new ShapeFactory(grid.CellSize);
+        }
 
         public void BuildImage()
         {

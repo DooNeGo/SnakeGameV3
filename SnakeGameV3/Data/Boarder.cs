@@ -7,6 +7,10 @@ namespace SnakeGameV3.Data
 {
     internal class Boarder : IGridObject, IEnumerable<KeyValuePair<Point, ConsoleColor>>
     {
+        private readonly List<Point> _points = new();
+
+        private readonly Grid _grid;
+
         public Boarder(Grid grid, ConsoleColor color)
         {
             _grid = grid;
@@ -14,15 +18,21 @@ namespace SnakeGameV3.Data
             InitializeBoarder();
         }
 
-        private readonly List<Point> _points = new();
-
-        private readonly Grid _grid;
-
         public ConsoleColor Color { get; }
 
         public bool IsCrashed { get; set; } = false;
 
         public PassType Type => PassType.Impassable;
+
+        public IEnumerator<Point> GetEnumerator() => _points.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => _points.GetEnumerator();
+
+        IEnumerator<KeyValuePair<Point, ConsoleColor>> IEnumerable<KeyValuePair<Point, ConsoleColor>>.GetEnumerator()
+        {
+            foreach (Point point in _points)
+                yield return new KeyValuePair<Point, ConsoleColor>(point, Color);
+        }
 
         private void InitializeBoarder()
         {
@@ -37,16 +47,6 @@ namespace SnakeGameV3.Data
                 _points.Add(new Point(0, i));
                 _points.Add(new Point(_grid.Size.Width - 1, i));
             }
-        }
-
-        public IEnumerator<Point> GetEnumerator() => _points.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => _points.GetEnumerator();
-
-        IEnumerator<KeyValuePair<Point, ConsoleColor>> IEnumerable<KeyValuePair<Point, ConsoleColor>>.GetEnumerator()
-        {
-            foreach (Point point in _points)
-                yield return new KeyValuePair<Point, ConsoleColor>(point, Color);
         }
     }
 }

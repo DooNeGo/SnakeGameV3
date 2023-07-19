@@ -2,12 +2,12 @@
 {
     internal class ShapeFactory
     {
+        private readonly int _gridCellSize;
+
         public ShapeFactory(int gridCellSize)
         {
             _gridCellSize = gridCellSize;
         }
-
-        private readonly int _gridCellSize;
 
         public ConsoleColor[,] GetSquare(ConsoleColor color)
         {

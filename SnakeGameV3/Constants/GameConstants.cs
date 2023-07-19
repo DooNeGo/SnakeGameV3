@@ -9,7 +9,7 @@
 
         public const ConsoleColor SnakeHeadColor = ConsoleColor.DarkYellow;
         public const ConsoleColor SnakeBodyColor = ConsoleColor.Yellow;
-        public const ConsoleColor BackgroundColor = ConsoleColor.Gray;
+        public const ConsoleColor BackgroundColor = ConsoleColor.Black;
         public const ConsoleColor FoodColor = ConsoleColor.DarkRed;
         public const ConsoleColor BoarderColor = ConsoleColor.White;
 

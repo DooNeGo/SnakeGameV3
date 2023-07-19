@@ -6,6 +6,10 @@ namespace SnakeGameV3.Data
 {
     internal class Grid
     {
+        private readonly List<IGridObject> _gridObjects = new();
+
+        private readonly ICellObject?[,] _cells;
+
         public Grid(int screenHeight, int screenWidth, int cellSize)
         {
             CellSize = cellSize;
@@ -15,35 +19,11 @@ namespace SnakeGameV3.Data
             InitializeCells();
         }
 
-        private readonly List<IGridObject> _gridObjects = new();
-
-        private readonly ICellObject?[,] _cells;
-
         public Size Size { get; }
 
         public int CellSize { get; }
 
         public bool IsOccupiedCell(int x, int y) => _cells[y, x] != null;
-
-        private void OccupyCell(Point point, ICellObject cellObject)
-        {
-            _cells[point.Y, point.X] = cellObject;
-        }
-
-        private void InitializeCells()
-        {
-            for (var y = 0; y < Size.Height; y++)
-                for (var x = 0; x < Size.Width; x++)
-                    _cells[y, x] = null;
-        }
-
-        private void Clear()
-        {
-            for (var y = 0; y < Size.Height; y++)
-                for (var x = 0; x < Size.Width; x++)
-                    if (_cells[y, x] != null)
-                        _cells[y, x] = null;
-        }
 
         public void Update()
         {
@@ -73,6 +53,26 @@ namespace SnakeGameV3.Data
         public void Remove(IGridObject gridObject)
         {
             _gridObjects.Remove(gridObject);
+        }
+
+        private void OccupyCell(Point point, ICellObject cellObject)
+        {
+            _cells[point.Y, point.X] = cellObject;
+        }
+
+        private void InitializeCells()
+        {
+            for (var y = 0; y < Size.Height; y++)
+                for (var x = 0; x < Size.Width; x++)
+                    _cells[y, x] = null;
+        }
+
+        private void Clear()
+        {
+            for (var y = 0; y < Size.Height; y++)
+                for (var x = 0; x < Size.Width; x++)
+                    if (_cells[y, x] != null)
+                        _cells[y, x] = null;
         }
     }
 }

@@ -7,16 +7,16 @@ namespace SnakeGameV3.Data
 {
     internal class Food : IGridObject, IEnumerable<KeyValuePair<Point, ConsoleColor>>
     {
+        private readonly Random _random = new();
+
+        private readonly Grid _grid;
+
         public Food(ConsoleColor color, Grid grid)
         {
             Color = color;
             _grid = grid;
             RandCoordinates();
         }
-
-        private readonly Random _random = new();
-
-        private readonly Grid _grid;
 
         public Point Point { get; private set; }
 

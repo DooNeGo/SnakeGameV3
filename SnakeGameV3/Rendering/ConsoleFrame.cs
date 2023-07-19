@@ -5,6 +5,12 @@ namespace SnakeGameV3.Rendering
 {
     internal class ConsoleFrame
     {
+        private readonly Grid _grid;
+
+        private readonly ConsoleColor _backgroundColor;
+
+        private readonly ConsoleColor[,] _frame;
+
         public ConsoleFrame(Grid grid, int screenHeight, int screenWidth, ConsoleColor backGroundColor)
         {
             _grid = grid;
@@ -12,12 +18,6 @@ namespace SnakeGameV3.Rendering
             _backgroundColor = backGroundColor;
             _frame = new ConsoleColor[Size.Height, Size.Width];
         }
-
-        private readonly Grid _grid;
-
-        private readonly ConsoleColor _backgroundColor;
-
-        private readonly ConsoleColor[,] _frame;
 
         public Size Size { get; }
 
