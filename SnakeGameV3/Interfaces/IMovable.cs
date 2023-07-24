@@ -1,13 +1,15 @@
-﻿using SnakeGameV3.Enums;
+﻿using System.Numerics;
 
 namespace SnakeGameV3.Interfaces
 {
     internal interface IMovable
     {
-        public void Move(Direction? direction);
+        public void MoveToPosition(Vector2 point);
 
-        public bool IsReadyForMove { get; }
+        public float MoveSpeed { get; }
 
-        public double MoveLatency { get; }
+        public Vector2 Position { get; }
+
+        public long DeltaTime { get; }
     }
 }

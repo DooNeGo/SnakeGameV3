@@ -1,6 +1,7 @@
 ﻿using SnakeGameV3.Enums;
 using SnakeGameV3.Interfaces;
 using System.Drawing;
+using System.Numerics;
 
 namespace SnakeGameV3.Data
 {
@@ -31,12 +32,12 @@ namespace SnakeGameV3.Data
 
             foreach (IGridObject gridObject in _gridObjects)
             {
-                foreach (Point point in gridObject)
+                foreach (Vector2 point in gridObject)
                 {
-                    if (_cells[point.Y, point.X] != null && _cells[point.Y, point.X]!.Type == PassType.Impassable)
+                    if (_cells[(int)point.Y, (int)point.X] != null && _cells[(int)point.Y, (int)point.X]!.Type == PassType.Impassable)
                     {
                         gridObject.IsCrashed = true;
-                        _cells[point.Y, point.X]!.IsCrashed = true;
+                        _cells[(int)point.Y, (int)point.X]!.IsCrashed = true;
                         break;
                     }
 
@@ -55,9 +56,9 @@ namespace SnakeGameV3.Data
             _gridObjects.Remove(gridObject);
         }
 
-        private void OccupyCell(Point point, ICellObject cellObject)
+        private void OccupyCell(Vector2 point, ICellObject cellObject)
         {
-            _cells[point.Y, point.X] = cellObject;
+            _cells[(int)point.Y, (int)point.X] = cellObject;
         }
 
         private void InitializeCells()

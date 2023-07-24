@@ -13,7 +13,7 @@
         public const ConsoleColor FoodColor = ConsoleColor.DarkRed;
         public const ConsoleColor BoarderColor = ConsoleColor.White;
 
-        public const double SnakeSpeed = 4;
+        public const float SnakeSpeed = 4f;
 
         public const int FramePerSecond = 60;
         public const double FrameDelay = 1000 / FramePerSecond;

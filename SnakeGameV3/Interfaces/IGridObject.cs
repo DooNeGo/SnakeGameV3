@@ -1,7 +1,7 @@
-﻿using System.Drawing;
+﻿using System.Numerics;
 
 namespace SnakeGameV3.Interfaces
 {
-    internal interface IGridObject : IEnumerable<Point>, ICellObject
+    internal interface IGridObject : IEnumerable<Vector2>, ICellObject
     { }
 }
