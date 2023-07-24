@@ -7,9 +7,7 @@ namespace SnakeGameV3.Rendering
     internal class ConsoleFrame
     {
         private readonly Grid _grid;
-
         private readonly ConsoleColor _backgroundColor;
-
         private readonly ConsoleColor[,] _frame;
 
         public ConsoleFrame(Grid grid, int screenHeight, int screenWidth, ConsoleColor backGroundColor)
@@ -38,7 +36,7 @@ namespace SnakeGameV3.Rendering
                 || position.X < 0
                 || position.Y >= _grid.Size.Height
                 || position.Y < 0)
-                throw new Exception();
+                return;
 
             for (var y = 0; y < model.GetLength(0); y++)
                 for (var x = 0; x < model.GetLength(1); x++)

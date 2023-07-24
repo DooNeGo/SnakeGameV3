@@ -8,14 +8,13 @@ namespace SnakeGameV3.Data
     internal class Grid
     {
         private readonly List<IGridObject> _gridObjects = new();
-
-        private readonly ICellObject?[,] _cells;
+        private readonly PassType[,] _cells;
 
         public Grid(int screenHeight, int screenWidth, int cellSize)
         {
             CellSize = cellSize;
             Size = new(screenWidth / cellSize, screenHeight / cellSize);
-            _cells = new ICellObject?[Size.Height, Size.Width];
+            _cells = new PassType[Size.Height, Size.Width];
 
             InitializeCells();
         }
@@ -24,7 +23,7 @@ namespace SnakeGameV3.Data
 
         public int CellSize { get; }
 
-        public bool IsOccupiedCell(int x, int y) => _cells[y, x] != null;
+        public bool IsOccupiedCell(Vector2 position) => _cells[(int)position.Y, (int)position.X] == PassType.Impassable;
 
         public void Update()
         {
@@ -32,16 +31,12 @@ namespace SnakeGameV3.Data
 
             foreach (IGridObject gridObject in _gridObjects)
             {
-                foreach (Vector2 point in gridObject)
+                foreach (Vector2 position in gridObject)
                 {
-                    if (_cells[(int)point.Y, (int)point.X] != null && _cells[(int)point.Y, (int)point.X]!.Type == PassType.Impassable)
-                    {
-                        gridObject.IsCrashed = true;
-                        _cells[(int)point.Y, (int)point.X]!.IsCrashed = true;
-                        break;
-                    }
+                    if (position.X >= Size.Width || position.Y >= Size.Height)
+                        continue;
 
-                    OccupyCell(point, gridObject);
+                    OccupyCell(position, gridObject.Type);
                 }
             }
         }
@@ -56,24 +51,24 @@ namespace SnakeGameV3.Data
             _gridObjects.Remove(gridObject);
         }
 
-        private void OccupyCell(Vector2 point, ICellObject cellObject)
+        private void OccupyCell(Vector2 position, PassType passType)
         {
-            _cells[(int)point.Y, (int)point.X] = cellObject;
+            _cells[(int)position.Y, (int)position.X] = passType;
         }
 
         private void InitializeCells()
         {
             for (var y = 0; y < Size.Height; y++)
                 for (var x = 0; x < Size.Width; x++)
-                    _cells[y, x] = null;
+                    _cells[y, x] = PassType.Passable;
         }
 
         private void Clear()
         {
             for (var y = 0; y < Size.Height; y++)
                 for (var x = 0; x < Size.Width; x++)
-                    if (_cells[y, x] != null)
-                        _cells[y, x] = null;
+                    if (_cells[y, x] != PassType.Passable)
+                        _cells[y, x] = PassType.Passable;
         }
     }
 }

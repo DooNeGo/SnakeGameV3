@@ -8,7 +8,6 @@ namespace SnakeGameV3.Data
     internal class Boarder : IGridObject, IEnumerable<ValueTuple<Vector2, ConsoleColor>>
     {
         private readonly List<Vector2> _points = new();
-
         private readonly Grid _grid;
 
         public Boarder(Grid grid, ConsoleColor color)
@@ -19,8 +18,6 @@ namespace SnakeGameV3.Data
         }
 
         public ConsoleColor Color { get; }
-
-        public bool IsCrashed { get; set; } = false;
 
         public PassType Type => PassType.Impassable;
 

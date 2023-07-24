@@ -1,5 +1,4 @@
 ﻿using SnakeGameV3.Data;
-using System.Drawing;
 using System.Numerics;
 using static SnakeGameV3.Constants.GameConstants;
 
@@ -8,9 +7,7 @@ namespace SnakeGameV3.Rendering
     internal class ConsoleFrameBuilder
     {
         private readonly ConsoleFrame[] _frames;
-
         private readonly List<IEnumerable<ValueTuple<Vector2, ConsoleColor>>> _gameObjects = new();
-
         private readonly ShapeFactory _shapeFactory;
 
         private Index _activeFrame = 0;

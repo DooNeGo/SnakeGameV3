@@ -9,23 +9,25 @@ namespace SnakeGameV3.Data
     internal class Snake : IMovable, IGridObject, IEnumerable<ValueTuple<Vector2, ConsoleColor>>
     {
         private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+        private readonly Queue<Vector2> _body = new();
+        private readonly Grid _grid;
 
-        private bool _isAte = false;
+        private Vector2 _head;
 
-        public Snake(int x, int y, ConsoleColor headColor, ConsoleColor bodyColor, float speed)
+        public Snake(Vector2 startPosition, ConsoleColor headColor, ConsoleColor bodyColor, float speed, Grid grid)
         {
-            Position = new Vector2(x, y);
+            _head = startPosition;
             HeadColor = headColor;
             BodyColor = bodyColor;
             MoveSpeed = speed;
+            MoveLatency = (int)(1000 / MoveSpeed);
+            _grid = grid;
 
-            Body.Enqueue(new Vector2(Position.X - 2, Position.Y));
-            Body.Enqueue(new Vector2(Position.X - 1, Position.Y));
+            _body.Enqueue(new Vector2(_head.X - 2, _head.Y));
+            _body.Enqueue(new Vector2(_head.X - 1, _head.Y));
         }
 
-        public Vector2 Position { get; private set; }
-
-        public Queue<Vector2> Body { get; } = new();
+        public Vector2 Position => _head;
 
         public ConsoleColor HeadColor { get; }
 
@@ -33,7 +35,9 @@ namespace SnakeGameV3.Data
 
         public float MoveSpeed { get; }
 
-        public bool IsCrashed { get; set; } = false;
+        public int MoveLatency { get; }
+
+        public bool IsDied { get; private set; } = false;
 
         public PassType Type => PassType.Impassable;
 
@@ -43,47 +47,50 @@ namespace SnakeGameV3.Data
         {
             _stopwatch.Restart();
 
-            if (nextPosition == Position)
-                return;
+            if (_grid.IsOccupiedCell(nextPosition) && nextPosition != _head)
+                IsDied = true;
 
-            if ((int)nextPosition.X != (int)Position.X || (int)nextPosition.Y != (int)Position.Y)
+            if ((int)nextPosition.X != (int)_head.X || (int)nextPosition.Y != (int)_head.Y)
             {
-                Body.Dequeue();
-                Body.Enqueue(Position);
+                _body.Dequeue();
+                _body.Enqueue(_head);
             }
 
-            Position = nextPosition;
+            _head = nextPosition;
         }
 
         public bool TryToEat(Food food)
         {
-            if (Position != food.Position)
+            if ((int)_head.X != (int)food.Position.X || (int)_head.Y != (int)food.Position.Y)
                 return false;
 
-            _isAte = true;
+            _body.Enqueue(new Vector2(_grid.Size.Width, 0));
 
             return true;
         }
 
         public IEnumerator<Vector2> GetEnumerator()
         {
-            foreach (Vector2 point in Body)
-                yield return point;
-            yield return Position;
+            yield return _head;
+
+            foreach (Vector2 position in _body)
+                yield return position;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (Vector2 point in Body)
-                yield return point;
-            yield return Position;
+            yield return _head;
+
+            foreach (Vector2 position in _body)
+                yield return position;
         }
 
         IEnumerator<ValueTuple<Vector2, ConsoleColor>> IEnumerable<ValueTuple<Vector2, ConsoleColor>>.GetEnumerator()
         {
-            foreach (Vector2 point in Body)
-                yield return new ValueTuple<Vector2, ConsoleColor>(point, BodyColor);
-            yield return new ValueTuple<Vector2, ConsoleColor>(Position, HeadColor);
+            yield return new ValueTuple<Vector2, ConsoleColor>(_head, HeadColor);
+
+            foreach (Vector2 position in _body)
+                yield return new ValueTuple<Vector2, ConsoleColor>(position, BodyColor);
         }
     }
 }

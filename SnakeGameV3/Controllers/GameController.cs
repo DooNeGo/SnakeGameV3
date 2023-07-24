@@ -1,6 +1,9 @@
 ﻿using SnakeGameV3.Data;
+using SnakeGameV3.Input;
+using SnakeGameV3.Model;
 using SnakeGameV3.Rendering;
 using System.Diagnostics;
+using System.Numerics;
 using static SnakeGameV3.Constants.GameConstants;
 
 namespace SnakeGameV3.Controllers
@@ -12,14 +15,11 @@ namespace SnakeGameV3.Controllers
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             Grid grid = new(ScreenHeight, ScreenWidth, GridCellSize);
-
             Food food = new(FoodColor, grid);
             Boarder boarder = new(grid, BoarderColor);
-
-            Snake snake = new(3, 4, SnakeHeadColor, SnakeBodyColor, SnakeSpeed);
+            Snake snake = new(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, grid);
             SnakeMovement movement = new(snake);
             KeyboardInput input = new(movement);
-
             ConsoleFrameBuilder builder = new(grid, ScreenHeight, ScreenWidth, BackgroundColor);
 
             grid.Add(boarder);
@@ -30,20 +30,21 @@ namespace SnakeGameV3.Controllers
             builder.Add(food);
             builder.Add(snake);
 
-            while (!snake.IsCrashed)
+            while (!snake.IsDied)
             {
                 if (stopwatch.ElapsedMilliseconds >= FrameDelay)
                 {
                     stopwatch.Restart();
 
-
                     builder.BuildImage();
                     builder.DrawImage();
-
                 }
 
                 grid.Update();
                 input.Update();
+
+                if (snake.TryToEat(food))
+                    food.RandCoordinates();
             }
         }
     }

@@ -8,7 +8,6 @@ namespace SnakeGameV3.Data
     internal class Food : IGridObject, IEnumerable<ValueTuple<Vector2, ConsoleColor>>
     {
         private readonly Random _random = new();
-
         private readonly Grid _grid;
 
         public Food(ConsoleColor color, Grid grid)
@@ -22,8 +21,6 @@ namespace SnakeGameV3.Data
 
         public ConsoleColor Color { get; }
 
-        public bool IsCrashed { get; set; } = false;
-
         public PassType Type => PassType.Passable;
 
         public void RandCoordinates()
@@ -31,7 +28,7 @@ namespace SnakeGameV3.Data
             do
             {
                 Position = new Vector2(_random.Next(1, _grid.Size.Width - 2), _random.Next(1, _grid.Size.Height - 2));
-            } while (_grid.IsOccupiedCell((int)Position.X, (int)Position.Y) == true);
+            } while (_grid.IsOccupiedCell(Position));
         }
 
         public IEnumerator<Vector2> GetEnumerator()

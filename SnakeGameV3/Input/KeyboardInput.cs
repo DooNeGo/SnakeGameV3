@@ -1,7 +1,7 @@
 ﻿using SnakeGameV3.Interfaces;
 using System.Numerics;
 
-namespace SnakeGameV3
+namespace SnakeGameV3.Input
 {
     internal class KeyboardInput
     {
@@ -33,7 +33,7 @@ namespace SnakeGameV3
                 ConsoleKey.DownArrow when _lastDirection.Y != -1 => new Vector2(0, 1),
                 ConsoleKey.LeftArrow when _lastDirection.X != 1 => new Vector2(-1, 0),
                 ConsoleKey.RightArrow when _lastDirection.X != -1 => new Vector2(1, 0),
-                ConsoleKey.Spacebar => new Vector2(),
+                ConsoleKey.Spacebar => new Vector2(0),
                 _ => _lastDirection
             };
         }
