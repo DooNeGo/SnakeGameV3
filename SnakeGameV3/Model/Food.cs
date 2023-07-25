@@ -23,6 +23,8 @@ namespace SnakeGameV3.Data
 
         public PassType Type => PassType.Passable;
 
+        public bool IsCrashed { get; set; } = false;
+
         public void RandCoordinates()
         {
             do

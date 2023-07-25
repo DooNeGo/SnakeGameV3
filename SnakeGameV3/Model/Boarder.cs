@@ -21,6 +21,8 @@ namespace SnakeGameV3.Data
 
         public PassType Type => PassType.Impassable;
 
+        public bool IsCrashed { get; set; } = false;
+
         public IEnumerator<Vector2> GetEnumerator() => _points.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => _points.GetEnumerator();

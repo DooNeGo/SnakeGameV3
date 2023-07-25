@@ -1,7 +1,7 @@
 ﻿using SnakeGameV3.Interfaces;
 using System.Numerics;
 
-namespace SnakeGameV3.Model
+namespace SnakeGameV3.Movements
 {
     internal class SnakeMovement : IMovement
     {
@@ -14,9 +14,6 @@ namespace SnakeGameV3.Model
 
         public void Move(Vector2 direction)
         {
-            if (_snake.DeltaTime < _snake.MoveLatency)
-                return;
-
             Vector2 offset = direction * (_snake.MoveSpeed * _snake.DeltaTime / 1000);
             _snake.MoveToPosition(_snake.Position + offset);
         }

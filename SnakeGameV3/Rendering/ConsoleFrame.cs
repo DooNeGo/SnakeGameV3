@@ -40,7 +40,7 @@ namespace SnakeGameV3.Rendering
 
             for (var y = 0; y < model.GetLength(0); y++)
                 for (var x = 0; x < model.GetLength(1); x++)
-                    _frame[(int)position.Y * _grid.CellSize + y, (int)position.X * _grid.CellSize + x] = model[y, x];
+                    _frame[(int)(position.Y * _grid.CellSize + y), (int)(position.X * _grid.CellSize + x)] = model[y, x];
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using SnakeGameV3.Data;
 using SnakeGameV3.Input;
-using SnakeGameV3.Model;
+using SnakeGameV3.Movements;
 using SnakeGameV3.Rendering;
 using System.Diagnostics;
 using System.Numerics;
@@ -30,7 +30,7 @@ namespace SnakeGameV3.Controllers
             builder.Add(food);
             builder.Add(snake);
 
-            while (!snake.IsDied)
+            while (!snake.IsCrashed)
             {
                 if (stopwatch.ElapsedMilliseconds >= FrameDelay)
                 {
@@ -38,13 +38,13 @@ namespace SnakeGameV3.Controllers
 
                     builder.BuildImage();
                     builder.DrawImage();
+
+                    grid.Update();
+                    input.Update();
+
+                    snake.TryToEat(food);
                 }
 
-                grid.Update();
-                input.Update();
-
-                if (snake.TryToEat(food))
-                    food.RandCoordinates();
             }
         }
     }
