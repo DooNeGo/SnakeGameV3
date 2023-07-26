@@ -1,4 +1,4 @@
-﻿using SnakeGameV3.Data;
+﻿using SnakeGameV3.Model;
 using System.Drawing;
 using System.Numerics;
 
@@ -14,8 +14,8 @@ namespace SnakeGameV3.Rendering
         {
             _grid = grid;
             Size = new Size(screenWidth, screenHeight);
-            _backgroundColor = backGroundColor;
             _frame = new ConsoleColor[Size.Height, Size.Width];
+            _backgroundColor = backGroundColor;
         }
 
         public Size Size { get; }
@@ -40,7 +40,7 @@ namespace SnakeGameV3.Rendering
 
             for (var y = 0; y < model.GetLength(0); y++)
                 for (var x = 0; x < model.GetLength(1); x++)
-                    _frame[(int)(position.Y * _grid.CellSize + y), (int)(position.X * _grid.CellSize + x)] = model[y, x];
+                    _frame[(int)Math.Round(position.Y * _grid.CellSize + y), (int)Math.Round(position.X * _grid.CellSize + x)] = model[y, x];
         }
     }
 }

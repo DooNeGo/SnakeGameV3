@@ -2,8 +2,8 @@
 {
     internal class GameConstants
     {
-        public const int ScreenHeight = 80;
-        public const int ScreenWidth = 160;
+        public const int ScreenHeight = 104;
+        public const int ScreenWidth = 208;
 
         public const int GridCellSize = 8;
 

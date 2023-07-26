@@ -1,15 +1,15 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Movements;
 using System.Numerics;
 
 namespace SnakeGameV3.Input
 {
     internal class KeyboardInput
     {
-        private readonly IMovement _movement;
+        private readonly PhysicsMovement _movement;
 
         private Vector2 _lastDirection = new(0);
 
-        public KeyboardInput(IMovement movement)
+        public KeyboardInput(PhysicsMovement movement)
         {
             _movement = movement;
         }

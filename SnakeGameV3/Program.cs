@@ -14,6 +14,6 @@ internal class Program
     {
         Console.CursorVisible = false;
         Console.SetWindowSize(ScreenWidth, ScreenHeight);
-        Console.SetBufferSize(ScreenWidth + GridCellSize, ScreenHeight);
+        Console.SetBufferSize(ScreenWidth, ScreenHeight);
     }
 }

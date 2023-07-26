@@ -6,8 +6,6 @@ namespace SnakeGameV3.Interfaces
     {
         public void MoveToPosition(Vector2 point);
 
-        public int MoveLatency { get; }
-
         public float MoveSpeed { get; }
 
         public Vector2 Position { get; }

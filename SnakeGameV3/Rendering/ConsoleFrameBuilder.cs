@@ -1,4 +1,4 @@
-﻿using SnakeGameV3.Data;
+﻿using SnakeGameV3.Model;
 using System.Numerics;
 using static SnakeGameV3.Constants.GameConstants;
 
@@ -22,7 +22,23 @@ namespace SnakeGameV3.Rendering
             _shapeFactory = new ShapeFactory(grid.CellSize);
         }
 
-        public void BuildImage()
+        public void UpdateFrame()
+        {
+            BuildImage();
+            DrawImage();
+        }
+
+        public void Add(IEnumerable<ValueTuple<Vector2, ConsoleColor>> gameObject)
+        {
+            _gameObjects.Add(gameObject);
+        }
+
+        public void Remove(IEnumerable<ValueTuple<Vector2, ConsoleColor>> gameObject)
+        {
+            _gameObjects.Remove(gameObject);
+        }
+
+        private void BuildImage()
         {
             _frames[_activeFrame].Prepare();
 
@@ -31,7 +47,7 @@ namespace SnakeGameV3.Rendering
                     _frames[_activeFrame].Add(objectPart.Item1, _shapeFactory.GetSquare(objectPart.Item2));
         }
 
-        public void DrawImage()
+        private void DrawImage()
         {
             for (var y = 0; y < _frames[_activeFrame].Size.Height; y++)
             {
@@ -47,16 +63,6 @@ namespace SnakeGameV3.Rendering
             }
 
             (_activeFrame, _inactiveFrame) = (_inactiveFrame, _activeFrame);
-        }
-
-        public void Add(IEnumerable<ValueTuple<Vector2, ConsoleColor>> gameObject)
-        {
-            _gameObjects.Add(gameObject);
-        }
-
-        public void Remove(IEnumerable<ValueTuple<Vector2, ConsoleColor>> gameObject)
-        {
-            _gameObjects.Remove(gameObject);
         }
     }
 }

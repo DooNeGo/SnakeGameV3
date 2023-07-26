@@ -3,7 +3,7 @@ using SnakeGameV3.Interfaces;
 using System.Collections;
 using System.Numerics;
 
-namespace SnakeGameV3.Data
+namespace SnakeGameV3.Model
 {
     internal class Boarder : IGridObject, IEnumerable<ValueTuple<Vector2, ConsoleColor>>
     {
@@ -20,8 +20,6 @@ namespace SnakeGameV3.Data
         public ConsoleColor Color { get; }
 
         public PassType Type => PassType.Impassable;
-
-        public bool IsCrashed { get; set; } = false;
 
         public IEnumerator<Vector2> GetEnumerator() => _points.GetEnumerator();
 

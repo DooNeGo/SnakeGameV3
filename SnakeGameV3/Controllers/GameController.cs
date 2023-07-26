@@ -1,5 +1,5 @@
-﻿using SnakeGameV3.Data;
-using SnakeGameV3.Input;
+﻿using SnakeGameV3.Input;
+using SnakeGameV3.Model;
 using SnakeGameV3.Movements;
 using SnakeGameV3.Rendering;
 using System.Diagnostics;
@@ -10,42 +10,66 @@ namespace SnakeGameV3.Controllers
 {
     internal class GameController
     {
+        private readonly Grid _grid;
+        private readonly Food _food;
+        private readonly Snake _snake;
+        private readonly Boarder _boarder;
+        private readonly ConsoleFrameBuilder _builder;
+
+        public GameController()
+        {
+            _grid = new(ScreenHeight, ScreenWidth, GridCellSize); ;
+            _food = new(FoodColor, _grid);
+            _snake = new(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
+            _boarder = new(_grid, BoarderColor);
+            _builder = new(_grid, ScreenHeight, ScreenWidth, BackgroundColor);
+        }
+
         public void StartGame()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            Grid grid = new(ScreenHeight, ScreenWidth, GridCellSize);
-            Food food = new(FoodColor, grid);
-            Boarder boarder = new(grid, BoarderColor);
-            Snake snake = new(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, grid);
-            SnakeMovement movement = new(snake);
+            PhysicsMovement movement = new(_snake);
             KeyboardInput input = new(movement);
-            ConsoleFrameBuilder builder = new(grid, ScreenHeight, ScreenWidth, BackgroundColor);
 
-            grid.Add(boarder);
-            grid.Add(food);
-            grid.Add(snake);
+            _food.RandCoordinates();
 
-            builder.Add(boarder);
-            builder.Add(food);
-            builder.Add(snake);
+            _grid.Add(_snake);
+            _grid.Add(_boarder);
+            _grid.Add(_food);
 
-            while (!snake.IsCrashed)
+            _builder.Add(_food);
+            _builder.Add(_snake);
+            _builder.Add(_boarder);
+
+            _snake.Die += OnSnakeDie;
+
+            while (!_snake.IsCrashed)
             {
                 if (stopwatch.ElapsedMilliseconds >= FrameDelay)
                 {
                     stopwatch.Restart();
 
-                    builder.BuildImage();
-                    builder.DrawImage();
-
-                    grid.Update();
+                    _builder.UpdateFrame();
+                    _grid.Update();
                     input.Update();
-
-                    snake.TryToEat(food);
                 }
 
             }
+        }
+
+        private void OnSnakeDie()
+        {
+            _grid.Remove(_snake);
+            _grid.Remove(_food);
+            _builder.Remove(_snake);
+            _builder.Remove(_food);
+
+            _builder.UpdateFrame();
+
+            _snake.Die -= OnSnakeDie;
+
+            Console.ReadKey();
         }
     }
 }
