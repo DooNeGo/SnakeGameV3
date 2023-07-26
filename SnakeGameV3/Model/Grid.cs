@@ -1,5 +1,4 @@
-﻿using SnakeGameV3.Enums;
-using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Interfaces;
 using System.Collections;
 using System.Drawing;
 using System.Numerics;
@@ -76,7 +75,7 @@ namespace SnakeGameV3.Model
         {
             for (var y = 0; y < _cells.GetLength(0); y++)
             {
-                for (var x = 0; x  <= _cells.GetLength(1); x++)
+                for (var x = 0; x <= _cells.GetLength(1); x++)
                 {
                     yield return _cells[y, x];
                 }

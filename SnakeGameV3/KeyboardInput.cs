@@ -1,7 +1,6 @@
-﻿using SnakeGameV3.Movements;
-using System.Numerics;
+﻿using System.Numerics;
 
-namespace SnakeGameV3.Input
+namespace SnakeGameV3
 {
     internal class KeyboardInput
     {

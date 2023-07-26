@@ -1,7 +1,7 @@
 ﻿using SnakeGameV3.Interfaces;
 using System.Numerics;
 
-namespace SnakeGameV3.Movements
+namespace SnakeGameV3
 {
     internal class PhysicsMovement
     {

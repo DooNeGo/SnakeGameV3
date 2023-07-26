@@ -2,6 +2,6 @@
 
 namespace SnakeGameV3.Interfaces
 {
-    internal interface IGridObject : IEnumerable<Vector2>, ICellObject
+    internal interface IGridObject : IEnumerable<Vector2>, ICollidable
     { }
 }

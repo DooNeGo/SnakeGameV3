@@ -1,5 +1,4 @@
-﻿using SnakeGameV3.Enums;
-using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Interfaces;
 using System.Collections;
 using System.Diagnostics;
 using System.Numerics;
@@ -37,7 +36,7 @@ namespace SnakeGameV3.Model
 
         public float MoveSpeed { get; }
 
-        public PassType Type => PassType.Impassable;
+        public bool IsCollidable => true;
 
         public long DeltaTime => _stopwatch.ElapsedMilliseconds;
 
@@ -119,7 +118,7 @@ namespace SnakeGameV3.Model
 
         private bool IsDied()
         {
-            if (_grid.IsOccupiedCell(Position) && _grid.GetCell(Position).Boss is not Snake && _grid.GetCell(Position).Type == PassType.Impassable)
+            if (_grid.IsOccupiedCell(Position) && _grid.GetCell(Position).Boss is not Snake && _grid.GetCell(Position).IsCollidable == true)
                 return true;
 
             for (var i = 1; i < _body.Count; i++)

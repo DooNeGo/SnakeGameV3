@@ -1,5 +1,5 @@
 ﻿using SnakeGameV3.Controllers;
-using static SnakeGameV3.Constants.GameConstants;
+using static SnakeGameV3.GameConstants;
 
 internal class Program
 {

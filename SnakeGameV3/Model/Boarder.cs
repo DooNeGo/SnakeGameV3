@@ -1,5 +1,4 @@
-﻿using SnakeGameV3.Enums;
-using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Interfaces;
 using System.Collections;
 using System.Numerics;
 
@@ -19,7 +18,7 @@ namespace SnakeGameV3.Model
 
         public ConsoleColor Color { get; }
 
-        public PassType Type => PassType.Impassable;
+        public bool IsCollidable => true;
 
         public IEnumerator<Vector2> GetEnumerator() => _points.GetEnumerator();
 

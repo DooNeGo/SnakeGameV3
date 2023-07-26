@@ -1,10 +1,8 @@
-﻿using SnakeGameV3.Input;
-using SnakeGameV3.Model;
-using SnakeGameV3.Movements;
+﻿using SnakeGameV3.Model;
 using SnakeGameV3.Rendering;
 using System.Diagnostics;
 using System.Numerics;
-using static SnakeGameV3.Constants.GameConstants;
+using static SnakeGameV3.GameConstants;
 
 namespace SnakeGameV3.Controllers
 {

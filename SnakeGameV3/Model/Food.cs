@@ -1,5 +1,4 @@
-﻿using SnakeGameV3.Enums;
-using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Interfaces;
 using System.Collections;
 using System.Numerics;
 
@@ -20,7 +19,7 @@ namespace SnakeGameV3.Model
 
         public ConsoleColor Color { get; }
 
-        public PassType Type => PassType.Passable;
+        public bool IsCollidable => false;
 
         public void RandCoordinates()
         {

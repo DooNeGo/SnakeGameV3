@@ -1,4 +1,4 @@
-﻿namespace SnakeGameV3.Constants
+﻿namespace SnakeGameV3
 {
     internal class GameConstants
     {

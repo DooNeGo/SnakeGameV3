@@ -1,5 +1,4 @@
-﻿using SnakeGameV3.Enums;
-using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Interfaces;
 
 namespace SnakeGameV3.Model
 {
@@ -7,23 +6,23 @@ namespace SnakeGameV3.Model
     {
         public Cell()
         {
-            Type = PassType.Passable;
+            IsCollidable = false;
             Boss = null;
         }
 
-        public PassType Type { get; private set; }
+        public bool IsCollidable { get; private set; }
 
         public object? Boss { get; private set; }
 
-        public void Occupy(ICellObject entity)
+        public void Occupy(ICollidable entity)
         {
-            Type = entity.Type;
+            IsCollidable = entity.IsCollidable;
             Boss = entity;
         }
 
         public void Clear()
         {
-            Type = PassType.Passable;
+            IsCollidable = false;
             Boss = null;
         }
     }

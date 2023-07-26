@@ -1,6 +1,6 @@
 ﻿using SnakeGameV3.Model;
 using System.Numerics;
-using static SnakeGameV3.Constants.GameConstants;
+using static SnakeGameV3.GameConstants;
 
 namespace SnakeGameV3.Rendering
 {
