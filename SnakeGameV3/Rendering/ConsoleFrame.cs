@@ -10,10 +10,10 @@ namespace SnakeGameV3.Rendering
         private readonly ConsoleColor _backgroundColor;
         private readonly ConsoleColor[,] _frame;
 
-        public ConsoleFrame(Grid grid, int screenHeight, int screenWidth, ConsoleColor backGroundColor)
+        public ConsoleFrame(Grid grid, Size screenSize, ConsoleColor backGroundColor)
         {
             _grid = grid;
-            Size = new Size(screenWidth, screenHeight);
+            Size = screenSize;
             _frame = new ConsoleColor[Size.Height, Size.Width];
             _backgroundColor = backGroundColor;
         }
@@ -40,7 +40,7 @@ namespace SnakeGameV3.Rendering
 
             for (var y = 0; y < model.GetLength(0); y++)
                 for (var x = 0; x < model.GetLength(1); x++)
-                    _frame[(int)Math.Round(position.Y * _grid.CellSize + y), (int)Math.Round(position.X * _grid.CellSize + x)] = model[y, x];
+                    _frame[(int)Math.Round(position.Y * _grid.CellSize.Height + y), (int)Math.Round(position.X * _grid.CellSize.Width + x)] = model[y, x];
         }
     }
 }

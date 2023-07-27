@@ -2,10 +2,11 @@
 {
     internal class GameConstants
     {
-        public const int ScreenHeight = 104;
-        public const int ScreenWidth = 208;
+        public const int ScreenHeight = 160;
+        public const int ScreenWidth = 240;
 
-        public const int GridCellSize = 8;
+        public const int GridCellHeight = 8;
+        public const int GridCellWidth = 12;
 
         public const ConsoleColor SnakeHeadColor = ConsoleColor.DarkYellow;
         public const ConsoleColor SnakeBodyColor = ConsoleColor.Yellow;

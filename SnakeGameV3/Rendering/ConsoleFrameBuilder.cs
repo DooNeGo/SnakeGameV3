@@ -1,4 +1,5 @@
 ﻿using SnakeGameV3.Model;
+using System.Drawing;
 using System.Numerics;
 using static SnakeGameV3.GameConstants;
 
@@ -13,11 +14,11 @@ namespace SnakeGameV3.Rendering
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
 
-        public ConsoleFrameBuilder(Grid grid, int screenHeight, int screenWidth, ConsoleColor backgroundColor)
+        public ConsoleFrameBuilder(Grid grid, Size screenSize, ConsoleColor backgroundColor)
         {
             _frames = new ConsoleFrame[2];
-            _frames[0] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
-            _frames[1] = new ConsoleFrame(grid, screenHeight, screenWidth, backgroundColor);
+            _frames[0] = new ConsoleFrame(grid, screenSize, backgroundColor);
+            _frames[1] = new ConsoleFrame(grid, screenSize, backgroundColor);
 
             _shapeFactory = new ShapeFactory(grid.CellSize);
         }

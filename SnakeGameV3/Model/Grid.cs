@@ -10,10 +10,10 @@ namespace SnakeGameV3.Model
         private readonly List<IGridObject> _gridObjects = new();
         private readonly Cell[,] _cells;
 
-        public Grid(int screenHeight, int screenWidth, int cellSize)
+        public Grid(Size screenSize, Size cellSize)
         {
             CellSize = cellSize;
-            Size = new(screenWidth / cellSize, screenHeight / cellSize);
+            Size = new(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
             _cells = new Cell[Size.Height, Size.Width];
 
             InitializeCells();
@@ -21,7 +21,7 @@ namespace SnakeGameV3.Model
 
         public Size Size { get; }
 
-        public int CellSize { get; }
+        public Size CellSize { get; }
 
         public bool IsOccupiedCell(Vector2 position) => _cells[(int)Math.Round(position.Y), (int)Math.Round(position.X)].Boss is not null;
 

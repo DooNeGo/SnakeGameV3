@@ -61,20 +61,6 @@ namespace SnakeGameV3.Model
             }
         }
 
-        public void Eat(Food food)
-        {
-            if (_headDirection.X > 0)
-                _body.Add(new Vector2(0, _grid.Size.Height / 2));
-            else if (_headDirection.X < 0)
-                _body.Add(new Vector2(_grid.Size.Width - 1, _grid.Size.Height / 2));
-            else if (_headDirection.Y > 0)
-                _body.Add(new Vector2(_grid.Size.Width / 2, 0));
-            else
-                _body.Add(new Vector2(_grid.Size.Width / 2, _grid.Size.Height - 1));
-
-            food.RandCoordinates();
-        }
-
         public IEnumerator<Vector2> GetEnumerator()
         {
             yield return _head;
@@ -97,6 +83,20 @@ namespace SnakeGameV3.Model
 
             foreach (Vector2 position in _body)
                 yield return new ValueTuple<Vector2, ConsoleColor>(position, BodyColor);
+        }
+
+        private void Eat(Food food)
+        {
+            if (_headDirection.X > 0)
+                _body.Add(new Vector2(0, _grid.Size.Height / 2));
+            else if (_headDirection.X < 0)
+                _body.Add(new Vector2(_grid.Size.Width - 1, _grid.Size.Height / 2));
+            else if (_headDirection.Y > 0)
+                _body.Add(new Vector2(_grid.Size.Width / 2, 0));
+            else
+                _body.Add(new Vector2(_grid.Size.Width / 2, _grid.Size.Height - 1));
+
+            food.RandCoordinates();
         }
 
         private void CheckPosition(Vector2 position)
