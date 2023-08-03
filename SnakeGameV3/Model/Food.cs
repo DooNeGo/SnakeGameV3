@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Food : IGridObject, IEnumerable<ValueTuple<Vector2, ConsoleColor>>
+    internal class Food : IGridObject, IRenderable
     {
         private readonly Random _random = new();
         private readonly Grid _grid;
@@ -20,6 +20,8 @@ namespace SnakeGameV3.Model
         public ConsoleColor Color { get; }
 
         public bool IsCollidable => false;
+
+        //public AnimationType AnimationType => AnimationType.Static;
 
         public void RandCoordinates()
         {

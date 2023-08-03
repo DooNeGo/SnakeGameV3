@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Snake : IMovable, IGridObject, IEnumerable<ValueTuple<Vector2, ConsoleColor>>
+    internal class Snake : IMovable, IGridObject, IRenderable
     {
         public event Action? Die;
 
@@ -42,14 +42,22 @@ namespace SnakeGameV3.Model
 
         public bool IsCrashed { get; private set; } = false;
 
+        //public AnimationType AnimationType => AnimationType.Snake;
+
         public void MoveToPosition(Vector2 nextPosition)
         {
             _stopwatch.Restart();
+
+            if (nextPosition == _head)
+                return;
 
             CheckPosition(nextPosition);
 
             _headDirection = nextPosition - _head;
             Vector2 direction = _head - _body[0];
+
+            if (direction.X > 1 || direction.Y > 1)
+                direction = Vector2.Normalize(direction);
 
             _head = nextPosition;
             _body[0] += direction * _headDirection.Length();
@@ -104,22 +112,29 @@ namespace SnakeGameV3.Model
             if (!_grid.IsOccupiedCell(position))
                 return;
 
-            if (IsDied())
+            Cell[,] positionCells = _grid.GetCells(position);
+
+            if (IsDied(positionCells))
             {
                 IsCrashed = true;
                 Die?.Invoke();
             }
-            else if (_grid.GetCell(position).Boss is Food food)
-            {
-                Eat(food);
-            }
 
+            foreach (Cell cell in positionCells)
+            {
+                if (cell.Boss is Food food)
+                {
+                    Eat(food);
+                    break;
+                }
+            }
         }
 
-        private bool IsDied()
+        private bool IsDied(Cell[,] positionCells)
         {
-            if (_grid.IsOccupiedCell(Position) && _grid.GetCell(Position).Boss is not Snake && _grid.GetCell(Position).IsCollidable == true)
-                return true;
+            foreach(Cell cell in positionCells)
+                if (_grid.IsOccupiedCell(Position) && cell.Boss is not Snake && cell.IsCollidable == true)
+                    return true;
 
             for (var i = 1; i < _body.Count; i++)
             {

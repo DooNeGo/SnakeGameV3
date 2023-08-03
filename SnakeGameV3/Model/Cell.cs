@@ -2,7 +2,7 @@
 
 namespace SnakeGameV3.Model
 {
-    internal class Cell
+    internal struct Cell : ICollidable
     {
         public Cell()
         {

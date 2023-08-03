@@ -13,8 +13,8 @@ namespace SnakeGameV3.Model
         public Grid(Size screenSize, Size cellSize)
         {
             CellSize = cellSize;
-            Size = new(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
-            _cells = new Cell[Size.Height, Size.Width];
+            Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
+            _cells = new Cell[screenSize.Height, screenSize.Width];
 
             InitializeCells();
         }
@@ -23,9 +23,29 @@ namespace SnakeGameV3.Model
 
         public Size CellSize { get; }
 
-        public bool IsOccupiedCell(Vector2 position) => _cells[(int)Math.Round(position.Y), (int)Math.Round(position.X)].Boss is not null;
+        public bool IsOccupiedCell(Vector2 position)
+        {
+            Vector2 convertedPosition = position.GetNormalCoord();
 
-        public Cell GetCell(Vector2 position) => _cells[(int)Math.Round(position.Y), (int)Math.Round(position.X)];
+            for (var y = 0; y < CellSize.Height; y++)
+                for (var x = 0; x < CellSize.Height; x++)
+                    if (_cells[(int)convertedPosition.Y + y, (int)convertedPosition.X + x].Boss is not null)
+                        return true;
+
+            return false;
+        }
+
+        public Cell[,] GetCells(Vector2 position)
+        {
+            Vector2 convertedPosition = position.GetNormalCoord();
+            var cells = new Cell[CellSize.Height, CellSize.Width];
+
+            for (var y = 0; y < CellSize.Height; y++)
+                for (var x = 0; x < CellSize.Width; x++)
+                    cells[y, x] = _cells[(int)convertedPosition.Y + y, (int)convertedPosition.X + x];
+
+            return cells;
+        }
 
         public void Update()
         {
@@ -41,7 +61,7 @@ namespace SnakeGameV3.Model
                         || position.Y < 0)
                         continue;
 
-                    _cells[(int)Math.Round(position.Y), (int)Math.Round(position.X)].Occupy(gridObject);
+                    AddToGrid(position, gridObject);
                 }
             }
         }
@@ -56,6 +76,15 @@ namespace SnakeGameV3.Model
             _gridObjects.Remove(gridObject);
         }
 
+        private void AddToGrid(Vector2 position, IGridObject entity)
+        {
+            Vector2 convertedPosition = position.GetNormalCoord();
+
+            for (var y = 0; y < CellSize.Height; y++)
+                for (var x = 0; x < CellSize.Width; x++)
+                    _cells[(int)convertedPosition.Y + y, (int)convertedPosition.X + x].Occupy(entity);
+        }
+
         private void InitializeCells()
         {
             for (var y = 0; y < _cells.GetLength(0); y++)
@@ -65,8 +94,8 @@ namespace SnakeGameV3.Model
 
         private void Clear()
         {
-            for (var y = 0; y < Size.Height; y++)
-                for (var x = 0; x < Size.Width; x++)
+            for (var y = 0; y < _cells.GetLength(0); y++)
+                for (var x = 0; x < _cells.GetLength(1); x++)
                     if (_cells[y, x].Boss is not null)
                         _cells[y, x].Clear();
         }
@@ -75,7 +104,7 @@ namespace SnakeGameV3.Model
         {
             for (var y = 0; y < _cells.GetLength(0); y++)
             {
-                for (var x = 0; x <= _cells.GetLength(1); x++)
+                for (var x = 0; x < _cells.GetLength(1); x++)
                 {
                     yield return _cells[y, x];
                 }
@@ -86,7 +115,7 @@ namespace SnakeGameV3.Model
         {
             for (var y = 0; y < _cells.GetLength(0); y++)
             {
-                for (var x = 0; x <= _cells.GetLength(1); x++)
+                for (var x = 0; x < _cells.GetLength(1); x++)
                 {
                     yield return _cells[y, x];
                 }

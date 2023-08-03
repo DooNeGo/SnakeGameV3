@@ -1,9 +1,10 @@
-﻿using SnakeGameV3.Model;
+﻿using static SnakeGameV3.GameConstants;
+
+using SnakeGameV3.Model;
 using SnakeGameV3.Rendering;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
-using static SnakeGameV3.GameConstants;
 
 namespace SnakeGameV3.Controllers
 {
@@ -19,7 +20,7 @@ namespace SnakeGameV3.Controllers
         {
             Size screenSize = new(ScreenWidth, ScreenHeight);
 
-            _grid = new(screenSize, new Size(GridCellWidth, GridCellHeight)); ;
+            _grid = new(screenSize, new Size(GridCellWidth, GridCellHeight));
             _food = new(FoodColor, _grid);
             _snake = new(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
             _boarder = new(_grid, BoarderColor);
@@ -30,8 +31,8 @@ namespace SnakeGameV3.Controllers
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            PhysicsMovement movement = new(_snake);
-            KeyboardInput input = new(movement);
+            PhysicsMovement snakeMovement = new(_snake);
+            KeyboardInput input = new(snakeMovement);
 
             _food.RandCoordinates();
 

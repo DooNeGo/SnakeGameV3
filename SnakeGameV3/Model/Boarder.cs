@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Boarder : IGridObject, IEnumerable<ValueTuple<Vector2, ConsoleColor>>
+    internal class Boarder : IGridObject, IRenderable
     {
         private readonly List<Vector2> _points = new();
         private readonly Grid _grid;
@@ -19,6 +19,8 @@ namespace SnakeGameV3.Model
         public ConsoleColor Color { get; }
 
         public bool IsCollidable => true;
+
+        public AnimationType AnimationType => AnimationType.Static;
 
         public IEnumerator<Vector2> GetEnumerator() => _points.GetEnumerator();
 

@@ -1,14 +1,15 @@
-﻿using SnakeGameV3.Model;
+﻿using static SnakeGameV3.GameConstants;
+using SnakeGameV3.Interfaces;
+using SnakeGameV3.Model;
 using System.Drawing;
 using System.Numerics;
-using static SnakeGameV3.GameConstants;
 
 namespace SnakeGameV3.Rendering
 {
     internal class ConsoleFrameBuilder
     {
         private readonly ConsoleFrame[] _frames;
-        private readonly List<IEnumerable<ValueTuple<Vector2, ConsoleColor>>> _gameObjects = new();
+        private readonly List<IRenderable> _gameObjects = new();
         private readonly ShapeFactory _shapeFactory;
 
         private Index _activeFrame = 0;
@@ -20,7 +21,7 @@ namespace SnakeGameV3.Rendering
             _frames[0] = new ConsoleFrame(grid, screenSize, backgroundColor);
             _frames[1] = new ConsoleFrame(grid, screenSize, backgroundColor);
 
-            _shapeFactory = new ShapeFactory(grid.CellSize);
+            _shapeFactory = new ShapeFactory(new Size(GridCellWidth, GridCellHeight));
         }
 
         public void UpdateFrame()
@@ -29,12 +30,12 @@ namespace SnakeGameV3.Rendering
             DrawImage();
         }
 
-        public void Add(IEnumerable<ValueTuple<Vector2, ConsoleColor>> gameObject)
+        public void Add(IRenderable gameObject)
         {
             _gameObjects.Add(gameObject);
         }
 
-        public void Remove(IEnumerable<ValueTuple<Vector2, ConsoleColor>> gameObject)
+        public void Remove(IRenderable gameObject)
         {
             _gameObjects.Remove(gameObject);
         }
@@ -43,7 +44,7 @@ namespace SnakeGameV3.Rendering
         {
             _frames[_activeFrame].Prepare();
 
-            foreach (IEnumerable<ValueTuple<Vector2, ConsoleColor>> frameObject in _gameObjects)
+            foreach (IRenderable frameObject in _gameObjects)
                 foreach (ValueTuple<Vector2, ConsoleColor> objectPart in frameObject)
                     _frames[_activeFrame].Add(objectPart.Item1, _shapeFactory.GetSquare(objectPart.Item2));
         }
