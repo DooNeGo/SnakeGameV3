@@ -1,20 +1,17 @@
 ﻿using SnakeGameV3.Interfaces;
 using System.Collections;
-using System.Diagnostics;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
     internal class Snake : IMovable, IGridObject, IRenderable
     {
-        public event Action? Die;
-
-        private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
         private readonly List<Vector2> _body = new();
         private readonly Grid _grid;
 
         private Vector2 _head;
-        private Vector2 _headDirection;
+        private Vector2 _headOffset;
+        private DateTime _lastMove;
 
         public Snake(Vector2 startPosition, ConsoleColor headColor, ConsoleColor bodyColor, float speed, Grid grid)
         {
@@ -38,7 +35,7 @@ namespace SnakeGameV3.Model
 
         public bool IsCollidable => true;
 
-        public long DeltaTime => _stopwatch.ElapsedMilliseconds;
+        public TimeSpan DeltaTime => DateTime.UtcNow - _lastMove;
 
         public bool IsCrashed { get; private set; } = false;
 
@@ -46,26 +43,25 @@ namespace SnakeGameV3.Model
 
         public void MoveToPosition(Vector2 nextPosition)
         {
-            _stopwatch.Restart();
+            _lastMove = DateTime.UtcNow;
 
-            if (nextPosition == _head)
+            if (nextPosition.X == _head.X && nextPosition.Y == _head.Y)
                 return;
 
             CheckPosition(nextPosition);
 
-            _headDirection = nextPosition - _head;
-            Vector2 direction = _head - _body[0];
-
-            if (direction.X > 1 || direction.Y > 1)
-                direction = Vector2.Normalize(direction);
+            _headOffset = nextPosition - _head;
+            Vector2 offset = _head - _body[0];
+            //Vector2 direction = (_head - _body[0]).GetUnitVector();
 
             _head = nextPosition;
-            _body[0] += direction * _headDirection.Length();
+            _body[0] += offset * _headOffset.Length();
 
             for (var i = 1; i < _body.Count; i++)
             {
-                direction = _body[i - 1] - _body[i];
-                _body[i] += direction * _headDirection.Length();
+                //direction = (_body[i - 1] - _body[i]).GetUnitVector();
+                offset = _body[i - 1] - _body[i];
+                _body[i] += offset * _headOffset.Length();
             }
         }
 
@@ -95,11 +91,11 @@ namespace SnakeGameV3.Model
 
         private void Eat(Food food)
         {
-            if (_headDirection.X > 0)
+            if (_headOffset.X > 0)
                 _body.Add(new Vector2(0, _grid.Size.Height / 2));
-            else if (_headDirection.X < 0)
+            else if (_headOffset.X < 0)
                 _body.Add(new Vector2(_grid.Size.Width - 1, _grid.Size.Height / 2));
-            else if (_headDirection.Y > 0)
+            else if (_headOffset.Y > 0)
                 _body.Add(new Vector2(_grid.Size.Width / 2, 0));
             else
                 _body.Add(new Vector2(_grid.Size.Width / 2, _grid.Size.Height - 1));
@@ -114,12 +110,6 @@ namespace SnakeGameV3.Model
 
             Cell[,] positionCells = _grid.GetCells(position);
 
-            if (IsDied(positionCells))
-            {
-                IsCrashed = true;
-                Die?.Invoke();
-            }
-
             foreach (Cell cell in positionCells)
             {
                 if (cell.Boss is Food food)
@@ -128,17 +118,22 @@ namespace SnakeGameV3.Model
                     break;
                 }
             }
+
+            if (IsDied(positionCells))
+            {
+                IsCrashed = true;
+            }
         }
 
         private bool IsDied(Cell[,] positionCells)
         {
-            foreach(Cell cell in positionCells)
+            foreach (Cell cell in positionCells)
                 if (_grid.IsOccupiedCell(Position) && cell.Boss is not Snake && cell.IsCollidable == true)
                     return true;
 
             for (var i = 1; i < _body.Count; i++)
             {
-                if (Math.Round(_head.X) == Math.Round(_body[i].X) && Math.Round(_head.Y) == Math.Round(_body[i].Y))
+                if (MathF.Round(_head.X) == MathF.Round(_body[i].X) && MathF.Round(_head.Y) == MathF.Round(_body[i].Y))
                     return true;
             }
 

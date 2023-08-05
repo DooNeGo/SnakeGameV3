@@ -1,8 +1,6 @@
-﻿using static SnakeGameV3.GameConstants;
-
+﻿using static SnakeGameV3.Config;
 using SnakeGameV3.Model;
 using SnakeGameV3.Rendering;
-using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
 
@@ -29,8 +27,6 @@ namespace SnakeGameV3.Controllers
 
         public void StartGame()
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
             PhysicsMovement snakeMovement = new(_snake);
             KeyboardInput input = new(snakeMovement);
 
@@ -44,31 +40,22 @@ namespace SnakeGameV3.Controllers
             _builder.Add(_snake);
             _builder.Add(_boarder);
 
-            _snake.Die += OnSnakeDie;
-
             while (!_snake.IsCrashed)
             {
-                if (stopwatch.ElapsedMilliseconds >= FrameDelay)
+                if (_builder.DeltaTime.TotalMilliseconds >= FrameDelay)
                 {
-                    stopwatch.Restart();
-
-                    _builder.UpdateFrame();
+                    _builder.Update();
                     _grid.Update();
                     input.Update();
                 }
             }
-        }
 
-        private void OnSnakeDie()
-        {
             _grid.Remove(_snake);
             _grid.Remove(_food);
             _builder.Remove(_snake);
             _builder.Remove(_food);
 
-            _builder.UpdateFrame();
-
-            _snake.Die -= OnSnakeDie;
+            _builder.Update();
 
             Console.ReadKey();
         }

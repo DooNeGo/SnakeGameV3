@@ -20,7 +20,7 @@ namespace SnakeGameV3.Model
 
         public bool IsCollidable => true;
 
-        public AnimationType AnimationType => AnimationType.Static;
+        //public AnimationType AnimationType => AnimationType.Static;
 
         public IEnumerator<Vector2> GetEnumerator() => _points.GetEnumerator();
 

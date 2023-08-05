@@ -1,4 +1,4 @@
-﻿using static SnakeGameV3.GameConstants;
+﻿using static SnakeGameV3.Config;
 using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using System.Drawing;
@@ -14,6 +14,7 @@ namespace SnakeGameV3.Rendering
 
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
+        private DateTime _lastFrame;
 
         public ConsoleFrameBuilder(Grid grid, Size screenSize, ConsoleColor backgroundColor)
         {
@@ -24,8 +25,12 @@ namespace SnakeGameV3.Rendering
             _shapeFactory = new ShapeFactory(new Size(GridCellWidth, GridCellHeight));
         }
 
-        public void UpdateFrame()
+        public TimeSpan DeltaTime => DateTime.UtcNow - _lastFrame;
+
+        public void Update()
         {
+            _lastFrame = DateTime.UtcNow;
+
             BuildImage();
             DrawImage();
         }

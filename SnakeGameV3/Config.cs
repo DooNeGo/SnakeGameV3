@@ -1,12 +1,12 @@
 ﻿namespace SnakeGameV3
 {
-    internal class GameConstants
+    internal class Config
     {
-        public const int ScreenHeight = 90;
-        public const int ScreenWidth = 160;
+        public const int ScreenHeight = 160;
+        public const int ScreenWidth = 480;
 
-        public const int GridCellHeight = 9;
-        public const int GridCellWidth = 8;
+        public const int GridCellHeight = 8;
+        public const int GridCellWidth = 12;
 
         public const ConsoleColor SnakeHeadColor = ConsoleColor.DarkYellow;
         public const ConsoleColor SnakeBodyColor = ConsoleColor.Yellow;

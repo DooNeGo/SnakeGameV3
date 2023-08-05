@@ -25,7 +25,7 @@ namespace SnakeGameV3.Model
 
         public bool IsOccupiedCell(Vector2 position)
         {
-            Vector2 convertedPosition = position.GetNormalCoord();
+            Vector2 convertedPosition = position.GetNormalPosition();
 
             for (var y = 0; y < CellSize.Height; y++)
                 for (var x = 0; x < CellSize.Height; x++)
@@ -37,7 +37,7 @@ namespace SnakeGameV3.Model
 
         public Cell[,] GetCells(Vector2 position)
         {
-            Vector2 convertedPosition = position.GetNormalCoord();
+            Vector2 convertedPosition = position.GetNormalPosition();
             var cells = new Cell[CellSize.Height, CellSize.Width];
 
             for (var y = 0; y < CellSize.Height; y++)
@@ -78,7 +78,7 @@ namespace SnakeGameV3.Model
 
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
-            Vector2 convertedPosition = position.GetNormalCoord();
+            Vector2 convertedPosition = position.GetNormalPosition();
 
             for (var y = 0; y < CellSize.Height; y++)
                 for (var x = 0; x < CellSize.Width; x++)

@@ -1,10 +1,10 @@
-﻿using static SnakeGameV3.GameConstants;
+﻿using static SnakeGameV3.Config;
 using System.Numerics;
 
 namespace SnakeGameV3
 {
     internal static class Vector2Extension
     {
-        public static Vector2 GetNormalCoord(this Vector2 vector) => new(MathF.Round(vector.X * GridCellWidth), MathF.Round(vector.Y * GridCellHeight));
+        public static Vector2 GetNormalPosition(this Vector2 position) => new(MathF.Round(position.X * GridCellWidth), MathF.Round(position.Y * GridCellHeight));
     }
 }
