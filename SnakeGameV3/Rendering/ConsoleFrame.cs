@@ -38,11 +38,11 @@ namespace SnakeGameV3.Rendering
                 || position.Y < 0)
                 return;
 
-            Vector2 convertedPosition = position.GetNormalPosition();
+            Vector2 absolutePosition = position.GetAbsolutePosition();
 
             for (var y = 0; y < model.GetLength(0); y++)
                 for (var x = 0; x < model.GetLength(1); x++)
-                    _frame[(int)convertedPosition.Y + y, (int)convertedPosition.X + x] = model[y, x];
+                    _frame[(int)absolutePosition.Y + y, (int)absolutePosition.X + x] = model[y, x];
         }
     }
 }

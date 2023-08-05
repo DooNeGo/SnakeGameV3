@@ -39,8 +39,6 @@ namespace SnakeGameV3.Model
 
         public bool IsCrashed { get; private set; } = false;
 
-        //public AnimationType AnimationType => AnimationType.Snake;
-
         public void MoveToPosition(Vector2 nextPosition)
         {
             _lastMove = DateTime.UtcNow;
@@ -52,14 +50,12 @@ namespace SnakeGameV3.Model
 
             _headOffset = nextPosition - _head;
             Vector2 offset = _head - _body[0];
-            //Vector2 direction = (_head - _body[0]).GetUnitVector();
 
             _head = nextPosition;
             _body[0] += offset * _headOffset.Length();
 
             for (var i = 1; i < _body.Count; i++)
             {
-                //direction = (_body[i - 1] - _body[i]).GetUnitVector();
                 offset = _body[i - 1] - _body[i];
                 _body[i] += offset * _headOffset.Length();
             }

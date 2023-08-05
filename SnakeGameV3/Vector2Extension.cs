@@ -5,6 +5,7 @@ namespace SnakeGameV3
 {
     internal static class Vector2Extension
     {
-        public static Vector2 GetNormalPosition(this Vector2 position) => new(MathF.Round(position.X * GridCellWidth), MathF.Round(position.Y * GridCellHeight));
+        public static Vector2 GetAbsolutePosition(this Vector2 relativePosition) => new(MathF.Round(relativePosition.X * GridCellWidth),
+                                                                                        MathF.Round(relativePosition.Y * GridCellHeight));
     }
 }

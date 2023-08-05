@@ -25,11 +25,11 @@ namespace SnakeGameV3.Model
 
         public bool IsOccupiedCell(Vector2 position)
         {
-            Vector2 convertedPosition = position.GetNormalPosition();
+            Vector2 absolutePosition = position.GetAbsolutePosition();
 
             for (var y = 0; y < CellSize.Height; y++)
                 for (var x = 0; x < CellSize.Height; x++)
-                    if (_cells[(int)convertedPosition.Y + y, (int)convertedPosition.X + x].Boss is not null)
+                    if (_cells[(int)absolutePosition.Y + y, (int)absolutePosition.X + x].Boss is not null)
                         return true;
 
             return false;
@@ -37,12 +37,12 @@ namespace SnakeGameV3.Model
 
         public Cell[,] GetCells(Vector2 position)
         {
-            Vector2 convertedPosition = position.GetNormalPosition();
+            Vector2 absolutePosition = position.GetAbsolutePosition();
             var cells = new Cell[CellSize.Height, CellSize.Width];
 
             for (var y = 0; y < CellSize.Height; y++)
                 for (var x = 0; x < CellSize.Width; x++)
-                    cells[y, x] = _cells[(int)convertedPosition.Y + y, (int)convertedPosition.X + x];
+                    cells[y, x] = _cells[(int)absolutePosition.Y + y, (int)absolutePosition.X + x];
 
             return cells;
         }
@@ -78,11 +78,11 @@ namespace SnakeGameV3.Model
 
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
-            Vector2 convertedPosition = position.GetNormalPosition();
+            Vector2 absolutePosition = position.GetAbsolutePosition();
 
             for (var y = 0; y < CellSize.Height; y++)
                 for (var x = 0; x < CellSize.Width; x++)
-                    _cells[(int)convertedPosition.Y + y, (int)convertedPosition.X + x].Occupy(entity);
+                    _cells[(int)absolutePosition.Y + y, (int)absolutePosition.X + x].Occupy(entity);
         }
 
         private void InitializeCells()

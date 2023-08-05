@@ -18,19 +18,17 @@ namespace SnakeGameV3.Controllers
         {
             Size screenSize = new(ScreenWidth, ScreenHeight);
 
-            _grid = new(screenSize, new Size(GridCellWidth, GridCellHeight));
-            _food = new(FoodColor, _grid);
-            _snake = new(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
-            _boarder = new(_grid, BoarderColor);
-            _builder = new(_grid, screenSize, BackgroundColor);
+            _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
+            _food = new Food(FoodColor, _grid);
+            _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
+            _boarder = new Boarder(_grid, BoarderColor);
+            _builder = new ConsoleFrameBuilder(_grid, screenSize, BackgroundColor);
         }
 
         public void StartGame()
         {
             PhysicsMovement snakeMovement = new(_snake);
             KeyboardInput input = new(snakeMovement);
-
-            _food.RandCoordinates();
 
             _grid.Add(_snake);
             _grid.Add(_boarder);
@@ -40,13 +38,16 @@ namespace SnakeGameV3.Controllers
             _builder.Add(_snake);
             _builder.Add(_boarder);
 
+            _grid.Update();
+            _food.RandCoordinates();
+
             while (!_snake.IsCrashed)
             {
                 if (_builder.DeltaTime.TotalMilliseconds >= FrameDelay)
                 {
                     _builder.Update();
-                    _grid.Update();
                     input.Update();
+                    _grid.Update();
                 }
             }
 

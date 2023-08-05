@@ -5,8 +5,13 @@
         public const int ScreenHeight = 160;
         public const int ScreenWidth = 480;
 
-        public const int GridCellHeight = 8;
-        public const int GridCellWidth = 12;
+        public const int GridCellHeight = (int)(ConsoleCharWidth * Scale);
+        public const int GridCellWidth = (int)(ConsoleCharHeight * Scale);
+
+        public const int ConsoleCharHeight = 6;
+        public const int ConsoleCharWidth = 4;
+
+        public const float Scale = 1f;
 
         public const ConsoleColor SnakeHeadColor = ConsoleColor.DarkYellow;
         public const ConsoleColor SnakeBodyColor = ConsoleColor.Yellow;

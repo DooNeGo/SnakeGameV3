@@ -21,8 +21,6 @@ namespace SnakeGameV3.Model
 
         public bool IsCollidable => false;
 
-        //public AnimationType AnimationType => AnimationType.Static;
-
         public void RandCoordinates()
         {
             do
