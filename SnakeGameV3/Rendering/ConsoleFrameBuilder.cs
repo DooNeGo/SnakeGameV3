@@ -1,8 +1,7 @@
-﻿using static SnakeGameV3.Config;
-using SnakeGameV3.Interfaces;
-using SnakeGameV3.Model;
+﻿using SnakeGameV3.Interfaces;
 using System.Drawing;
 using System.Numerics;
+using static SnakeGameV3.Config;
 
 namespace SnakeGameV3.Rendering
 {
@@ -14,13 +13,14 @@ namespace SnakeGameV3.Rendering
 
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
+
         private DateTime _lastFrameTime;
 
-        public ConsoleFrameBuilder(Grid grid, Size screenSize, ConsoleColor backgroundColor)
+        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor)
         {
             _frames = new ConsoleFrame[2];
-            _frames[0] = new ConsoleFrame(grid, screenSize, backgroundColor);
-            _frames[1] = new ConsoleFrame(grid, screenSize, backgroundColor);
+            _frames[0] = new ConsoleFrame(screenSize, backgroundColor);
+            _frames[1] = new ConsoleFrame(screenSize, backgroundColor);
 
             _shapeFactory = new ShapeFactory(new Size(GridCellWidth, GridCellHeight));
         }
@@ -47,7 +47,7 @@ namespace SnakeGameV3.Rendering
 
         private void BuildImage()
         {
-            _frames[_activeFrame].Prepare();
+            _frames[_activeFrame].Clear();
 
             foreach (IRenderable frameObject in _gameObjects)
                 foreach (ValueTuple<Vector2, ConsoleColor> objectPart in frameObject)

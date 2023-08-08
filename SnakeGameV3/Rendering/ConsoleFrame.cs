@@ -1,28 +1,25 @@
-﻿using SnakeGameV3.Model;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGameV3.Rendering
 {
     internal class ConsoleFrame
     {
-        private readonly Grid _grid;
         private readonly ConsoleColor _backgroundColor;
         private readonly ConsoleColor[,] _frame;
 
-        public ConsoleFrame(Grid grid, Size screenSize, ConsoleColor backGroundColor)
+        public ConsoleFrame(Size screenSize, ConsoleColor backGroundColor)
         {
-            _grid = grid;
             Size = screenSize;
-            _frame = new ConsoleColor[Size.Height, Size.Width];
             _backgroundColor = backGroundColor;
+            _frame = new ConsoleColor[Size.Height, Size.Width];
         }
 
         public Size Size { get; }
 
         public ConsoleColor GetPixel(int x, int y) => _frame[y, x];
 
-        public void Prepare()
+        public void Clear()
         {
             for (var y = 0; y < Size.Height; y++)
                 for (var x = 0; x < Size.Width; x++)
@@ -32,17 +29,25 @@ namespace SnakeGameV3.Rendering
 
         public void Add(Vector2 position, ConsoleColor[,] model)
         {
-            if (position.X >= _grid.Size.Width
-                || position.X < 0
-                || position.Y >= _grid.Size.Height
-                || position.Y < 0)
-                return;
-
             Vector2 absolutePosition = position.GetAbsolutePosition();
 
             for (var y = 0; y < model.GetLength(0); y++)
+            {
+                var positionY = absolutePosition.Y + y;
+
                 for (var x = 0; x < model.GetLength(1); x++)
-                    _frame[(int)absolutePosition.Y + y, (int)absolutePosition.X + x] = model[y, x];
+                {
+                    var positionX = absolutePosition.X + x;
+
+                    if (positionY >= _frame.GetLength(0)
+                        || positionX >= _frame.GetLength(1)
+                        || positionX < 0
+                        || positionY < 0)
+                        continue;
+
+                    _frame[(int)positionY, (int)positionX] = model[y, x];
+                }
+            }
         }
     }
 }

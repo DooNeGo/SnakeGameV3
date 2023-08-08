@@ -26,7 +26,7 @@ namespace SnakeGameV3.Model
             do
             {
                 Position = new Vector2(_random.Next(1, _grid.Size.Width - 2), _random.Next(1, _grid.Size.Height - 2));
-            } while (_grid.IsOccupiedCell(Position));
+            } while (_grid.IsCellOccupied(Position));
         }
 
         public IEnumerator<Vector2> GetEnumerator()

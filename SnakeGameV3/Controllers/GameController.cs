@@ -1,8 +1,8 @@
-﻿using static SnakeGameV3.Config;
-using SnakeGameV3.Model;
+﻿using SnakeGameV3.Model;
 using SnakeGameV3.Rendering;
 using System.Drawing;
 using System.Numerics;
+using static SnakeGameV3.Config;
 
 namespace SnakeGameV3.Controllers
 {
@@ -22,7 +22,7 @@ namespace SnakeGameV3.Controllers
             _food = new Food(FoodColor, _grid);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
             _boarder = new Boarder(_grid, BoarderColor);
-            _builder = new ConsoleFrameBuilder(_grid, screenSize, BackgroundColor);
+            _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor);
         }
 
         public void StartGame()
@@ -31,12 +31,12 @@ namespace SnakeGameV3.Controllers
             KeyboardInput input = new(snakeMovement);
 
             _grid.Add(_snake);
-            _grid.Add(_boarder);
+            //_grid.Add(_boarder);
             _grid.Add(_food);
 
             _builder.Add(_food);
             _builder.Add(_snake);
-            _builder.Add(_boarder);
+            //_builder.Add(_boarder);
 
             _grid.Update();
             _food.RandCoordinates();

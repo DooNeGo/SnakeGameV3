@@ -1,11 +1,10 @@
 ﻿using SnakeGameV3.Interfaces;
-using System.Collections;
 using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Grid : IEnumerable<Cell>
+    internal class Grid
     {
         private readonly List<IGridObject> _gridObjects = new();
         private readonly Cell[,] _cells;
@@ -23,28 +22,39 @@ namespace SnakeGameV3.Model
 
         public Size CellSize { get; }
 
-        public bool IsOccupiedCell(Vector2 position)
+        public bool IsCellOccupied(Vector2 position)
         {
-            Vector2 absolutePosition = position.GetAbsolutePosition();
+            bool isOccupied = false;
 
-            for (var y = 0; y < CellSize.Height; y++)
-                for (var x = 0; x < CellSize.Height; x++)
-                    if (_cells[(int)absolutePosition.Y + y, (int)absolutePosition.X + x].Boss is not null)
-                        return true;
+            ForCell(position, (positionX, positionY) =>
+            {
+                if (_cells[(int)positionY, (int)positionX].Boss is not null)
+                {
+                    isOccupied = true;
+                    return;
+                }
+            });
 
-            return false;
+            return isOccupied;
         }
 
-        public Cell[,] GetCells(Vector2 position)
+        public object? GetObjectInPosition(Vector2 position, object requester)
         {
-            Vector2 absolutePosition = position.GetAbsolutePosition();
-            var cells = new Cell[CellSize.Height, CellSize.Width];
+            object? entity = null;
 
-            for (var y = 0; y < CellSize.Height; y++)
-                for (var x = 0; x < CellSize.Width; x++)
-                    cells[y, x] = _cells[(int)absolutePosition.Y + y, (int)absolutePosition.X + x];
+            ForCell(position, (positionX, positionY) =>
+            {
+                Cell cell = _cells[(int)positionY, (int)positionX];
 
-            return cells;
+                if (cell.Boss != null
+                && cell.Boss != requester)
+                {
+                    entity = cell.Boss;
+                    return;
+                }
+            });
+
+            return entity;
         }
 
         public void Update()
@@ -55,12 +65,6 @@ namespace SnakeGameV3.Model
             {
                 foreach (Vector2 position in gridObject)
                 {
-                    if (position.X >= Size.Width
-                        || position.Y >= Size.Height
-                        || position.X < 0
-                        || position.Y < 0)
-                        continue;
-
                     AddToGrid(position, gridObject);
                 }
             }
@@ -78,47 +82,82 @@ namespace SnakeGameV3.Model
 
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
-            Vector2 absolutePosition = position.GetAbsolutePosition();
-
-            for (var y = 0; y < CellSize.Height; y++)
-                for (var x = 0; x < CellSize.Width; x++)
-                    _cells[(int)absolutePosition.Y + y, (int)absolutePosition.X + x].Occupy(entity);
+            ForCell(position, (positionX, positionY) =>
+            {
+                _cells[(int)positionY, (int)positionX].Occupy(entity);
+            });
         }
 
         private void InitializeCells()
         {
             for (var y = 0; y < _cells.GetLength(0); y++)
+            {
                 for (var x = 0; x < _cells.GetLength(1); x++)
+                {
                     _cells[y, x] = new Cell();
+                }
+            }
         }
 
         private void Clear()
         {
             for (var y = 0; y < _cells.GetLength(0); y++)
-                for (var x = 0; x < _cells.GetLength(1); x++)
-                    if (_cells[y, x].Boss is not null)
-                        _cells[y, x].Clear();
-        }
-
-        public IEnumerator<Cell> GetEnumerator()
-        {
-            for (var y = 0; y < _cells.GetLength(0); y++)
             {
                 for (var x = 0; x < _cells.GetLength(1); x++)
                 {
-                    yield return _cells[y, x];
+                    if (_cells[y, x].Boss is not null)
+                    {
+                        _cells[y, x].Clear();
+                    }
                 }
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        private void ForCell(Vector2 relativePosition, Action<float, float> action)
         {
-            for (var y = 0; y < _cells.GetLength(0); y++)
+            Vector2 absolutePosition = relativePosition.GetAbsolutePosition();
+
+            for (var y = 0; y < CellSize.Height; y++)
             {
-                for (var x = 0; x < _cells.GetLength(1); x++)
+                var positionY = absolutePosition.Y + y;
+
+                for (var x = 0; x < CellSize.Width; x++)
                 {
-                    yield return _cells[y, x];
+                    var positionX = absolutePosition.X + x;
+
+                    if (positionY >= _cells.GetLength(0)
+                        || positionX >= _cells.GetLength(1)
+                        || positionX < 0
+                        || positionY < 0)
+                        continue;
+
+                    action(positionX, positionY);
                 }
+            }
+        }
+
+        internal struct Cell : ICollidable
+        {
+            public Cell()
+            {
+                IsCollidable = false;
+                Boss = null;
+            }
+
+            public bool IsCollidable { get; private set; }
+
+            public object? Boss { get; private set; }
+
+            public void Occupy(ICollidable entity)
+            {
+                IsCollidable = entity.IsCollidable;
+                Boss = entity;
+            }
+
+            public void Clear()
+            {
+                IsCollidable = false;
+                Boss = null;
             }
         }
     }

@@ -32,7 +32,7 @@ namespace SnakeGameV3.Model
 
         private void InitializeBoarder()
         {
-            for (var i = 1; i < _grid.Size.Width - 1; i++)
+            for (var i = 0; i < _grid.Size.Width; i++)
             {
                 _points.Add(new Vector2(i, 0));
                 _points.Add(new Vector2(i, _grid.Size.Height - 1));
