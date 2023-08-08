@@ -22,9 +22,15 @@ namespace SnakeGameV3.Rendering
         public void Clear()
         {
             for (var y = 0; y < Size.Height; y++)
+            {
                 for (var x = 0; x < Size.Width; x++)
+                {
                     if (_frame[y, x] != _backgroundColor)
+                    {
                         _frame[y, x] = _backgroundColor;
+                    }
+                }
+            }
         }
 
         public void Add(Vector2 position, ConsoleColor[,] model)
@@ -33,11 +39,11 @@ namespace SnakeGameV3.Rendering
 
             for (var y = 0; y < model.GetLength(0); y++)
             {
-                var positionY = absolutePosition.Y + y;
+                float positionY = absolutePosition.Y + y;
 
                 for (var x = 0; x < model.GetLength(1); x++)
                 {
-                    var positionX = absolutePosition.X + x;
+                    float positionX = absolutePosition.X + x;
 
                     if (positionY >= _frame.GetLength(0)
                         || positionX >= _frame.GetLength(1)

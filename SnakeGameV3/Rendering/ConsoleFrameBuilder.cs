@@ -50,8 +50,12 @@ namespace SnakeGameV3.Rendering
             _frames[_activeFrame].Clear();
 
             foreach (IRenderable frameObject in _gameObjects)
+            {
                 foreach (ValueTuple<Vector2, ConsoleColor> objectPart in frameObject)
+                {
                     _frames[_activeFrame].Add(objectPart.Item1, _shapeFactory.GetSquare(objectPart.Item2));
+                }
+            }
         }
 
         private void DrawImage()

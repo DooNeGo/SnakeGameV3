@@ -104,16 +104,11 @@ namespace SnakeGameV3.Model
         {
             Vector2 projection = position.GetProjectionOnTheGrid(_grid);
 
-            if (!_grid.IsCellOccupied(projection))
-                return;
-
             if (_grid.GetObjectInPosition(projection, this) is Food food)
                 Eat(food);
 
-            //if (IsDied())
-            //{
-            //    IsCrashed = true;
-            //}
+            if (IsDied())
+                IsCrashed = true;
         }
 
         private bool IsDied()
