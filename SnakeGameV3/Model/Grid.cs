@@ -22,11 +22,11 @@ namespace SnakeGameV3.Model
 
         public Size CellSize { get; }
 
-        public bool IsCellOccupied(Vector2 position)
+        public bool IsPositionOccupied(Vector2 position)
         {
             bool isOccupied = false;
 
-            ForCell(position, (positionX, positionY) =>
+            ForEachCellInPosition(position, (positionX, positionY) =>
             {
                 if (_cells[(int)positionY, (int)positionX].Boss is not null)
                 {
@@ -42,7 +42,7 @@ namespace SnakeGameV3.Model
         {
             object? entity = null;
 
-            ForCell(position, (positionX, positionY) =>
+            ForEachCellInPosition(position, (positionX, positionY) =>
             {
                 Cell cell = _cells[(int)positionY, (int)positionX];
 
@@ -80,9 +80,25 @@ namespace SnakeGameV3.Model
             _gridObjects.Remove(gridObject);
         }
 
+        public Vector2 Project(Vector2 position)
+        {
+            var projection = new Vector2(position.X % Size.Width, position.Y % Size.Height);
+
+            if (position.X < 0)
+            {
+                projection.X += Size.Width - 1;
+            }
+            if (position.Y < 0)
+            {
+                projection.Y += Size.Height - 1;
+            }
+
+            return projection;
+        }
+
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
-            ForCell(position, (positionX, positionY) =>
+            ForEachCellInPosition(position, (positionX, positionY) =>
             {
                 _cells[(int)positionY, (int)positionX].Occupy(entity);
             });
@@ -113,17 +129,17 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void ForCell(Vector2 relativePosition, Action<float, float> action)
+        private void ForEachCellInPosition(Vector2 relativePosition, Action<float, float> action)
         {
             Vector2 absolutePosition = relativePosition.GetAbsolutePosition();
 
             for (var y = 0; y < CellSize.Height; y++)
             {
-                var positionY = absolutePosition.Y + y;
+                float positionY = absolutePosition.Y + y;
 
                 for (var x = 0; x < CellSize.Width; x++)
                 {
-                    var positionX = absolutePosition.X + x;
+                    float positionX = absolutePosition.X + x;
 
                     if (positionY >= _cells.GetLength(0)
                         || positionX >= _cells.GetLength(1)

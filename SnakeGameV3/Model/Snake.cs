@@ -64,10 +64,10 @@ namespace SnakeGameV3.Model
 
         public IEnumerator<Vector2> GetEnumerator()
         {
-            yield return _head.GetProjectionOnTheGrid(_grid);
+            yield return _grid.Project(_head);
 
             foreach (Vector2 position in _body)
-                yield return position.GetProjectionOnTheGrid(_grid);
+                yield return _grid.Project(position);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -80,10 +80,10 @@ namespace SnakeGameV3.Model
 
         IEnumerator<ValueTuple<Vector2, ConsoleColor>> IEnumerable<ValueTuple<Vector2, ConsoleColor>>.GetEnumerator()
         {
-            yield return new ValueTuple<Vector2, ConsoleColor>(_head.GetProjectionOnTheGrid(_grid), HeadColor);
+            yield return new ValueTuple<Vector2, ConsoleColor>(_grid.Project(_head), HeadColor);
 
             foreach (Vector2 position in _body)
-                yield return new ValueTuple<Vector2, ConsoleColor>(position.GetProjectionOnTheGrid(_grid), BodyColor);
+                yield return new ValueTuple<Vector2, ConsoleColor>(_grid.Project(position), BodyColor);
         }
 
         private void Eat(Food food)
@@ -102,7 +102,7 @@ namespace SnakeGameV3.Model
 
         private void CheckPosition(Vector2 position)
         {
-            Vector2 projection = position.GetProjectionOnTheGrid(_grid);
+            Vector2 projection = _grid.Project(position);
 
             if (_grid.GetObjectInPosition(projection, this) is Food food)
                 Eat(food);
@@ -113,9 +113,11 @@ namespace SnakeGameV3.Model
 
         private bool IsDied()
         {
+            Vector2 headProjection = _grid.Project(_head);
+
             for (var i = 1; i < _body.Count; i++)
             {
-                if (MathF.Round(_head.X) == MathF.Round(_body[i].X) && MathF.Round(_head.Y) == MathF.Round(_body[i].Y))
+                if (headProjection.EqualsRound(_grid.Project(_body[i])))
                     return true;
             }
 
