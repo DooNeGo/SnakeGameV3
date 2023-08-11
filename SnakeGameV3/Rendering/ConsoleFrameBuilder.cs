@@ -66,14 +66,19 @@ namespace SnakeGameV3.Rendering
                 {
                     if (_frames[_activeFrame].GetPixel(x, y) != _frames[_inactiveFrame].GetPixel(x, y))
                     {
-                        Console.SetCursorPosition(x, y);
-                        Console.ForegroundColor = _frames[_activeFrame].GetPixel(x, y);
-                        Console.Write(PixelModel);
+                        DrawPixel(x, y);
                     }
                 }
             }
 
             (_activeFrame, _inactiveFrame) = (_inactiveFrame, _activeFrame);
+        }
+
+        private void DrawPixel(int x, int y)
+        {
+            Console.SetCursorPosition(x, y);
+            Console.ForegroundColor = _frames[_activeFrame].GetPixel(x, y);
+            Console.Write(PixelModel);
         }
     }
 }
