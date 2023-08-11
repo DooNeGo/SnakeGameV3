@@ -118,11 +118,12 @@ namespace SnakeGameV3.Model
         private void CheckPosition(Vector2 position)
         {
             Vector2 projection = _grid.Project(position);
+            object? entityInPosition = _grid.GetObjectInPosition(projection, this);
 
-            if (_grid.GetObjectInPosition(projection, this) is Food food)
+            if (entityInPosition is Food food)
                 Eat(food);
 
-            if (IsDied())
+            if (IsDied() || entityInPosition is ICollidable entity && entity.IsCollidable)
                 IsCrashed = true;
         }
 

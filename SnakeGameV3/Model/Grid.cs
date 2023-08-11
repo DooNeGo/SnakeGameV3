@@ -38,7 +38,7 @@ namespace SnakeGameV3.Model
             return isOccupied;
         }
 
-        public object? GetObjectInPosition(Vector2 position, object requester)
+        public object? GetObjectInPosition(Vector2 position, object? requester)
         {
             object? entity = null;
 
