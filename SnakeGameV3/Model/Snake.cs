@@ -103,17 +103,28 @@ namespace SnakeGameV3.Model
 
         private void Eat(Food food)
         {
-            Vector2 projection = _grid.Project(_head);
-            Vector2 offset = new(_head.X - projection.X, _head.Y - projection.Y);
+            Vector2 tailProjection = _grid.Project(_body[^1]);
+            Vector2 offset = new(_body[^1].X - tailProjection.X, _body[^1].Y - tailProjection.Y);
 
-            if (_headOffset.X > 0)
-                _body.Add(new Vector2(offset.X, _grid.Size.Height / 2 + offset.Y));
-            else if (_headOffset.X < 0)
-                _body.Add(new Vector2(_grid.Size.Width - 1 + offset.X, _grid.Size.Height / 2 + offset.Y));
-            else if (_headOffset.Y > 0)
-                _body.Add(new Vector2(_grid.Size.Width / 2 + offset.X, offset.Y));
+            Edge theNearestEdge = _grid.GetTheNearestEdgeToPosition(tailProjection);
+
+            if (theNearestEdge == Edge.Right)
+            {
+                _body.Add(new Vector2(offset.X + _grid.Size.Width - 1, _body[^1].Y));
+            }
+            else if (theNearestEdge == Edge.Bottom)
+            {
+                _body.Add(new Vector2(_body[^1].X, offset.Y + _grid.Size.Height - 1));
+            }
+            else if (theNearestEdge == Edge.Left)
+            {
+                _body.Add(new Vector2(offset.X, _body[^1].Y));
+            }
             else
-                _body.Add(new Vector2(_grid.Size.Width / 2 + offset.X, _grid.Size.Height - 1 + offset.Y));
+            {
+                _body.Add(new Vector2(_body[^1].X, offset.Y));
+            }
+
 
             food.RandCoordinates();
         }

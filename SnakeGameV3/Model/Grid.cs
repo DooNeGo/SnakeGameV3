@@ -1,9 +1,18 @@
 ﻿using SnakeGameV3.Interfaces;
+using System;
 using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
+    internal enum Edge
+    {
+        Upper,
+        Bottom,
+        Left,
+        Right,
+    }
+
     internal class Grid
     {
         private readonly List<IGridObject> _gridObjects = new();
@@ -14,13 +23,15 @@ namespace SnakeGameV3.Model
             CellSize = cellSize;
             Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
             _cells = new Cell[screenSize.Height, screenSize.Width];
-
+            Center = new Vector2(Size.Width / 2.0f, Size.Height / 2.0f);
             InitializeCells();
         }
 
         public Size Size { get; }
 
         public Size CellSize { get; }
+
+        public Vector2 Center { get; }
 
         public bool IsPositionOccupied(Vector2 position)
         {
@@ -96,6 +107,37 @@ namespace SnakeGameV3.Model
             return projection;
         }
 
+        public Edge GetTheNearestEdgeToPosition(Vector2 position)
+        {
+            float distanceToUpperEdge = Vector2.Distance(position, new Vector2(position.X, 0));
+            float distanceToLeftEdge = Vector2.Distance(position, new Vector2(0, position.Y));
+            float distanceToRightEdge = Size.Width - distanceToLeftEdge;
+            float distanceToBottomEdge = Size.Height - distanceToUpperEdge;
+
+            if (distanceToRightEdge < distanceToBottomEdge
+                && distanceToRightEdge < distanceToLeftEdge
+                && distanceToRightEdge < distanceToUpperEdge)
+            {
+                return Edge.Right;
+            }
+            else if (distanceToBottomEdge < distanceToLeftEdge
+                && distanceToBottomEdge < distanceToRightEdge
+                && distanceToBottomEdge < distanceToUpperEdge)
+            {
+                return Edge.Bottom;
+            }
+            else if (distanceToLeftEdge < distanceToRightEdge
+                && distanceToLeftEdge < distanceToUpperEdge
+                && distanceToLeftEdge < distanceToBottomEdge)
+            {
+                return Edge.Left;
+            }
+            else
+            {
+                return Edge.Upper;
+            }
+        }
+
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
             ForEachCellInPosition(position, (positionX, positionY) =>
@@ -152,7 +194,7 @@ namespace SnakeGameV3.Model
             }
         }
 
-        internal struct Cell : ICollidable
+        private struct Cell : ICollidable
         {
             public Cell()
             {
