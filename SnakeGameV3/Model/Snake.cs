@@ -103,14 +103,17 @@ namespace SnakeGameV3.Model
 
         private void Eat(Food food)
         {
+            Vector2 projection = _grid.Project(_head);
+            Vector2 offset = new(_head.X - projection.X, _head.Y - projection.Y);
+
             if (_headOffset.X > 0)
-                _body.Add(new Vector2(0, _grid.Size.Height / 2));
+                _body.Add(new Vector2(offset.X, _grid.Size.Height / 2 + offset.Y));
             else if (_headOffset.X < 0)
-                _body.Add(new Vector2(_grid.Size.Width - 1, _grid.Size.Height / 2));
+                _body.Add(new Vector2(_grid.Size.Width - 1 + offset.X, _grid.Size.Height / 2 + offset.Y));
             else if (_headOffset.Y > 0)
-                _body.Add(new Vector2(_grid.Size.Width / 2, 0));
+                _body.Add(new Vector2(_grid.Size.Width / 2 + offset.X, offset.Y));
             else
-                _body.Add(new Vector2(_grid.Size.Width / 2, _grid.Size.Height - 1));
+                _body.Add(new Vector2(_grid.Size.Width / 2 + offset.X, _grid.Size.Height - 1 + offset.Y));
 
             food.RandCoordinates();
         }
