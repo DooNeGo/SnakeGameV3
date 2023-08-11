@@ -49,17 +49,9 @@ namespace SnakeGameV3.Model
 
             CheckPosition(nextPosition);
 
-            _headOffset = nextPosition - _head;
-            Vector2 offset = _head - _body[0];
+            ApplyOffsets(CalculateOffsets(nextPosition));
 
             _head = nextPosition;
-            _body[0] += offset * _headOffset.Length();
-
-            for (var i = 1; i < _body.Count; i++)
-            {
-                offset = _body[i - 1] - _body[i];
-                _body[i] += offset * _headOffset.Length();
-            }
         }
 
         public IEnumerator<Vector2> GetEnumerator()
@@ -84,6 +76,29 @@ namespace SnakeGameV3.Model
 
             foreach (Vector2 position in _body)
                 yield return new ValueTuple<Vector2, ConsoleColor>(_grid.Project(position), BodyColor);
+        }
+
+        private Vector2[] CalculateOffsets(Vector2 nextPosition)
+        {
+            var offsets = new Vector2[_body.Count];
+
+            _headOffset = nextPosition - _head;
+            offsets[0] = _head - _body[0];
+
+            for (var i = 1; i < _body.Count; i++)
+            {
+                offsets[i] = _body[i - 1] - _body[i];
+            }
+
+            return offsets;
+        }
+
+        private void ApplyOffsets(Vector2[] offsets)
+        {
+            for (var i = 0; i < offsets.Length; i++)
+            {
+                _body[i] += offsets[i] * _headOffset.Length();
+            }
         }
 
         private void Eat(Food food)
