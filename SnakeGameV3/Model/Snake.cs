@@ -105,26 +105,9 @@ namespace SnakeGameV3.Model
         {
             Vector2 tailProjection = _grid.Project(_body[^1]);
             Vector2 offset = new(_body[^1].X - tailProjection.X, _body[^1].Y - tailProjection.Y);
+            Vector2 projectionOnTheEdge = _grid.GetTheClosestProjectionOnTheEdge(tailProjection);
 
-            Edge theNearestEdge = _grid.GetTheNearestEdgeToPosition(tailProjection);
-
-            if (theNearestEdge == Edge.Right)
-            {
-                _body.Add(new Vector2(offset.X + _grid.Size.Width - 1, _body[^1].Y));
-            }
-            else if (theNearestEdge == Edge.Bottom)
-            {
-                _body.Add(new Vector2(_body[^1].X, offset.Y + _grid.Size.Height - 1));
-            }
-            else if (theNearestEdge == Edge.Left)
-            {
-                _body.Add(new Vector2(offset.X, _body[^1].Y));
-            }
-            else
-            {
-                _body.Add(new Vector2(_body[^1].X, offset.Y));
-            }
-
+            _body.Add(projectionOnTheEdge + offset);
 
             food.RandCoordinates();
         }

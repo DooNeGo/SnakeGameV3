@@ -1,18 +1,9 @@
 ﻿using SnakeGameV3.Interfaces;
-using System;
 using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal enum Edge
-    {
-        Upper,
-        Bottom,
-        Left,
-        Right,
-    }
-
     internal class Grid
     {
         private readonly List<IGridObject> _gridObjects = new();
@@ -107,35 +98,27 @@ namespace SnakeGameV3.Model
             return projection;
         }
 
-        public Edge GetTheNearestEdgeToPosition(Vector2 position)
+        public Vector2 GetTheClosestProjectionOnTheEdge(Vector2 position)
         {
-            float distanceToUpperEdge = Vector2.Distance(position, new Vector2(position.X, 0));
-            float distanceToLeftEdge = Vector2.Distance(position, new Vector2(0, position.Y));
+            Vector2 projectionToUpperEdge = position with { Y = 0 };
+            Vector2 projectionToLeftEdge = position with { X = 0 };
+            Vector2 projectionToRightEdge = position with { X = Size.Width - 1 };
+            Vector2 projectionToBottomEdge = position with { Y = Size.Height - 1 };
+
+            float distanceToUpperEdge = Vector2.Distance(position, projectionToUpperEdge);
+            float distanceToLeftEdge = Vector2.Distance(position, projectionToLeftEdge);
             float distanceToRightEdge = Size.Width - distanceToLeftEdge;
             float distanceToBottomEdge = Size.Height - distanceToUpperEdge;
 
-            if (distanceToRightEdge < distanceToBottomEdge
-                && distanceToRightEdge < distanceToLeftEdge
-                && distanceToRightEdge < distanceToUpperEdge)
+            ValueTuple<float, Vector2>[] distancesWithOffsets =
             {
-                return Edge.Right;
-            }
-            else if (distanceToBottomEdge < distanceToLeftEdge
-                && distanceToBottomEdge < distanceToRightEdge
-                && distanceToBottomEdge < distanceToUpperEdge)
-            {
-                return Edge.Bottom;
-            }
-            else if (distanceToLeftEdge < distanceToRightEdge
-                && distanceToLeftEdge < distanceToUpperEdge
-                && distanceToLeftEdge < distanceToBottomEdge)
-            {
-                return Edge.Left;
-            }
-            else
-            {
-                return Edge.Upper;
-            }
+                new(distanceToUpperEdge, projectionToUpperEdge),
+                new(distanceToLeftEdge, projectionToLeftEdge),
+                new(distanceToRightEdge, projectionToRightEdge),
+                new(distanceToBottomEdge, projectionToBottomEdge),
+            };
+
+            return distancesWithOffsets.Min().Item2;
         }
 
         private void AddToGrid(Vector2 position, IGridObject entity)
