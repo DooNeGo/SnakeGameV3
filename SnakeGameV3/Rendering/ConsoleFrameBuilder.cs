@@ -9,20 +9,19 @@ namespace SnakeGameV3.Rendering
     {
         private readonly ConsoleFrame[] _frames;
         private readonly List<IRenderable> _gameObjects = new();
-        private readonly ShapeFactory _shapeFactory;
+        private readonly TextureDatabase _textureDatabase;
 
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
 
         private DateTime _lastFrameTime;
 
-        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor)
+        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, TextureDatabase textureDatabase)
         {
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(screenSize, backgroundColor);
             _frames[1] = new ConsoleFrame(screenSize, backgroundColor);
-
-            _shapeFactory = new ShapeFactory(new Size(GridCellWidth, GridCellHeight));
+            _textureDatabase = textureDatabase;
         }
 
         public TimeSpan DeltaTime => DateTime.UtcNow - _lastFrameTime;
@@ -49,11 +48,12 @@ namespace SnakeGameV3.Rendering
         {
             _frames[_activeFrame].Clear();
 
-            foreach (IRenderable frameObject in _gameObjects)
+            foreach (IRenderable gameObject in _gameObjects)
             {
-                foreach (ValueTuple<Vector2, ConsoleColor> objectPart in frameObject)
+                foreach (ValueTuple<Vector2, ConsoleColor, Texture> objectPart in gameObject)
                 {
-                    _frames[_activeFrame].Add(objectPart.Item1, _shapeFactory.GetSquare(objectPart.Item2));
+                    bool[,] model = _textureDatabase.GetTexture(objectPart.Item3);
+                    _frames[_activeFrame].Add(objectPart.Item1, objectPart.Item2, model);
                 }
             }
         }

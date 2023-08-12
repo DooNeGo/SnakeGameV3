@@ -121,6 +121,12 @@ namespace SnakeGameV3.Model
             return distancesWithOffsets.Min().Item2;
         }
 
+        public Vector2 GetAbsolutePosition(Vector2 relativePosition)
+        {
+            return new(MathF.Round(relativePosition.X * CellSize.Width),
+                       MathF.Round(relativePosition.Y * CellSize.Height));
+        }
+
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
             ForEachCellInPosition(position, (positionX, positionY) =>
@@ -156,7 +162,7 @@ namespace SnakeGameV3.Model
 
         private void ForEachCellInPosition(Vector2 relativePosition, Action<float, float> action)
         {
-            Vector2 absolutePosition = relativePosition.GetAbsolutePosition();
+            Vector2 absolutePosition = GetAbsolutePosition(relativePosition);
 
             for (var y = 0; y < CellSize.Height; y++)
             {

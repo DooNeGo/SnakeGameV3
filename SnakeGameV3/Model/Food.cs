@@ -8,6 +8,7 @@ namespace SnakeGameV3.Model
     {
         private readonly Random _random = new();
         private readonly Grid _grid;
+        private readonly Texture _texture = Texture.Food;
 
         public Food(ConsoleColor color, Grid grid)
         {
@@ -39,9 +40,11 @@ namespace SnakeGameV3.Model
             yield return Position;
         }
 
-        IEnumerator<ValueTuple<Vector2, ConsoleColor>> IEnumerable<ValueTuple<Vector2, ConsoleColor>>.GetEnumerator()
+        IEnumerator<ValueTuple<Vector2, ConsoleColor, Texture>> IEnumerable<ValueTuple<Vector2, ConsoleColor, Texture>>.GetEnumerator()
         {
-            yield return new ValueTuple<Vector2, ConsoleColor>(Position, Color);
+            Vector2 projection = _grid.Project(Position);
+
+            yield return new ValueTuple<Vector2, ConsoleColor, Texture>(_grid.GetAbsolutePosition(projection), Color, _texture);
         }
     }
 }

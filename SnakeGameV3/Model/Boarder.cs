@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Boarder : IGridObject, IRenderable
+    internal class Boarder : IGridObject
     {
         private readonly List<Vector2> _body = new();
         private readonly Grid _grid;
@@ -23,12 +23,6 @@ namespace SnakeGameV3.Model
         public IEnumerator<Vector2> GetEnumerator() => _body.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => _body.GetEnumerator();
-
-        IEnumerator<ValueTuple<Vector2, ConsoleColor>> IEnumerable<ValueTuple<Vector2, ConsoleColor>>.GetEnumerator()
-        {
-            foreach (Vector2 position in _body)
-                yield return new ValueTuple<Vector2, ConsoleColor>(position, Color);
-        }
 
         private void InitializeBoarder()
         {

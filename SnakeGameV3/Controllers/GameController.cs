@@ -11,8 +11,8 @@ namespace SnakeGameV3.Controllers
         private readonly Grid _grid;
         private readonly Food _food;
         private readonly Snake _snake;
-        private readonly Boarder _boarder;
         private readonly ConsoleFrameBuilder _builder;
+        private readonly TextureDatabase _textureDatabase;
 
         public GameController()
         {
@@ -21,8 +21,8 @@ namespace SnakeGameV3.Controllers
             _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
             _food = new Food(FoodColor, _grid);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
-            _boarder = new Boarder(_grid, BoarderColor);
-            _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor);
+            _textureDatabase = new TextureDatabase(_grid);
+            _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _textureDatabase);
         }
 
         public void StartGame()
@@ -31,12 +31,10 @@ namespace SnakeGameV3.Controllers
             KeyboardInput input = new(snakeMovement);
 
             _grid.Add(_snake);
-            //_grid.Add(_boarder);
             _grid.Add(_food);
 
             _builder.Add(_food);
             _builder.Add(_snake);
-            //_builder.Add(_boarder);
 
             _grid.Update();
             _food.RandCoordinates();
