@@ -8,12 +8,13 @@ namespace SnakeGameV3.Model
     {
         private readonly Random _random = new();
         private readonly Grid _grid;
-        private readonly Texture _texture = Texture.Food;
+        private readonly TextureInfo _textureInfo;
 
         public Food(ConsoleColor color, Grid grid)
         {
             Color = color;
             _grid = grid;
+            _textureInfo = new TextureInfo(TextureName.Food, Scale);
         }
 
         public Vector2 Position { get; private set; }
@@ -22,17 +23,24 @@ namespace SnakeGameV3.Model
 
         public bool IsCollidable => false;
 
+        public float Scale => 1f;
+
+        public IEnumerator<(Vector2, float)> GetEnumerator()
+        {
+            yield return new(Position, _textureInfo.Scale);
+        }
+
         public void RandCoordinates()
         {
             do
             {
                 Position = new Vector2(_random.Next(1, _grid.Size.Width - 2), _random.Next(1, _grid.Size.Height - 2));
-            } while (_grid.IsPositionOccupied(Position));
+            } while (_grid.IsPositionOccupied(Position, this));
         }
 
-        public IEnumerator<Vector2> GetEnumerator()
+        IEnumerator<(Vector2, ConsoleColor, TextureInfo)> IEnumerable<(Vector2, ConsoleColor, TextureInfo)>.GetEnumerator()
         {
-            yield return Position;
+            yield return new(_grid.GetAbsolutePosition(Position), Color, _textureInfo);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -40,11 +48,9 @@ namespace SnakeGameV3.Model
             yield return Position;
         }
 
-        IEnumerator<ValueTuple<Vector2, ConsoleColor, Texture>> IEnumerable<ValueTuple<Vector2, ConsoleColor, Texture>>.GetEnumerator()
+        IEnumerator<Vector2> IEnumerable<Vector2>.GetEnumerator()
         {
-            Vector2 projection = _grid.Project(Position);
-
-            yield return new ValueTuple<Vector2, ConsoleColor, Texture>(_grid.GetAbsolutePosition(projection), Color, _texture);
+            yield return Position;
         }
     }
 }

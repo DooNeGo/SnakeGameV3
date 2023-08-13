@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Boarder : IGridObject
+    internal class Boarder
     {
         private readonly List<Vector2> _body = new();
         private readonly Grid _grid;
@@ -21,8 +21,6 @@ namespace SnakeGameV3.Model
         public bool IsCollidable => true;
 
         public IEnumerator<Vector2> GetEnumerator() => _body.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => _body.GetEnumerator();
 
         private void InitializeBoarder()
         {

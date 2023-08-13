@@ -9,14 +9,14 @@ namespace SnakeGameV3.Rendering
     {
         private readonly ConsoleFrame[] _frames;
         private readonly List<IRenderable> _gameObjects = new();
-        private readonly TextureDatabase _textureDatabase;
+        private readonly TexturesDatabase _textureDatabase;
 
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
 
         private DateTime _lastFrameTime;
 
-        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, TextureDatabase textureDatabase)
+        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, TexturesDatabase textureDatabase)
         {
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(screenSize, backgroundColor);
@@ -50,7 +50,7 @@ namespace SnakeGameV3.Rendering
 
             foreach (IRenderable gameObject in _gameObjects)
             {
-                foreach (ValueTuple<Vector2, ConsoleColor, Texture> objectPart in gameObject)
+                foreach (ValueTuple<Vector2, ConsoleColor, TextureInfo> objectPart in gameObject)
                 {
                     bool[,] model = _textureDatabase.GetTexture(objectPart.Item3);
                     _frames[_activeFrame].Add(objectPart.Item1, objectPart.Item2, model);

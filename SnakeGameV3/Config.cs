@@ -11,7 +11,7 @@
         public const int ConsoleCharHeight = 6;
         public const int ConsoleCharWidth = 4;
 
-        public const float Scale = 4f;
+        public const float Scale = 2f;
 
         public const ConsoleColor SnakeHeadColor = ConsoleColor.DarkYellow;
         public const ConsoleColor SnakeBodyColor = ConsoleColor.Yellow;

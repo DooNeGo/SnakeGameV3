@@ -12,7 +12,7 @@ namespace SnakeGameV3.Controllers
         private readonly Food _food;
         private readonly Snake _snake;
         private readonly ConsoleFrameBuilder _builder;
-        private readonly TextureDatabase _textureDatabase;
+        private readonly TexturesDatabase _textureDatabase;
 
         public GameController()
         {
@@ -21,7 +21,7 @@ namespace SnakeGameV3.Controllers
             _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
             _food = new Food(FoodColor, _grid);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
-            _textureDatabase = new TextureDatabase(_grid);
+            _textureDatabase = new TexturesDatabase(_grid);
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _textureDatabase);
         }
 

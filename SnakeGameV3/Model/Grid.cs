@@ -6,6 +6,8 @@ namespace SnakeGameV3.Model
 {
     internal class Grid
     {
+        private const float defaultScale = 1f;
+
         private readonly List<IGridObject> _gridObjects = new();
         private readonly Cell[,] _cells;
 
@@ -24,11 +26,15 @@ namespace SnakeGameV3.Model
 
         public Vector2 Center { get; }
 
-        public bool IsPositionOccupied(Vector2 position)
+        public bool IsPositionOccupied(Vector2 position, IScalable? requester)
         {
             bool isOccupied = false;
+            float scale = defaultScale;
 
-            ForEachCellInPosition(position, (positionX, positionY) =>
+            if (requester != null)
+                scale = requester.Scale;
+
+            ForEachCellInPosition(position, scale, (positionX, positionY) =>
             {
                 if (_cells[(int)positionY, (int)positionX].Boss is not null)
                 {
@@ -40,11 +46,15 @@ namespace SnakeGameV3.Model
             return isOccupied;
         }
 
-        public object? GetObjectInPosition(Vector2 position, object? requester)
+        public object? GetObjectInPosition(Vector2 position, IScalable? requester)
         {
             object? entity = null;
+            float scale = defaultScale;
 
-            ForEachCellInPosition(position, (positionX, positionY) =>
+            if (requester != null)
+                scale = requester.Scale;
+
+            ForEachCellInPosition(position, scale, (positionX, positionY) =>
             {
                 Cell cell = _cells[(int)positionY, (int)positionX];
 
@@ -129,7 +139,7 @@ namespace SnakeGameV3.Model
 
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
-            ForEachCellInPosition(position, (positionX, positionY) =>
+            ForEachCellInPosition(position, entity.Scale, (positionX, positionY) =>
             {
                 _cells[(int)positionY, (int)positionX].Occupy(entity);
             });
@@ -160,15 +170,15 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void ForEachCellInPosition(Vector2 relativePosition, Action<float, float> action)
+        private void ForEachCellInPosition(Vector2 relativePosition, float scale, Action<float, float> action)
         {
             Vector2 absolutePosition = GetAbsolutePosition(relativePosition);
 
-            for (var y = 0; y < CellSize.Height; y++)
+            for (var y = 0; y < CellSize.Height * scale; y++)
             {
                 float positionY = absolutePosition.Y + y;
 
-                for (var x = 0; x < CellSize.Width; x++)
+                for (var x = 0; x < CellSize.Width * scale; x++)
                 {
                     float positionX = absolutePosition.X + x;
 

@@ -9,8 +9,8 @@ namespace SnakeGameV3.Model
         private readonly List<Vector2> _body = new();
         private readonly Grid _grid;
 
-        private readonly Texture _headTexture = Texture.SnakeHead;
-        private readonly Texture _bodyTexture = Texture.SnakeBody;
+        private readonly TextureInfo _headTextureInfo;
+        private readonly TextureInfo _bodyTextureInfo;
 
         private Vector2 _head;
         private Vector2 _headOffset;
@@ -24,6 +24,9 @@ namespace SnakeGameV3.Model
             MoveSpeed = speed;
             _grid = grid;
             _head = new Vector2(startPosition.X, startPosition.Y);
+
+            _headTextureInfo = new TextureInfo(TextureName.SnakeHead, Scale);
+            _bodyTextureInfo = new TextureInfo(TextureName.SnakeBody, Scale);
 
             _body.Add(new Vector2(_head.X - 1, _head.Y));
             _body.Add(new Vector2(_head.X - 2, _head.Y));
@@ -43,6 +46,8 @@ namespace SnakeGameV3.Model
 
         public bool IsCrashed { get; private set; } = false;
 
+        public float Scale => 1f;
+
         public void MoveToPosition(Vector2 nextPosition)
         {
             _lastMoveTime = DateTime.UtcNow;
@@ -55,38 +60,6 @@ namespace SnakeGameV3.Model
             ApplyOffsets(CalculateOffsets(nextPosition));
 
             _head = nextPosition;
-        }
-
-        public IEnumerator<Vector2> GetEnumerator()
-        {
-            yield return _grid.Project(_head);
-
-            foreach (Vector2 position in _body)
-                yield return _grid.Project(position);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            yield return _head;
-
-            foreach (Vector2 position in _body)
-                yield return position;
-        }
-
-        IEnumerator<ValueTuple<Vector2, ConsoleColor, Texture>> IEnumerable<ValueTuple<Vector2, ConsoleColor, Texture>>.GetEnumerator()
-        {
-            Vector2 projection = _grid.Project(_head);
-
-            yield return new ValueTuple<Vector2, ConsoleColor, Texture>(
-                _grid.GetAbsolutePosition(projection), HeadColor, _headTexture);
-
-            foreach (Vector2 position in _body)
-            {
-                projection = _grid.Project(position);
-
-                yield return new ValueTuple<Vector2, ConsoleColor, Texture>(
-                    _grid.GetAbsolutePosition(projection), BodyColor, _bodyTexture);
-            }
         }
 
         private Vector2[] CalculateOffsets(Vector2 nextPosition)
@@ -146,6 +119,48 @@ namespace SnakeGameV3.Model
             }
 
             return false;
+        }
+
+        IEnumerator<(Vector2, ConsoleColor, TextureInfo)> IEnumerable<(Vector2, ConsoleColor, TextureInfo)>.GetEnumerator()
+        {
+            Vector2 projection = _grid.Project(_head);
+
+            yield return new(_grid.GetAbsolutePosition(projection),
+                             HeadColor,
+                             _headTextureInfo);
+
+            foreach (Vector2 position in _body)
+            {
+                projection = _grid.Project(position);
+
+                yield return new(_grid.GetAbsolutePosition(projection),
+                                 BodyColor,
+                                 _bodyTextureInfo);
+            }
+        }
+
+        public IEnumerator<Vector2> GetEnumerator()
+        {
+            Vector2 projection = _grid.Project(_head);
+            yield return projection;
+
+            foreach (Vector2 position in _body)
+            {
+                projection = _grid.Project(position);
+                yield return projection;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            Vector2 projection = _grid.Project(_head);
+            yield return projection;
+
+            foreach (Vector2 position in _body)
+            {
+                projection = _grid.Project(position);
+                yield return projection;
+            }
         }
     }
 }
