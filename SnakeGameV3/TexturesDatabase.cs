@@ -8,6 +8,9 @@ namespace SnakeGameV3
         SnakeHead,
         SnakeBody,
         Food,
+        G,
+        a,
+        m,
     }
 
     internal class TexturesDatabase
@@ -30,7 +33,7 @@ namespace SnakeGameV3
 
         private void LoadTexture(TextureInfo textureInfo)
         {
-            string path = $"C:\\Users\\DooNeGo\\source\\repos\\DooNeGo\\SnakeGameV3\\SnakeGameV3\\Textures\\{textureInfo.Name}.bmp";
+            string path = $"C:\\Users\\matve\\source\\repos\\SnakeGameV3\\SnakeGameV3\\Textures\\{textureInfo.Name}.bmp";
             Bitmap bitmap = (Bitmap)Image.FromFile(path);
 
             var textureHeight = (int)(_grid.CellSize.Height * textureInfo.Scale);

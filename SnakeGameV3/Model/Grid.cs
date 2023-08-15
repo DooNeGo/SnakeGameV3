@@ -16,15 +16,12 @@ namespace SnakeGameV3.Model
             CellSize = cellSize;
             Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
             _cells = new Cell[screenSize.Height, screenSize.Width];
-            Center = new Vector2(Size.Width / 2.0f, Size.Height / 2.0f);
             InitializeCells();
         }
 
         public Size Size { get; }
 
         public Size CellSize { get; }
-
-        public Vector2 Center { get; }
 
         public bool IsPositionOccupied(Vector2 position, IScalable? requester)
         {
@@ -34,9 +31,9 @@ namespace SnakeGameV3.Model
             if (requester != null)
                 scale = requester.Scale;
 
-            ForEachCellInPosition(position, scale, (positionX, positionY) =>
+            ForEachCellInPosition(position, scale, (cell) =>
             {
-                if (_cells[(int)positionY, (int)positionX].Boss is not null)
+                if (cell.Boss is not null)
                 {
                     isOccupied = true;
                     return;
@@ -54,10 +51,8 @@ namespace SnakeGameV3.Model
             if (requester != null)
                 scale = requester.Scale;
 
-            ForEachCellInPosition(position, scale, (positionX, positionY) =>
+            ForEachCellInPosition(position, scale, (cell) =>
             {
-                Cell cell = _cells[(int)positionY, (int)positionX];
-
                 if (cell.Boss != null
                 && cell.Boss != requester)
                 {
@@ -67,6 +62,30 @@ namespace SnakeGameV3.Model
             });
 
             return entity;
+        }
+
+        public IEnumerator<object> GetEachObjectInPosition(Vector2 position, IScalable? requester)
+        {
+            float scale = defaultScale;
+            HashSet<object> entities = new();
+
+            if (requester != null)
+            {
+                scale = requester.Scale;
+                entities.Add(requester);
+            }
+
+            IEnumerator<Cell> enumerator = GetEachCellInPosition(position, scale);
+
+            while (enumerator.MoveNext())
+            {
+                if (enumerator.Current.Boss is null
+                    || entities.Contains(enumerator.Current.Boss))
+                    continue;
+
+                entities.Add(enumerator.Current.Boss);
+                yield return enumerator.Current.Boss;
+            }
         }
 
         public void Update()
@@ -139,9 +158,9 @@ namespace SnakeGameV3.Model
 
         private void AddToGrid(Vector2 position, IGridObject entity)
         {
-            ForEachCellInPosition(position, entity.Scale, (positionX, positionY) =>
+            ForEachCellInPosition(position, entity.Scale, (cell) =>
             {
-                _cells[(int)positionY, (int)positionX].Occupy(entity);
+                cell.Occupy(entity);
             });
         }
 
@@ -170,7 +189,7 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void ForEachCellInPosition(Vector2 relativePosition, float scale, Action<float, float> action)
+        private IEnumerator<Cell> GetEachCellInPosition(Vector2 relativePosition, float scale)
         {
             Vector2 absolutePosition = GetAbsolutePosition(relativePosition);
 
@@ -188,8 +207,18 @@ namespace SnakeGameV3.Model
                         || positionY < 0)
                         continue;
 
-                    action(positionX, positionY);
+                    yield return _cells[(int)positionY, (int)positionX];
                 }
+            }
+        }
+
+        private void ForEachCellInPosition(Vector2 relativePosition, float scale, Action<Cell> action)
+        {
+            IEnumerator<Cell> enumerator = GetEachCellInPosition(relativePosition, scale);
+
+            while (enumerator.MoveNext())
+            {
+                action(enumerator.Current);
             }
         }
 

@@ -1,14 +1,15 @@
 ﻿using SnakeGameV3.Interfaces;
 using System.Drawing;
 using System.Numerics;
-using static SnakeGameV3.Config;
 
 namespace SnakeGameV3.Rendering
 {
     internal class ConsoleFrameBuilder
     {
+        private const char ConsolePixel = '█';
+
         private readonly ConsoleFrame[] _frames;
-        private readonly List<IRenderable> _gameObjects = new();
+        private readonly List<IRenderable> _entities = new();
         private readonly TexturesDatabase _textureDatabase;
 
         private Index _activeFrame = 0;
@@ -36,19 +37,19 @@ namespace SnakeGameV3.Rendering
 
         public void Add(IRenderable gameObject)
         {
-            _gameObjects.Add(gameObject);
+            _entities.Add(gameObject);
         }
 
         public void Remove(IRenderable gameObject)
         {
-            _gameObjects.Remove(gameObject);
+            _entities.Remove(gameObject);
         }
 
         private void BuildImage()
         {
             _frames[_activeFrame].Clear();
 
-            foreach (IRenderable gameObject in _gameObjects)
+            foreach (IRenderable entity in _entities)
             {
                 foreach (ValueTuple<Vector2, ConsoleColor, TextureInfo> objectPart in gameObject)
                 {
@@ -78,7 +79,7 @@ namespace SnakeGameV3.Rendering
         {
             Console.SetCursorPosition(x, y);
             Console.ForegroundColor = _frames[_activeFrame].GetPixel(x, y);
-            Console.Write(PixelModel);
+            Console.Write(ConsolePixel);
         }
     }
 }

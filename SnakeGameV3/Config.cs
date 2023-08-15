@@ -23,7 +23,5 @@
 
         public const int FramePerSecond = 60;
         public const double FrameDelay = 1000 / FramePerSecond;
-
-        public const char PixelModel = '█';
     }
 }
