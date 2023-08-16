@@ -11,6 +11,11 @@ namespace SnakeGameV3
         G,
         a,
         m,
+        e,
+        O,
+        v,
+        r,
+        Space,
     }
 
     internal class TexturesDatabase
@@ -34,7 +39,7 @@ namespace SnakeGameV3
         private void LoadTexture(TextureInfo textureInfo)
         {
             string path = $"C:\\Users\\matve\\source\\repos\\SnakeGameV3\\SnakeGameV3\\Textures\\{textureInfo.Name}.bmp";
-            Bitmap bitmap = (Bitmap)Image.FromFile(path);
+            using Bitmap bitmap = (Bitmap)Image.FromFile(path);
 
             var textureHeight = (int)(_grid.CellSize.Height * textureInfo.Scale);
             var textureWidth = (int)(_grid.CellSize.Width * textureInfo.Scale);

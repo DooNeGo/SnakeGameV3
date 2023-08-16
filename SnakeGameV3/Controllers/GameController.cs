@@ -49,13 +49,19 @@ namespace SnakeGameV3.Controllers
                 }
             }
 
+            Text gameOver = new("Game Over", ConsoleColor.White, 2f, _grid.Center, _grid);
+
             _grid.Remove(_snake);
             _grid.Remove(_food);
             _builder.Remove(_snake);
             _builder.Remove(_food);
 
+            _builder.Add(gameOver);
+
             _builder.Update();
 
+
+            Console.ReadKey();
             Console.ReadKey();
         }
     }

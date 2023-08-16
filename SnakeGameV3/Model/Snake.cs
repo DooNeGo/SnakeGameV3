@@ -28,8 +28,8 @@ namespace SnakeGameV3.Model
             _headTextureInfo = new TextureInfo(TextureName.SnakeHead, Scale);
             _bodyTextureInfo = new TextureInfo(TextureName.SnakeBody, Scale);
 
-            _body.Add(new Vector2(_head.X - 1, _head.Y));
-            _body.Add(new Vector2(_head.X - 2, _head.Y));
+            _body.Add(new Vector2(_head.X - 1 * Scale, _head.Y));
+            _body.Add(new Vector2(_head.X - 2 * Scale, _head.Y));
         }
 
         public Vector2 Position => _head;
@@ -81,7 +81,7 @@ namespace SnakeGameV3.Model
         {
             for (var i = 0; i < offsets.Length; i++)
             {
-                _body[i] += offsets[i] * _headOffset.Length();
+                _body[i] += offsets[i] * _headOffset.Length() / Scale;
             }
         }
 
@@ -114,7 +114,7 @@ namespace SnakeGameV3.Model
 
             for (var i = 1; i < _body.Count; i++)
             {
-                if (headProjection.EqualsRound(_grid.Project(_body[i])))
+                if (headProjection.EqualsRounded(_grid.Project(_body[i])))
                     return true;
             }
 

@@ -16,12 +16,15 @@ namespace SnakeGameV3.Model
             CellSize = cellSize;
             Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
             _cells = new Cell[screenSize.Height, screenSize.Width];
+            Center = new Vector2(Size.Width / 2f, Size.Height / 2f);
             InitializeCells();
         }
 
         public Size Size { get; }
 
         public Size CellSize { get; }
+
+        public Vector2 Center { get; }
 
         public bool IsPositionOccupied(Vector2 position, IScalable? requester)
         {
