@@ -46,27 +46,6 @@ namespace SnakeGameV3.Model
             return isOccupied;
         }
 
-        public object? GetObjectInPosition(Vector2 position, IScalable? requester)
-        {
-            object? entity = null;
-            float scale = defaultScale;
-
-            if (requester != null)
-                scale = requester.Scale;
-
-            ForEachCellInPosition(position, scale, (cell) =>
-            {
-                if (cell.Boss != null
-                && cell.Boss != requester)
-                {
-                    entity = cell.Boss;
-                    return;
-                }
-            });
-
-            return entity;
-        }
-
         public IEnumerator<object> GetEachObjectInPosition(Vector2 position, IScalable? requester)
         {
             float scale = defaultScale;
@@ -225,7 +204,7 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private struct Cell : ICollidable
+        private class Cell : ICollidable
         {
             public Cell()
             {

@@ -23,7 +23,7 @@ namespace SnakeGameV3.Model
 
         public bool IsCollidable => false;
 
-        public float Scale => 1f;
+        public float Scale => 0.5f;
 
         public IEnumerator<(Vector2, float)> GetEnumerator()
         {
