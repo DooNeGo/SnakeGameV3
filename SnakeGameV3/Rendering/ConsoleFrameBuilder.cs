@@ -51,10 +51,10 @@ namespace SnakeGameV3.Rendering
 
             foreach (IRenderable entity in _entities)
             {
-                foreach (ValueTuple<Vector2, ConsoleColor, TextureInfo> objectPart in entity)
+                foreach (ValueTuple<Vector2, TextureInfo> objectPart in entity)
                 {
-                    bool[,] model = _textureDatabase.GetTexture(objectPart.Item3);
-                    _frames[_activeFrame].Add(objectPart.Item1, objectPart.Item2, model);
+                    ConsoleColor[,] texture = _textureDatabase.GetTexture(objectPart.Item2);
+                    _frames[_activeFrame].Add(objectPart.Item1, texture);
                 }
             }
         }

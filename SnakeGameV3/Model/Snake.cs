@@ -19,14 +19,12 @@ namespace SnakeGameV3.Model
 
         public Snake(Vector2 startPosition, ConsoleColor headColor, ConsoleColor bodyColor, float speed, Grid grid)
         {
-            HeadColor = headColor;
-            BodyColor = bodyColor;
             MoveSpeed = speed;
             _grid = grid;
             _head = new Vector2(startPosition.X, startPosition.Y);
 
-            _headTextureInfo = new TextureInfo(TextureName.SnakeHead, Scale);
-            _bodyTextureInfo = new TextureInfo(TextureName.SnakeBody, Scale);
+            _headTextureInfo = new TextureInfo(TextureName.SnakeHead, Scale, headColor);
+            _bodyTextureInfo = new TextureInfo(TextureName.SnakeBody, Scale, bodyColor);
 
             _body.Add(new Vector2(_head.X - 1 * Scale, _head.Y));
             _body.Add(new Vector2(_head.X - 2 * Scale, _head.Y));
@@ -34,21 +32,17 @@ namespace SnakeGameV3.Model
 
         public Vector2 Position => _head;
 
-        public ConsoleColor HeadColor { get; }
-
-        public ConsoleColor BodyColor { get; }
-
         public float MoveSpeed { get; }
 
         public bool IsCollidable => true;
 
         public TimeSpan DeltaTime => DateTime.UtcNow - _lastMoveTime;
 
-        public bool IsCrashed { get; private set; } = false;
+        public bool IsDied { get; private set; } = false;
 
         public float Scale => 1f;
 
-        public void MoveToPosition(Vector2 nextPosition)
+        public void MoveTo(Vector2 nextPosition)
         {
             _lastMoveTime = DateTime.UtcNow;
 
@@ -111,16 +105,16 @@ namespace SnakeGameV3.Model
 
                 if (enumerator.Current is ICollidable entity && entity.IsCollidable)
                 {
-                    IsCrashed = true;
+                    IsDied = true;
                     break;
                 }
             }
 
-            if (IsDied())
-                IsCrashed = true;
+            if (IsDead())
+                IsDied = true;
         }
 
-        private bool IsDied()
+        private bool IsDead()
         {
             Vector2 headProjection = _grid.Project(_head);
 
@@ -133,12 +127,11 @@ namespace SnakeGameV3.Model
             return false;
         }
 
-        IEnumerator<(Vector2, ConsoleColor, TextureInfo)> IEnumerable<(Vector2, ConsoleColor, TextureInfo)>.GetEnumerator()
+        IEnumerator<(Vector2, TextureInfo)> IEnumerable<(Vector2, TextureInfo)>.GetEnumerator()
         {
             Vector2 projection = _grid.Project(_head);
 
             yield return new(_grid.GetAbsolutePosition(projection),
-                             HeadColor,
                              _headTextureInfo);
 
             foreach (Vector2 position in _body)
@@ -146,7 +139,6 @@ namespace SnakeGameV3.Model
                 projection = _grid.Project(position);
 
                 yield return new(_grid.GetAbsolutePosition(projection),
-                                 BodyColor,
                                  _bodyTextureInfo);
             }
         }

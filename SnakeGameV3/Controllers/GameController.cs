@@ -39,7 +39,7 @@ namespace SnakeGameV3.Controllers
             _grid.Update();
             _food.RandCoordinates();
 
-            while (!_snake.IsCrashed)
+            while (!_snake.IsDied)
             {
                 if (_builder.DeltaTime.TotalMilliseconds >= FrameDelay)
                 {
@@ -49,7 +49,7 @@ namespace SnakeGameV3.Controllers
                 }
             }
 
-            Text gameOver = new("Game Over", ConsoleColor.White, 2f, _grid.Center, _grid);
+            Text gameOver = new("Game Over", ConsoleColor.Red, 2f, _grid.Center, _grid);
 
             _grid.Remove(_snake);
             _grid.Remove(_food);
@@ -59,7 +59,6 @@ namespace SnakeGameV3.Controllers
             _builder.Add(gameOver);
 
             _builder.Update();
-
 
             Console.ReadKey();
             Console.ReadKey();

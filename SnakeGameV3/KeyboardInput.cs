@@ -6,7 +6,7 @@ namespace SnakeGameV3
     {
         private readonly PhysicsMovement _movement;
 
-        private Vector2 _lastDirection = new(0);
+        private Vector2 _lastDirection = Vector2.Zero;
 
         public KeyboardInput(PhysicsMovement movement)
         {
@@ -28,11 +28,11 @@ namespace SnakeGameV3
 
             return pressedKey switch
             {
-                ConsoleKey.UpArrow when _lastDirection.Y != 1 => new Vector2(0, -1),
-                ConsoleKey.DownArrow when _lastDirection.Y != -1 => new Vector2(0, 1),
-                ConsoleKey.LeftArrow when _lastDirection.X != 1 => new Vector2(-1, 0),
-                ConsoleKey.RightArrow when _lastDirection.X != -1 => new Vector2(1, 0),
-                ConsoleKey.Spacebar => new Vector2(0),
+                ConsoleKey.UpArrow when _lastDirection != Vector2.UnitY => -Vector2.UnitY,
+                ConsoleKey.DownArrow when _lastDirection != -Vector2.UnitY => Vector2.UnitY,
+                ConsoleKey.LeftArrow when _lastDirection != Vector2.UnitX => -Vector2.UnitX,
+                ConsoleKey.RightArrow when _lastDirection != -Vector2.UnitX => Vector2.UnitX,
+                ConsoleKey.Spacebar => Vector2.Zero,
                 _ => _lastDirection
             };
         }

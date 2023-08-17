@@ -2,7 +2,7 @@
 
 namespace SnakeGameV3.Interfaces
 {
-    internal interface IRenderable : IEnumerable<ValueTuple<Vector2, ConsoleColor, TextureInfo>>
+    internal interface IRenderable : IEnumerable<ValueTuple<Vector2, TextureInfo>>
     {
         //public AnimationType AnimationType { get; }
     }

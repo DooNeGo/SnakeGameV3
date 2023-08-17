@@ -33,13 +33,13 @@ namespace SnakeGameV3.Rendering
             }
         }
 
-        public void Add(Vector2 position, ConsoleColor color, bool[,] model)
+        public void Add(Vector2 position, ConsoleColor[,] texture)
         {
-            for (var y = 0; y < model.GetLength(0); y++)
+            for (var y = 0; y < texture.GetLength(0); y++)
             {
                 float positionY = position.Y + y;
 
-                for (var x = 0; x < model.GetLength(1); x++)
+                for (var x = 0; x < texture.GetLength(1); x++)
                 {
                     float positionX = position.X + x;
 
@@ -47,10 +47,10 @@ namespace SnakeGameV3.Rendering
                         || positionX >= _frame.GetLength(1)
                         || positionX < 0
                         || positionY < 0
-                        || model[y, x] == false)
+                        || texture[y, x] == 0)
                         continue;
 
-                    _frame[(int)positionY, (int)positionX] = color;
+                    _frame[(int)positionY, (int)positionX] = texture[y, x];
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace SnakeGameV3
         public void Move(Vector2 direction)
         {
             Vector2 offset = direction * (float)(_body.MoveSpeed * _body.DeltaTime.TotalSeconds);
-            _body.MoveToPosition(_body.Position + offset);
+            _body.MoveTo(_body.Position + offset);
         }
     }
 }

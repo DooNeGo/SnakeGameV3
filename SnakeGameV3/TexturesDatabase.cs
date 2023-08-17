@@ -21,30 +21,30 @@ namespace SnakeGameV3
     internal class TexturesDatabase
     {
         private readonly Grid _grid;
-        private readonly Dictionary<TextureName, bool[,]> _textures = new();
+        private readonly Dictionary<TextureName, ConsoleColor[,]> _textures = new();
 
         public TexturesDatabase(Grid grid)
         {
             _grid = grid;
         }
 
-        public bool[,] GetTexture(TextureInfo textureInfo)
+        public ConsoleColor[,] GetTexture(TextureInfo textureInfo)
         {
             if (!_textures.ContainsKey(textureInfo.Name))
                 LoadTexture(textureInfo);
 
-            return _textures[textureInfo.Name].Clone() as bool[,];
+            return _textures[textureInfo.Name].Clone() as ConsoleColor[,];
         }
 
         private void LoadTexture(TextureInfo textureInfo)
         {
-            string path = $"C:\\Users\\matve\\source\\repos\\SnakeGameV3\\SnakeGameV3\\Textures\\{textureInfo.Name}.bmp";
-            using Bitmap bitmap = (Bitmap)Image.FromFile(path);
+            DirectoryInfo directoryInfo = new($"..\\..\\..\\Textures\\{textureInfo.Name}.bmp");
+            using Bitmap bitmap = (Bitmap)Image.FromFile(directoryInfo.FullName);
 
             var textureHeight = (int)(_grid.CellSize.Height * textureInfo.Scale);
             var textureWidth = (int)(_grid.CellSize.Width * textureInfo.Scale);
 
-            bool[,] texture = new bool[textureHeight, textureWidth];
+            ConsoleColor[,] texture = new ConsoleColor[textureHeight, textureWidth];
 
             int offsetY = bitmap.Size.Height / texture.GetLength(0);
             int offsetX = bitmap.Size.Width / texture.GetLength(1);
@@ -57,7 +57,7 @@ namespace SnakeGameV3
 
                     if (pixel.R > 0 && pixel.B > 0 && pixel.G > 0)
                     {
-                        texture[y, x] = true;
+                        texture[y, x] = textureInfo.Color;
                     }
                 }
             }

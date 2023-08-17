@@ -10,6 +10,6 @@ namespace SnakeGameV3.Interfaces
 
         public TimeSpan DeltaTime { get; }
 
-        public void MoveToPosition(Vector2 point);
+        public void MoveTo(Vector2 position);
     }
 }

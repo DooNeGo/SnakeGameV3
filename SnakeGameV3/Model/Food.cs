@@ -12,14 +12,11 @@ namespace SnakeGameV3.Model
 
         public Food(ConsoleColor color, Grid grid)
         {
-            Color = color;
             _grid = grid;
-            _textureInfo = new TextureInfo(TextureName.Food, Scale);
+            _textureInfo = new TextureInfo(TextureName.Food, Scale, color);
         }
 
         public Vector2 Position { get; private set; }
-
-        public ConsoleColor Color { get; }
 
         public bool IsCollidable => false;
 
@@ -38,9 +35,9 @@ namespace SnakeGameV3.Model
             } while (_grid.IsPositionOccupied(Position, this));
         }
 
-        IEnumerator<(Vector2, ConsoleColor, TextureInfo)> IEnumerable<(Vector2, ConsoleColor, TextureInfo)>.GetEnumerator()
+        IEnumerator<(Vector2, TextureInfo)> IEnumerable<(Vector2, TextureInfo)>.GetEnumerator()
         {
-            yield return new(_grid.GetAbsolutePosition(Position), Color, _textureInfo);
+            yield return new(_grid.GetAbsolutePosition(Position), _textureInfo);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
