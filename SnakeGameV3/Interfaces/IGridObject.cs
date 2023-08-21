@@ -1,7 +1,5 @@
-﻿using System.Numerics;
-
-namespace SnakeGameV3.Interfaces
+﻿namespace SnakeGameV3.Interfaces
 {
-    internal interface IGridObject : IEnumerable<Vector2>, ICollidable, IScalable
+    internal interface IGridObject : IEnumerable<IGridObjectPart>, IScalable, IProjectable
     { }
 }

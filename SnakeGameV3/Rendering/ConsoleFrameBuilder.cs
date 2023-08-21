@@ -1,4 +1,6 @@
 ﻿using SnakeGameV3.Interfaces;
+using SnakeGameV3.Model;
+using SnakeGameV3.Texturing;
 using System.Drawing;
 using System.Numerics;
 
@@ -11,18 +13,20 @@ namespace SnakeGameV3.Rendering
         private readonly ConsoleFrame[] _frames;
         private readonly List<IRenderable> _entities = new();
         private readonly TexturesDatabase _textureDatabase;
+        private readonly Grid _grid;
 
         private Index _activeFrame = 0;
         private Index _inactiveFrame = 1;
 
         private DateTime _lastFrameTime;
 
-        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, TexturesDatabase textureDatabase)
+        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, Grid grid)
         {
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(screenSize, backgroundColor);
             _frames[1] = new ConsoleFrame(screenSize, backgroundColor);
-            _textureDatabase = textureDatabase;
+            _grid = grid;
+            _textureDatabase = new TexturesDatabase(_grid);
         }
 
         public TimeSpan DeltaTime => DateTime.UtcNow - _lastFrameTime;
@@ -51,10 +55,17 @@ namespace SnakeGameV3.Rendering
 
             foreach (IRenderable entity in _entities)
             {
-                foreach (ValueTuple<Vector2, TextureInfo> objectPart in entity)
+                foreach (IReadOnlyGameObject gameObject in entity)
                 {
-                    ConsoleColor[,] texture = _textureDatabase.GetTexture(objectPart.Item2);
-                    _frames[_activeFrame].Add(objectPart.Item1, texture);
+                    Vector2 position = gameObject.Position;
+
+                    if (entity.IsNeedToProject)
+                        position = _grid.Project(position);
+
+                    position = _grid.GetAbsolutePosition(position);
+
+                    Texture texture = _textureDatabase.GetTexture(gameObject.TextureConfig);
+                    _frames[_activeFrame].Add(position, texture);
                 }
             }
         }

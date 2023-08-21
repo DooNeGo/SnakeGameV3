@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
+using SnakeGameV3.Texturing;
 
 namespace SnakeGameV3.Rendering
 {
@@ -33,13 +34,13 @@ namespace SnakeGameV3.Rendering
             }
         }
 
-        public void Add(Vector2 position, ConsoleColor[,] texture)
+        public void Add(Vector2 position, Texture texture)
         {
-            for (var y = 0; y < texture.GetLength(0); y++)
+            for (var y = 0; y < texture.Size.Height; y++)
             {
                 float positionY = position.Y + y;
 
-                for (var x = 0; x < texture.GetLength(1); x++)
+                for (var x = 0; x < texture.Size.Width; x++)
                 {
                     float positionX = position.X + x;
 
@@ -47,10 +48,10 @@ namespace SnakeGameV3.Rendering
                         || positionX >= _frame.GetLength(1)
                         || positionX < 0
                         || positionY < 0
-                        || texture[y, x] == 0)
+                        || texture.GetPixel(x, y) == 0)
                         continue;
 
-                    _frame[(int)positionY, (int)positionX] = texture[y, x];
+                    _frame[(int)positionY, (int)positionX] = texture.GetPixel(x, y);
                 }
             }
         }

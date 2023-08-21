@@ -1,8 +1,6 @@
-﻿using System.Numerics;
-
-namespace SnakeGameV3.Interfaces
+﻿namespace SnakeGameV3.Interfaces
 {
-    internal interface IRenderable : IEnumerable<ValueTuple<Vector2, TextureInfo>>
+    internal interface IRenderable : IEnumerable<IReadOnlyGameObject>, IProjectable
     {
         //public AnimationType AnimationType { get; }
     }

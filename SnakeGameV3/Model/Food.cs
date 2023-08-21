@@ -1,31 +1,22 @@
 ﻿using SnakeGameV3.Interfaces;
+using SnakeGameV3.Texturing;
 using System.Collections;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Food : IGridObject, IRenderable
+    internal class Food : GameObject, IRenderable, IGridObject
     {
         private readonly Random _random = new();
         private readonly Grid _grid;
-        private readonly TextureInfo _textureInfo;
 
-        public Food(ConsoleColor color, Grid grid)
+        public Food(TextureConfig textureConfig, Grid grid, ColliderType colliderType) :
+            base(Vector2.Zero, textureConfig, colliderType)
         {
             _grid = grid;
-            _textureInfo = new TextureInfo(TextureName.Food, Scale, color);
         }
 
-        public Vector2 Position { get; private set; }
-
-        public bool IsCollidable => false;
-
-        public float Scale => 0.5f;
-
-        public IEnumerator<(Vector2, float)> GetEnumerator()
-        {
-            yield return new(Position, _textureInfo.Scale);
-        }
+        public bool IsNeedToProject => false;
 
         public void RandCoordinates()
         {
@@ -35,19 +26,19 @@ namespace SnakeGameV3.Model
             } while (_grid.IsPositionOccupied(Position, this));
         }
 
-        IEnumerator<(Vector2, TextureInfo)> IEnumerable<(Vector2, TextureInfo)>.GetEnumerator()
+        public IEnumerator<IGridObjectPart> GetEnumerator()
         {
-            yield return new(_grid.GetAbsolutePosition(Position), _textureInfo);
+            yield return this;
+        }
+
+        IEnumerator<IReadOnlyGameObject> IEnumerable<IReadOnlyGameObject>.GetEnumerator()
+        {
+            yield return this;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            yield return Position;
-        }
-
-        IEnumerator<Vector2> IEnumerable<Vector2>.GetEnumerator()
-        {
-            yield return Position;
+            yield return this;
         }
     }
 }

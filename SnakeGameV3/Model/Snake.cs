@@ -1,4 +1,5 @@
 ﻿using SnakeGameV3.Interfaces;
+using SnakeGameV3.Texturing;
 using System.Collections;
 using System.Numerics;
 
@@ -6,14 +7,14 @@ namespace SnakeGameV3.Model
 {
     internal class Snake : IMovable, IGridObject, IRenderable
     {
-        private readonly List<Vector2> _body = new();
+        private readonly List<GameObject> _body = new();
         private readonly Grid _grid;
 
-        private readonly TextureInfo _headTextureInfo;
-        private readonly TextureInfo _bodyTextureInfo;
+        private readonly TextureConfig _headTextureConfig;
+        private readonly TextureConfig _bodyTextureConfig;
 
-        private Vector2 _head;
-        private Vector2 _headOffset;
+        private readonly ColliderConfig _headColliderConfig;
+        private readonly ColliderConfig _bodyColliderConfig;
 
         private DateTime _lastMoveTime;
 
@@ -21,20 +22,22 @@ namespace SnakeGameV3.Model
         {
             MoveSpeed = speed;
             _grid = grid;
-            _head = new Vector2(startPosition.X, startPosition.Y);
+            var headPosition = new Vector2(startPosition.X, startPosition.Y);
 
-            _headTextureInfo = new TextureInfo(TextureName.SnakeHead, Scale, headColor);
-            _bodyTextureInfo = new TextureInfo(TextureName.SnakeBody, Scale, bodyColor);
+            _headTextureConfig = new TextureConfig(TextureName.SnakeHead, Scale, headColor);
+            _bodyTextureConfig = new TextureConfig(TextureName.SnakeBody, Scale, bodyColor);
 
-            _body.Add(new Vector2(_head.X - 1 * Scale, _head.Y));
-            _body.Add(new Vector2(_head.X - 2 * Scale, _head.Y));
+            _headColliderConfig = new ColliderConfig(ColliderType.Circle, Scale);
+            _bodyColliderConfig = new ColliderConfig(ColliderType.Circle, Scale);
+
+            _body.Add(new GameObject(headPosition, _headTextureConfig, ColliderType.Circle));
+            _body.Add(new GameObject(headPosition with { X = headPosition.X - 1 * Scale }, _bodyTextureConfig, ColliderType.Circle));
+            _body.Add(new GameObject(headPosition with { X = headPosition.X - 2 * Scale }, _bodyTextureConfig, ColliderType.Circle));
         }
 
-        public Vector2 Position => _head;
+        public Vector2 Position => Head.Position;
 
         public float MoveSpeed { get; }
-
-        public bool IsCollidable => true;
 
         public TimeSpan DeltaTime => DateTime.UtcNow - _lastMoveTime;
 
@@ -42,30 +45,30 @@ namespace SnakeGameV3.Model
 
         public float Scale => 1f;
 
+        public bool IsNeedToProject => true;
+
+        private GameObject Head => _body[0];
+
         public void MoveTo(Vector2 nextPosition)
         {
             _lastMoveTime = DateTime.UtcNow;
 
-            if (nextPosition == _head)
+            if (nextPosition == Position)
                 return;
 
             CheckPosition(nextPosition);
-
             ApplyOffsets(CalculateOffsets(nextPosition));
-
-            _head = nextPosition;
         }
 
         private Vector2[] CalculateOffsets(Vector2 nextPosition)
         {
             var offsets = new Vector2[_body.Count];
 
-            _headOffset = nextPosition - _head;
-            offsets[0] = _head - _body[0];
+            offsets[0] = nextPosition - Position;
 
             for (var i = 1; i < _body.Count; i++)
             {
-                offsets[i] = _body[i - 1] - _body[i];
+                offsets[i] = _body[i - 1].Position - _body[i].Position;
             }
 
             return offsets;
@@ -73,19 +76,21 @@ namespace SnakeGameV3.Model
 
         private void ApplyOffsets(Vector2[] offsets)
         {
-            for (var i = 0; i < offsets.Length; i++)
+            Head.Position += offsets[0];
+
+            for (var i = 1; i < offsets.Length; i++)
             {
-                _body[i] += offsets[i] * _headOffset.Length() / Scale;
+                _body[i].Position += offsets[i] * offsets[0].Length() / Scale;
             }
         }
 
         private void Eat(Food food)
         {
-            Vector2 tailProjection = _grid.Project(_body[^1]);
-            Vector2 offset = new(_body[^1].X - tailProjection.X, _body[^1].Y - tailProjection.Y);
+            Vector2 tailProjection = _grid.Project(_body[^1].Position);
+            Vector2 offset = new(_body[^1].Position.X - tailProjection.X, _body[^1].Position.Y - tailProjection.Y);
             Vector2 projectionOnTheEdge = _grid.GetTheClosestProjectionOnTheEdge(tailProjection);
 
-            _body.Add(projectionOnTheEdge + offset);
+            _body.Add(new GameObject(projectionOnTheEdge + offset, _bodyTextureConfig, ColliderType.Square));
 
             food.RandCoordinates();
         }
@@ -93,7 +98,7 @@ namespace SnakeGameV3.Model
         private void CheckPosition(Vector2 position)
         {
             Vector2 projection = _grid.Project(position);
-            IEnumerator<object> enumerator = _grid.GetEachObjectInPosition(projection, this);
+            IEnumerator<IGridObjectPart> enumerator = _grid.GetEachObjectInPosition(projection, Head);
 
             while (enumerator.MoveNext())
             {
@@ -103,68 +108,27 @@ namespace SnakeGameV3.Model
                     break;
                 }
 
-                if (enumerator.Current is ICollidable entity && entity.IsCollidable)
+                if (enumerator.Current != _body[1])
                 {
                     IsDied = true;
                     break;
                 }
             }
-
-            if (IsDead())
-                IsDied = true;
         }
 
-        private bool IsDead()
+        public IEnumerator<IReadOnlyGameObject> GetEnumerator()
         {
-            Vector2 headProjection = _grid.Project(_head);
-
-            for (var i = 1; i < _body.Count; i++)
-            {
-                if (headProjection.EqualsRounded(_grid.Project(_body[i])))
-                    return true;
-            }
-
-            return false;
-        }
-
-        IEnumerator<(Vector2, TextureInfo)> IEnumerable<(Vector2, TextureInfo)>.GetEnumerator()
-        {
-            Vector2 projection = _grid.Project(_head);
-
-            yield return new(_grid.GetAbsolutePosition(projection),
-                             _headTextureInfo);
-
-            foreach (Vector2 position in _body)
-            {
-                projection = _grid.Project(position);
-
-                yield return new(_grid.GetAbsolutePosition(projection),
-                                 _bodyTextureInfo);
-            }
-        }
-
-        public IEnumerator<Vector2> GetEnumerator()
-        {
-            Vector2 projection = _grid.Project(_head);
-            yield return projection;
-
-            foreach (Vector2 position in _body)
-            {
-                projection = _grid.Project(position);
-                yield return projection;
-            }
+            return _body.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            Vector2 projection = _grid.Project(_head);
-            yield return projection;
+            return _body.GetEnumerator();
+        }
 
-            foreach (Vector2 position in _body)
-            {
-                projection = _grid.Project(position);
-                yield return projection;
-            }
+        IEnumerator<IGridObjectPart> IEnumerable<IGridObjectPart>.GetEnumerator()
+        {
+            return _body.GetEnumerator();
         }
     }
 }

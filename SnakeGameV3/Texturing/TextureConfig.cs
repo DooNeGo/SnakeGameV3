@@ -1,10 +1,10 @@
 ﻿using SnakeGameV3.Interfaces;
 
-namespace SnakeGameV3
+namespace SnakeGameV3.Texturing
 {
-    internal class TextureInfo : IScalable
+    internal class TextureConfig : IScalable
     {
-        public TextureInfo(TextureName name, float scale, ConsoleColor color)
+        public TextureConfig(TextureName name, float scale, ConsoleColor color)
         {
             Name = name;
             Scale = scale;
