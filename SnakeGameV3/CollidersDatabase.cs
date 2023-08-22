@@ -6,12 +6,12 @@ namespace SnakeGameV3
     {
         Square,
         Circle,
-        Undefined,
     }
 
     internal class CollidersDatabase
     {
         private readonly Dictionary<ColliderType, Collider> _colliders = new();
+        private readonly Dictionary<ColliderConfig, Collider> _transformedColliders = new();
         private readonly Grid _grid;
 
         public CollidersDatabase(Grid grid)
@@ -20,9 +20,12 @@ namespace SnakeGameV3
             LoadColliders();
         }
 
-        public Collider GetTransformedCollider(ColliderType colliderType, float scale)
+        public Collider GetTransformedCollider(ColliderConfig colliderConfig, float scale)
         {
-            Collider collider = _colliders[colliderType];
+            if (_transformedColliders.ContainsKey(colliderConfig))
+                return _transformedColliders[colliderConfig];
+
+            Collider collider = _colliders[colliderConfig.Type];
 
             int transformedColliderHeight = (int)(_grid.CellSize.Height * scale);
             int transformedColiderWidth = (int)(_grid.CellSize.Width * scale);
@@ -41,16 +44,15 @@ namespace SnakeGameV3
                 }
             }
 
-            return new Collider(transformedBounds);
+            Collider transformedCollider = new(transformedBounds);
+            _transformedColliders.Add(colliderConfig, transformedCollider);
+
+            return transformedCollider;
         }
 
         private unsafe void LoadColliders()
         {
-            ColliderType[] names =
-            {
-                ColliderType.Square,
-                ColliderType.Circle,
-            };
+            ColliderType[] names = Enum.GetValues<ColliderType>();
 
             int* height = stackalloc int[1];
             int* width = stackalloc int[1];

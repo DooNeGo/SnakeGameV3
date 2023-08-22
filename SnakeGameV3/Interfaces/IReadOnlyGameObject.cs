@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using SnakeGameV3.Texturing;
 
 namespace SnakeGameV3.Interfaces
 {
@@ -7,6 +6,6 @@ namespace SnakeGameV3.Interfaces
     {
         public Vector2 Position { get; }
 
-        public TextureConfig TextureConfig { get; }
+        public T? GetComponent<T>();
     }
 }

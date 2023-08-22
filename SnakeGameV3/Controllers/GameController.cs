@@ -19,9 +19,12 @@ namespace SnakeGameV3.Controllers
             Size screenSize = new(ScreenWidth, ScreenHeight);
 
             _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
-            _food = new Food(new TextureConfig(TextureName.Food, 0.5f, FoodColor), _grid, ColliderType.Square);
+            _food = new Food(_grid, 0.5f);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid);
+
+            _food.AddComponent(new TextureConfig(TextureName.Food, FoodColor));
+            _food.AddComponent(new ColliderConfig(ColliderType.Square));
         }
 
         public void StartGame()
@@ -56,7 +59,6 @@ namespace SnakeGameV3.Controllers
             _builder.Remove(_food);
 
             _builder.Add(gameOver);
-
             _builder.Update();
 
             Console.ReadKey();

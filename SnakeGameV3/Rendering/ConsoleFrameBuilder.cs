@@ -11,7 +11,7 @@ namespace SnakeGameV3.Rendering
         private const char ConsolePixel = '█';
 
         private readonly ConsoleFrame[] _frames;
-        private readonly List<IRenderable> _entities = new();
+        private readonly List<ICompositeObject> _entities = new();
         private readonly TexturesDatabase _textureDatabase;
         private readonly Grid _grid;
 
@@ -39,12 +39,12 @@ namespace SnakeGameV3.Rendering
             DrawImage();
         }
 
-        public void Add(IRenderable gameObject)
+        public void Add(ICompositeObject gameObject)
         {
             _entities.Add(gameObject);
         }
 
-        public void Remove(IRenderable gameObject)
+        public void Remove(ICompositeObject gameObject)
         {
             _entities.Remove(gameObject);
         }
@@ -53,10 +53,13 @@ namespace SnakeGameV3.Rendering
         {
             _frames[_activeFrame].Clear();
 
-            foreach (IRenderable entity in _entities)
+            foreach (ICompositeObject entity in _entities)
             {
-                foreach (IReadOnlyGameObject gameObject in entity)
+                IEnumerator<IReadOnlyGameObject> enumerator = entity.GetGameObjectsWithComponent<TextureConfig>();
+
+                while(enumerator.MoveNext())
                 {
+                    IReadOnlyGameObject gameObject = enumerator.Current;
                     Vector2 position = gameObject.Position;
 
                     if (entity.IsNeedToProject)
@@ -64,7 +67,7 @@ namespace SnakeGameV3.Rendering
 
                     position = _grid.GetAbsolutePosition(position);
 
-                    Texture texture = _textureDatabase.GetTexture(gameObject.TextureConfig);
+                    Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!, entity.Scale);
                     _frames[_activeFrame].Add(position, texture);
                 }
             }

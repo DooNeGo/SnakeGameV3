@@ -9,7 +9,7 @@ namespace SnakeGameV3.Model
         private const float defaultScale = 1f;
         private const ColliderType defaultColliderType = ColliderType.Square;
 
-        private readonly List<IGridObject> _gridObjects = new();
+        private readonly List<ICompositeObject> _gridObjects = new();
         private readonly CollidersDatabase _collidersDatabase;
         private readonly Cell[,] _cells;
 
@@ -29,7 +29,7 @@ namespace SnakeGameV3.Model
 
         public Vector2 Center { get; }
 
-        public bool IsPositionOccupied(Vector2 position, IGridObjectPart? requester)
+        public bool IsPositionOccupied(Vector2 position, IReadOnlyGameObject? requester)
         {
             bool isOccupied = false;
 
@@ -45,9 +45,9 @@ namespace SnakeGameV3.Model
             return isOccupied;
         }
 
-        public IEnumerator<IGridObjectPart> GetEachObjectInPosition(Vector2 position, IGridObjectPart? requester)
+        public IEnumerator<IReadOnlyGameObject> GetEachObjectInPosition(Vector2 position, IReadOnlyGameObject? requester)
         {
-            List<IGridObjectPart> entities = new();
+            List<IReadOnlyGameObject> entities = new(3);
             IEnumerator<Cell> enumerator = GetEachCellInPosition(position, requester);
 
             if (requester != null)
@@ -68,26 +68,31 @@ namespace SnakeGameV3.Model
         {
             Clear();
 
-            foreach (IGridObject gridObject in _gridObjects)
+            foreach (ICompositeObject gridObject in _gridObjects)
             {
-                foreach (IGridObjectPart gridObjectPart in gridObject)
+                IEnumerator<IReadOnlyGameObject> enumerator = gridObject.GetGameObjectsWithComponent<ColliderConfig>();
+
+                while(enumerator.MoveNext())
                 {
-                    Vector2 position = gridObjectPart.Position;
+                    IReadOnlyGameObject gameObject = enumerator.Current;
+                    Vector2 position = gameObject.Position;
 
                     if (gridObject.IsNeedToProject)
+                    {
                         position = Project(position);
+                    }
 
-                    AddToGrid(position, gridObjectPart);
+                    AddToGrid(position, gameObject);
                 }
             }
         }
 
-        public void Add(IGridObject gridObject)
+        public void Add(ICompositeObject gridObject)
         {
             _gridObjects.Add(gridObject);
         }
 
-        public void Remove(IGridObject gridObject)
+        public void Remove(ICompositeObject gridObject)
         {
             _gridObjects.Remove(gridObject);
         }
@@ -137,7 +142,7 @@ namespace SnakeGameV3.Model
                        MathF.Round(relativePosition.Y * CellSize.Height));
         }
 
-        private void AddToGrid(Vector2 position, IGridObjectPart entity)
+        private void AddToGrid(Vector2 position, IReadOnlyGameObject entity)
         {
             ForEachCellInPosition(position, entity, (cell) =>
             {
@@ -167,18 +172,23 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private IEnumerator<Cell> GetEachCellInPosition(Vector2 relativePosition, IGridObjectPart? requester)
+        private IEnumerator<Cell> GetEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester)
         {
-            ColliderType colliderType = defaultColliderType;
-            float scale = defaultScale;
+            float scale;
+            ColliderConfig colliderConfig;
 
             if (requester != null)
             {
                 scale = requester.Scale;
-                colliderType = requester.ColliderType;
+                colliderConfig = requester.GetComponent<ColliderConfig>()!;
+            }
+            else
+            {
+                scale = defaultScale;
+                colliderConfig = new(defaultColliderType);
             }
 
-            Collider collider = _collidersDatabase.GetTransformedCollider(colliderType, scale);
+            Collider collider = _collidersDatabase.GetTransformedCollider(colliderConfig, scale);
             Vector2 absolutePosition = GetAbsolutePosition(relativePosition);
 
             for (var y = 0; y < collider.Size.Height; y++)
@@ -201,7 +211,7 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void ForEachCellInPosition(Vector2 relativePosition, IGridObjectPart? requester, Action<Cell> action)
+        private void ForEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester, Action<Cell> action)
         {
             IEnumerator<Cell> enumerator = GetEachCellInPosition(relativePosition, requester);
 
@@ -218,9 +228,9 @@ namespace SnakeGameV3.Model
                 Boss = null;
             }
 
-            public IGridObjectPart? Boss { get; private set; }
+            public IReadOnlyGameObject? Boss { get; private set; }
 
-            public void Occupy(IGridObjectPart entity)
+            public void Occupy(IReadOnlyGameObject entity)
             {
                 Boss = entity;
             }

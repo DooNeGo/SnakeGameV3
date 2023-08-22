@@ -22,47 +22,77 @@ namespace SnakeGameV3.Texturing
     {
         private readonly Grid _grid;
         private readonly Dictionary<TextureName, Texture> _textures = new();
+        private readonly Dictionary<TextureConfig, Texture> _transformedTextures = new();
 
         public TexturesDatabase(Grid grid)
         {
             _grid = grid;
+            LoadTextures();
         }
 
         public Texture GetTexture(TextureConfig textureConfig)
         {
-            if (!_textures.ContainsKey(textureConfig.Name))
-                LoadTexture(textureConfig);
 
             return _textures[textureConfig.Name];
         }
 
-        private void LoadTexture(TextureConfig textureConfig)
+        public Texture GetTransformedTexture(TextureConfig textureConfig, float scale)
         {
-            DirectoryInfo directoryInfo = new($"..\\..\\..\\Textures\\{textureConfig.Name}.bmp");
-            using Bitmap bitmap = (Bitmap)Image.FromFile(directoryInfo.FullName);
+            if (_transformedTextures.ContainsKey(textureConfig))
+                return _transformedTextures[textureConfig];
 
-            var textureHeight = (int)(_grid.CellSize.Height * textureConfig.Scale);
-            var textureWidth = (int)(_grid.CellSize.Width * textureConfig.Scale);
+            Texture texture = _textures[textureConfig.Name];
 
-            ConsoleColor[,] pixels = new ConsoleColor[textureHeight, textureWidth];
+            var transformedTextureHeight = (int)(_grid.CellSize.Height * scale);
+            var transfomedTextureWidth = (int)(_grid.CellSize.Width * scale);
+            var pixels = new ConsoleColor[transformedTextureHeight, transfomedTextureWidth];
 
-            int offsetY = bitmap.Size.Height / pixels.GetLength(0);
-            int offsetX = bitmap.Size.Width / pixels.GetLength(1);
+            int offsetY = texture.Size.Height / pixels.GetLength(0);
+            int offsetX = texture.Size.Width / pixels.GetLength(1);
 
-            for (var y = 0; y < pixels.GetLength(0); y++)
+            for (var y = 0; y < transformedTextureHeight; y++)
             {
-                for (var x = 0; x < pixels.GetLength(1); x++)
+                for (var x = 0; x < transfomedTextureWidth; x++)
                 {
-                    Color pixel = bitmap.GetPixel(x * offsetX, y * offsetY);
+                    ConsoleColor color = texture.GetPixel(x * offsetX, y * offsetY);
 
-                    if (pixel.R > 0 && pixel.B > 0 && pixel.G > 0)
-                    {
+                    if (color == ConsoleColor.White)
                         pixels[y, x] = textureConfig.Color;
-                    }
                 }
             }
 
-            _textures[textureConfig.Name] = new Texture(pixels);
+            Texture transformedTexture = new(pixels);
+            _transformedTextures.Add(textureConfig, transformedTexture);
+
+            return transformedTexture;
+        }
+
+        private void LoadTextures()
+        {
+            TextureName[] names = Enum.GetValues<TextureName>();
+
+            foreach (TextureName name in names)
+            {
+                DirectoryInfo directoryInfo = new($"..\\..\\..\\Textures\\{name}.bmp");
+                using Bitmap bitmap = (Bitmap)Image.FromFile(directoryInfo.FullName);
+
+                ConsoleColor[,] pixels = new ConsoleColor[bitmap.Size.Height, bitmap.Size.Width];
+
+                for (var y = 0; y < pixels.GetLength(0); y++)
+                {
+                    for (var x = 0; x < pixels.GetLength(1); x++)
+                    {
+                        Color pixel = bitmap.GetPixel(x, y);
+
+                        if (pixel.R > 0 || pixel.B > 0 || pixel.G > 0)
+                        {
+                            pixels[y, x] = ConsoleColor.White;
+                        }
+                    }
+                }
+
+                _textures[name] = new Texture(pixels);
+            }
         }
     }
 }

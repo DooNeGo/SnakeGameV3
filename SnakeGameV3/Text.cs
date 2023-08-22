@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace SnakeGameV3
 {
-    internal class Text : IRenderable
+    internal class Text : ICompositeObject
     {
         private readonly GameObject[] _letters;
         private readonly Vector2 _textPosition;
@@ -23,19 +23,12 @@ namespace SnakeGameV3
 
         public bool IsNeedToProject => false;
 
-        public IEnumerator<IReadOnlyGameObject> GetEnumerator()
+        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
         {
-            foreach (GameObject gameObject in _letters)
+            foreach(IReadOnlyGameObject gameObject in _letters)
             {
-                yield return gameObject;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            foreach (GameObject gameObject in _letters)
-            {
-                yield return gameObject;
+                if (gameObject.GetComponent<T>() != null)
+                    yield return gameObject;
             }
         }
 
@@ -50,12 +43,10 @@ namespace SnakeGameV3
                 if (textureName == " ")
                     textureName = "Space";
 
-                TextureConfig textureInfo = new(
-                    Enum.Parse<TextureName>(textureName),
-                    Scale,
-                    color);
+                TextureConfig textureInfo = new(Enum.Parse<TextureName>(textureName), color);
 
-                _letters[i] = new GameObject(position, textureInfo, ColliderType.Undefined);
+                _letters[i] = new GameObject(position, Scale);
+                _letters[i].AddComponent(textureInfo);
             }
         }
     }

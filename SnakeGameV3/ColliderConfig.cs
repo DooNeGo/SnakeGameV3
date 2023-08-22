@@ -1,17 +1,12 @@
-﻿using SnakeGameV3.Interfaces;
-
-namespace SnakeGameV3
+﻿namespace SnakeGameV3
 {
-    internal class ColliderConfig : IScalable
+    internal record ColliderConfig : ComponentConfig
     {
-        public ColliderConfig(ColliderType colliderType, float scale)
+        public ColliderConfig(ColliderType colliderType)
         {
             Type = colliderType;
-            Scale = scale;
         }
 
         public ColliderType Type { get; }
-
-        public float Scale { get; }
     }
 }

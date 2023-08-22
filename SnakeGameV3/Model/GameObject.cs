@@ -1,24 +1,41 @@
 ﻿using SnakeGameV3.Interfaces;
-using SnakeGameV3.Texturing;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class GameObject : IReadOnlyGameObject, IGridObjectPart
+    internal class GameObject : IReadOnlyGameObject
     {
-        public GameObject(Vector2 position, TextureConfig textureConfig, ColliderType colliderType)
+        private readonly List<ComponentConfig> _components = new();
+
+        public GameObject(Vector2 position, float scale)
         {
             Position = position;
-            TextureConfig = textureConfig;
-            ColliderType = colliderType;
+            Scale = scale;
         }
 
         public Vector2 Position { get; set; }
 
-        public TextureConfig TextureConfig { get; set; }
+        public float Scale { get; set; }
 
-        public float Scale => TextureConfig.Scale;
+        public void AddComponent(ComponentConfig component)
+        {
+            _components.Add(component);
+        }
 
-        public ColliderType ColliderType { get; }
+        public void RemoveComponent(ComponentConfig component)
+        {
+            _components.Remove(component);
+        }
+
+        public T? GetComponent<T>()
+        {
+            foreach (ComponentConfig component in _components)
+            {
+                if (component is T value)
+                    return value;
+            }
+
+            return default;
+        }
     }
 }

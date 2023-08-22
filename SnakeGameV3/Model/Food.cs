@@ -1,17 +1,16 @@
 ﻿using SnakeGameV3.Interfaces;
-using SnakeGameV3.Texturing;
 using System.Collections;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Food : GameObject, IRenderable, IGridObject
+    internal class Food : GameObject, ICompositeObject
     {
         private readonly Random _random = new();
         private readonly Grid _grid;
 
-        public Food(TextureConfig textureConfig, Grid grid, ColliderType colliderType) :
-            base(Vector2.Zero, textureConfig, colliderType)
+        public Food(Grid grid, float scale) :
+            base(Vector2.Zero, scale)
         {
             _grid = grid;
         }
@@ -26,19 +25,12 @@ namespace SnakeGameV3.Model
             } while (_grid.IsPositionOccupied(Position, this));
         }
 
-        public IEnumerator<IGridObjectPart> GetEnumerator()
+        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
         {
-            yield return this;
-        }
-
-        IEnumerator<IReadOnlyGameObject> IEnumerable<IReadOnlyGameObject>.GetEnumerator()
-        {
-            yield return this;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            yield return this;
+            if (GetComponent<T>() != null)
+            {
+                yield return this;
+            }
         }
     }
 }
