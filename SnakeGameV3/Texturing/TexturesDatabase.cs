@@ -22,7 +22,7 @@ namespace SnakeGameV3.Texturing
     {
         private readonly Grid _grid;
         private readonly Dictionary<TextureName, Texture> _textures = new();
-        private readonly Dictionary<TextureConfig, Texture> _transformedTextures = new();
+        private readonly Dictionary<ValueTuple<TextureConfig, float>, Texture> _transformedTextures = new();
 
         public TexturesDatabase(Grid grid)
         {
@@ -30,16 +30,10 @@ namespace SnakeGameV3.Texturing
             LoadTextures();
         }
 
-        public Texture GetTexture(TextureConfig textureConfig)
-        {
-
-            return _textures[textureConfig.Name];
-        }
-
         public Texture GetTransformedTexture(TextureConfig textureConfig, float scale)
         {
-            if (_transformedTextures.ContainsKey(textureConfig))
-                return _transformedTextures[textureConfig];
+            if (_transformedTextures.ContainsKey((textureConfig, scale)))
+                return _transformedTextures[(textureConfig, scale)];
 
             Texture texture = _textures[textureConfig.Name];
 
@@ -47,14 +41,14 @@ namespace SnakeGameV3.Texturing
             var transfomedTextureWidth = (int)(_grid.CellSize.Width * scale);
             var pixels = new ConsoleColor[transformedTextureHeight, transfomedTextureWidth];
 
-            int offsetY = texture.Size.Height / pixels.GetLength(0);
-            int offsetX = texture.Size.Width / pixels.GetLength(1);
+            float offsetY = (float)texture.Size.Height / pixels.GetLength(0);
+            float offsetX = (float)texture.Size.Width / pixels.GetLength(1);
 
             for (var y = 0; y < transformedTextureHeight; y++)
             {
                 for (var x = 0; x < transfomedTextureWidth; x++)
                 {
-                    ConsoleColor color = texture.GetPixel(x * offsetX, y * offsetY);
+                    ConsoleColor color = texture.GetPixel((int)(x * offsetX), (int)(y * offsetY));
 
                     if (color == ConsoleColor.White)
                         pixels[y, x] = textureConfig.Color;
@@ -62,7 +56,7 @@ namespace SnakeGameV3.Texturing
             }
 
             Texture transformedTexture = new(pixels);
-            _transformedTextures.Add(textureConfig, transformedTexture);
+            _transformedTextures.Add((textureConfig, scale), transformedTexture);
 
             return transformedTexture;
         }
@@ -76,13 +70,16 @@ namespace SnakeGameV3.Texturing
                 DirectoryInfo directoryInfo = new($"..\\..\\..\\Textures\\{name}.bmp");
                 using Bitmap bitmap = (Bitmap)Image.FromFile(directoryInfo.FullName);
 
-                ConsoleColor[,] pixels = new ConsoleColor[bitmap.Size.Height, bitmap.Size.Width];
+                ConsoleColor[,] pixels = new ConsoleColor[_grid.CellSize.Height * 20, _grid.CellSize.Width * 20];
+
+                float offsetY = (float)bitmap.Size.Height / pixels.GetLength(0);
+                float offsetX = (float)bitmap.Size.Width / pixels.GetLength(1);
 
                 for (var y = 0; y < pixels.GetLength(0); y++)
                 {
                     for (var x = 0; x < pixels.GetLength(1); x++)
                     {
-                        Color pixel = bitmap.GetPixel(x, y);
+                        Color pixel = bitmap.GetPixel((int)(x * offsetX), (int)(y * offsetY));
 
                         if (pixel.R > 0 || pixel.B > 0 || pixel.G > 0)
                         {

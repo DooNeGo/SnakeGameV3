@@ -57,7 +57,7 @@ namespace SnakeGameV3.Rendering
             {
                 IEnumerator<IReadOnlyGameObject> enumerator = entity.GetGameObjectsWithComponent<TextureConfig>();
 
-                while(enumerator.MoveNext())
+                while (enumerator.MoveNext())
                 {
                     IReadOnlyGameObject gameObject = enumerator.Current;
                     Vector2 position = gameObject.Position;
@@ -65,7 +65,7 @@ namespace SnakeGameV3.Rendering
                     if (entity.IsNeedToProject)
                         position = _grid.Project(position);
 
-                    position = _grid.GetAbsolutePosition(position);
+                    position = _grid.GetAbsolutePosition(position, entity.Scale);
 
                     Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!, entity.Scale);
                     _frames[_activeFrame].Add(position, texture);

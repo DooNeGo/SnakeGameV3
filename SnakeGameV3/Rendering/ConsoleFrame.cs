@@ -1,6 +1,6 @@
-﻿using System.Drawing;
+﻿using SnakeGameV3.Texturing;
+using System.Drawing;
 using System.Numerics;
-using SnakeGameV3.Texturing;
 
 namespace SnakeGameV3.Rendering
 {

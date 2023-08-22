@@ -8,8 +8,8 @@
             Color = color;
         }
 
-        public TextureName Name { get; }
+        public TextureName Name { get; init; }
 
-        public ConsoleColor Color { get; }
+        public ConsoleColor Color { get; init; }
     }
 }

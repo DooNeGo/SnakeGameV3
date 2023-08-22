@@ -9,7 +9,7 @@ namespace SnakeGameV3.Model
         private const float defaultScale = 1f;
         private const ColliderType defaultColliderType = ColliderType.Square;
 
-        private readonly List<ICompositeObject> _gridObjects = new();
+        private readonly List<ICompositeObject> _compositeObjects = new();
         private readonly CollidersDatabase _collidersDatabase;
         private readonly Cell[,] _cells;
 
@@ -29,11 +29,11 @@ namespace SnakeGameV3.Model
 
         public Vector2 Center { get; }
 
-        public bool IsPositionOccupied(Vector2 position, IReadOnlyGameObject? requester)
+        public bool IsPositionOccupied(Vector2 position, IReadOnlyGameObject? requester, float scale)
         {
             bool isOccupied = false;
 
-            ForEachCellInPosition(position, requester, (cell) =>
+            ForEachCellInPosition(position, requester, scale, cell =>
             {
                 if (cell.Boss is not null)
                 {
@@ -45,12 +45,12 @@ namespace SnakeGameV3.Model
             return isOccupied;
         }
 
-        public IEnumerator<IReadOnlyGameObject> GetEachObjectInPosition(Vector2 position, IReadOnlyGameObject? requester)
+        public IEnumerator<IReadOnlyGameObject> GetEachObjectInPosition(Vector2 position, IReadOnlyGameObject? requester, float scale)
         {
             List<IReadOnlyGameObject> entities = new(3);
-            IEnumerator<Cell> enumerator = GetEachCellInPosition(position, requester);
+            IEnumerator<Cell> enumerator = GetEachCellInPosition(position, requester, scale);
 
-            if (requester != null)
+            if (requester is not null)
                 entities.Add(requester);
 
             while (enumerator.MoveNext())
@@ -68,33 +68,33 @@ namespace SnakeGameV3.Model
         {
             Clear();
 
-            foreach (ICompositeObject gridObject in _gridObjects)
+            foreach (ICompositeObject compositeObject in _compositeObjects)
             {
-                IEnumerator<IReadOnlyGameObject> enumerator = gridObject.GetGameObjectsWithComponent<ColliderConfig>();
+                IEnumerator<IReadOnlyGameObject> enumerator = compositeObject.GetGameObjectsWithComponent<ColliderConfig>();
 
-                while(enumerator.MoveNext())
+                while (enumerator.MoveNext())
                 {
                     IReadOnlyGameObject gameObject = enumerator.Current;
                     Vector2 position = gameObject.Position;
 
-                    if (gridObject.IsNeedToProject)
+                    if (compositeObject.IsNeedToProject)
                     {
                         position = Project(position);
                     }
 
-                    AddToGrid(position, gameObject);
+                    AddToGrid(position, gameObject, compositeObject.Scale);
                 }
             }
         }
 
-        public void Add(ICompositeObject gridObject)
+        public void Add(ICompositeObject compositeObject)
         {
-            _gridObjects.Add(gridObject);
+            _compositeObjects.Add(compositeObject);
         }
 
-        public void Remove(ICompositeObject gridObject)
+        public void Remove(ICompositeObject compositeObject)
         {
-            _gridObjects.Remove(gridObject);
+            _compositeObjects.Remove(compositeObject);
         }
 
         public Vector2 Project(Vector2 position)
@@ -136,15 +136,18 @@ namespace SnakeGameV3.Model
             return distancesWithProjections.Min().Item2;
         }
 
-        public Vector2 GetAbsolutePosition(Vector2 relativePosition)
+        public Vector2 GetAbsolutePosition(Vector2 relativePosition, float scale)
         {
-            return new(MathF.Round(relativePosition.X * CellSize.Width),
-                       MathF.Round(relativePosition.Y * CellSize.Height));
+            Vector2 offset = new(CellSize.Width * scale / 2,
+                                 CellSize.Height * scale / 2);
+
+            return new(relativePosition.X * CellSize.Width,
+                       relativePosition.Y * CellSize.Height - offset.Y);
         }
 
-        private void AddToGrid(Vector2 position, IReadOnlyGameObject entity)
+        private void AddToGrid(Vector2 position, IReadOnlyGameObject entity, float scale)
         {
-            ForEachCellInPosition(position, entity, (cell) =>
+            ForEachCellInPosition(position, entity, scale, cell =>
             {
                 cell.Occupy(entity);
             });
@@ -172,24 +175,22 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private IEnumerator<Cell> GetEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester)
+        private IEnumerator<Cell> GetEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester, float scale)
         {
-            float scale;
             ColliderConfig colliderConfig;
 
-            if (requester != null)
+            if (requester is not null)
             {
-                scale = requester.Scale;
                 colliderConfig = requester.GetComponent<ColliderConfig>()!;
             }
             else
             {
                 scale = defaultScale;
-                colliderConfig = new(defaultColliderType);
+                colliderConfig = new ColliderConfig(defaultColliderType);
             }
 
             Collider collider = _collidersDatabase.GetTransformedCollider(colliderConfig, scale);
-            Vector2 absolutePosition = GetAbsolutePosition(relativePosition);
+            Vector2 absolutePosition = GetAbsolutePosition(relativePosition, scale);
 
             for (var y = 0; y < collider.Size.Height; y++)
             {
@@ -211,9 +212,9 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void ForEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester, Action<Cell> action)
+        private void ForEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester, float scale, Action<Cell> action)
         {
-            IEnumerator<Cell> enumerator = GetEachCellInPosition(relativePosition, requester);
+            IEnumerator<Cell> enumerator = GetEachCellInPosition(relativePosition, requester, scale);
 
             while (enumerator.MoveNext())
             {

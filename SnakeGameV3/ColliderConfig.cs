@@ -7,6 +7,6 @@
             Type = colliderType;
         }
 
-        public ColliderType Type { get; }
+        public ColliderType Type { get; init; }
     }
 }

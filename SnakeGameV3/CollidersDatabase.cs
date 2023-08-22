@@ -11,7 +11,7 @@ namespace SnakeGameV3
     internal class CollidersDatabase
     {
         private readonly Dictionary<ColliderType, Collider> _colliders = new();
-        private readonly Dictionary<ColliderConfig, Collider> _transformedColliders = new();
+        private readonly Dictionary<ValueTuple<ColliderConfig, float>, Collider> _transformedColliders = new();
         private readonly Grid _grid;
 
         public CollidersDatabase(Grid grid)
@@ -22,30 +22,30 @@ namespace SnakeGameV3
 
         public Collider GetTransformedCollider(ColliderConfig colliderConfig, float scale)
         {
-            if (_transformedColliders.ContainsKey(colliderConfig))
-                return _transformedColliders[colliderConfig];
+            if (_transformedColliders.ContainsKey((colliderConfig, scale)))
+                return _transformedColliders[(colliderConfig, scale)];
 
             Collider collider = _colliders[colliderConfig.Type];
 
-            int transformedColliderHeight = (int)(_grid.CellSize.Height * scale);
-            int transformedColiderWidth = (int)(_grid.CellSize.Width * scale);
+            var transformedColliderHeight = (int)(_grid.CellSize.Height * scale);
+            var transformedColiderWidth = (int)(_grid.CellSize.Width * scale);
 
             bool[,] transformedBounds = new bool[transformedColliderHeight, transformedColiderWidth];
 
-            int offsetX = collider.Size.Width / transformedColiderWidth;
-            int offsetY = collider.Size.Height / transformedColliderHeight;
+            float offsetX = (float)collider.Size.Width / transformedColiderWidth;
+            float offsetY = (float)collider.Size.Height / transformedColliderHeight;
 
             for (var y = 0; y < transformedColliderHeight; y++)
             {
                 for (var x = 0; x < transformedColiderWidth; x++)
                 {
-                    bool value = collider.GetValue(x * offsetX, y * offsetY);
+                    bool value = collider.GetValue((int)(x * offsetX), (int)(y * offsetY));
                     transformedBounds[y, x] = value;
                 }
             }
 
             Collider transformedCollider = new(transformedBounds);
-            _transformedColliders.Add(colliderConfig, transformedCollider);
+            _transformedColliders.Add((colliderConfig, scale), transformedCollider);
 
             return transformedCollider;
         }
@@ -54,12 +54,13 @@ namespace SnakeGameV3
         {
             ColliderType[] names = Enum.GetValues<ColliderType>();
 
-            int* height = stackalloc int[1];
-            int* width = stackalloc int[1];
+            int height = 0;
+            int width = 0;
+
             int*[] size =
             {
-                height,
-                width,
+                &height,
+                &width,
             };
 
             foreach (ColliderType name in names)
@@ -75,12 +76,17 @@ namespace SnakeGameV3
                     }
                 }
 
-                bool[,] pixels = new bool[*size[0], *size[1]];
+                bool[,] pixels = new bool[height, width];
+
+                //float offsetX = (float)height / pixels.GetLength(1);
+                //float offsetY = (float)width / pixels.GetLength(0);
 
                 for (var y = 0; y < pixels.GetLength(0); y++)
                 {
                     for (var x = 0; x < pixels.GetLength(1); x++)
                     {
+                        //fileStream.Position = (long)(width * y * offsetY + x * offsetX);
+
                         pixels[y, x] = Convert.ToBoolean(fileStream.ReadByte());
                     }
                 }

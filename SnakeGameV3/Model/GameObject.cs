@@ -7,15 +7,12 @@ namespace SnakeGameV3.Model
     {
         private readonly List<ComponentConfig> _components = new();
 
-        public GameObject(Vector2 position, float scale)
+        public GameObject(Vector2 position)
         {
             Position = position;
-            Scale = scale;
         }
 
         public Vector2 Position { get; set; }
-
-        public float Scale { get; set; }
 
         public void AddComponent(ComponentConfig component)
         {

@@ -26,14 +26,13 @@ namespace SnakeGameV3.Model
             _headColliderConfig = new ColliderConfig(ColliderType.Circle);
             _bodyColliderConfig = new ColliderConfig(ColliderType.Circle);
 
-            GameObject head = new(startPosition, Scale);
-            GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale }, Scale);
-            GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale }, Scale);
+            GameObject head = new(startPosition);
+            GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale });
+            GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale });
 
             head.AddComponent(_headTextureConfig);
             head.AddComponent(_headColliderConfig);
             bodyPart1.AddComponent(_bodyTextureConfig);
-            bodyPart1.AddComponent(_bodyColliderConfig);
             bodyPart2.AddComponent(_bodyTextureConfig);
             bodyPart2.AddComponent(_bodyColliderConfig);
 
@@ -50,7 +49,7 @@ namespace SnakeGameV3.Model
 
         public bool IsDied { get; private set; } = false;
 
-        public float Scale => 1f;
+        public float Scale { get; private set; } = 1.0f;
 
         public bool IsNeedToProject => true;
 
@@ -69,7 +68,7 @@ namespace SnakeGameV3.Model
             for (var i = 3; i < _body.Count; i++)
             {
                 if (_body[i].GetComponent<ColliderConfig>() is null
-                    && Vector2.Distance(_body[i].Position, _body[i - 1].Position) <= 1)
+                    && Vector2.Distance(_body[i].Position, _body[i - 1].Position) <= 0.8f * Scale)
                 {
                     _body[i].AddComponent(_bodyColliderConfig);
                 }
@@ -85,6 +84,7 @@ namespace SnakeGameV3.Model
             for (var i = 1; i < _body.Count; i++)
             {
                 offsets[i] = _body[i - 1].Position - _body[i].Position;
+                offsets[i] /= Scale;
             }
 
             return offsets;
@@ -96,7 +96,7 @@ namespace SnakeGameV3.Model
 
             for (var i = 1; i < offsets.Length; i++)
             {
-                _body[i].Position += offsets[i] * offsets[0].Length() / Scale;
+                _body[i].Position += offsets[i] * offsets[0].Length();
             }
         }
 
@@ -106,7 +106,7 @@ namespace SnakeGameV3.Model
             Vector2 offset = new(_body[^1].Position.X - tailProjection.X, _body[^1].Position.Y - tailProjection.Y);
             Vector2 projectionOnTheEdge = _grid.GetTheClosestProjectionOnTheEdge(tailProjection);
 
-            GameObject newBodyPart = new(projectionOnTheEdge + offset, Scale);
+            GameObject newBodyPart = new(projectionOnTheEdge + offset);
 
             newBodyPart.AddComponent(_bodyTextureConfig);
 
@@ -118,7 +118,7 @@ namespace SnakeGameV3.Model
         private void CheckPosition(Vector2 position)
         {
             Vector2 projection = _grid.Project(position);
-            IEnumerator<IReadOnlyGameObject> enumerator = _grid.GetEachObjectInPosition(projection, Head);
+            IEnumerator<IReadOnlyGameObject> enumerator = _grid.GetEachObjectInPosition(projection, Head, Scale);
 
             while (enumerator.MoveNext())
             {
@@ -127,8 +127,7 @@ namespace SnakeGameV3.Model
                     Eat(food);
                     break;
                 }
-
-                if (enumerator.Current != _body[1])
+                else
                 {
                     IsDied = true;
                     break;
