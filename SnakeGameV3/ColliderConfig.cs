@@ -1,6 +1,6 @@
 ﻿namespace SnakeGameV3
 {
-    internal record ColliderConfig : ComponentConfig
+    internal record ColliderConfig : Component
     {
         public ColliderConfig(ColliderType colliderType)
         {

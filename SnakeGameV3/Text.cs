@@ -36,7 +36,7 @@ namespace SnakeGameV3
             for (var i = 0; i < text.Length; i++)
             {
                 string textureName = text[i].ToString();
-                Vector2 position = new(_textPosition.X + (i - _letters.Length / 2f) * Scale,
+                Vector2 position = new(_textPosition.X + (i - (_letters.Length - 1) / 2f) * Scale,
                                        _textPosition.Y);
 
                 if (textureName == " ")

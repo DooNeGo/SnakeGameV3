@@ -5,7 +5,7 @@ namespace SnakeGameV3.Model
 {
     internal class GameObject : IReadOnlyGameObject
     {
-        private readonly List<ComponentConfig> _components = new();
+        private readonly List<Component> _components = new();
 
         public GameObject(Vector2 position)
         {
@@ -14,19 +14,19 @@ namespace SnakeGameV3.Model
 
         public Vector2 Position { get; set; }
 
-        public void AddComponent(ComponentConfig component)
+        public void AddComponent(Component component)
         {
             _components.Add(component);
         }
 
-        public void RemoveComponent(ComponentConfig component)
+        public void RemoveComponent(Component component)
         {
             _components.Remove(component);
         }
 
         public T? GetComponent<T>()
         {
-            foreach (ComponentConfig component in _components)
+            foreach (Component component in _components)
             {
                 if (component is T value)
                     return value;

@@ -18,7 +18,7 @@ namespace SnakeGameV3.Model
             CellSize = cellSize;
             Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
             _cells = new Cell[screenSize.Height, screenSize.Width];
-            Center = new Vector2(Size.Width / 2f, Size.Height / 2f);
+            Center = new Vector2((Size.Width - 1) / 2f, (Size.Height - 1) / 2f);
             _collidersDatabase = new CollidersDatabase(this);
             InitializeCells();
         }
@@ -138,11 +138,11 @@ namespace SnakeGameV3.Model
 
         public Vector2 GetAbsolutePosition(Vector2 relativePosition, float scale)
         {
-            Vector2 offset = new(CellSize.Width * scale / 2,
-                                 CellSize.Height * scale / 2);
-
-            return new(relativePosition.X * CellSize.Width,
-                       relativePosition.Y * CellSize.Height - offset.Y);
+            Vector2 offset = new(CellSize.Width * scale - CellSize.Width,
+                                 CellSize.Height * scale - CellSize.Height);
+            offset /= 2f;
+            return new(MathF.Round(relativePosition.X * CellSize.Width - offset.X),
+                       MathF.Round(relativePosition.Y * CellSize.Height - offset.Y));
         }
 
         private void AddToGrid(Vector2 position, IReadOnlyGameObject entity, float scale)

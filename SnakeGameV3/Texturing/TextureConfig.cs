@@ -1,6 +1,6 @@
 ﻿namespace SnakeGameV3.Texturing
 {
-    internal record TextureConfig : ComponentConfig
+    internal record TextureConfig : Component
     {
         public TextureConfig(TextureName name, ConsoleColor color)
         {

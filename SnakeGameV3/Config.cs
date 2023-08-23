@@ -2,7 +2,7 @@
 {
     internal class Config
     {
-        public const int ScreenHeight = 80;
+        public const int ScreenHeight = 96;
         public const int ScreenWidth = 240;
 
         public const int GridCellHeight = (int)(ConsoleCharWidth * Scale);
