@@ -9,21 +9,18 @@ namespace SnakeGameV3
     {
         private readonly GameObject[] _letters;
         private readonly Vector2 _textPosition;
-        private readonly Grid _grid;
 
-        public Text(string text, ConsoleColor color, float scale, Vector2 position, Grid grid)
+        public Text(string text, ConsoleColor color, float scale, Vector2 position)
         {
             _letters = new GameObject[text.Length];
             Scale = scale;
             _textPosition = position;
-            _grid = grid;
             InitializeLetters(text, color);
         }
 
-        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end, Grid grid)
+        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end)
         {
             _letters = new GameObject[text.Length];
-            _grid = grid;
             float distanceBeetweenStartAndEnd = end.X - start.X;
             Scale = distanceBeetweenStartAndEnd / text.Length;
             _textPosition = start with { X = start.X + distanceBeetweenStartAndEnd / 2};

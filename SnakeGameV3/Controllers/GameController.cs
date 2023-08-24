@@ -33,7 +33,7 @@ namespace SnakeGameV3.Controllers
 
             _builder.Add(_food);
             _builder.Add(_snake);
-            //_builder.Add(_grid);
+            _builder.Add(_grid);
 
             _grid.Update();
             _food.RandCoordinates();
@@ -51,8 +51,7 @@ namespace SnakeGameV3.Controllers
             Text gameOver = new("Game Over",
                                 ConsoleColor.DarkRed,
                                 _grid.Center with { X = 0 },
-                                _grid.Center with { X = _grid.Size.Width - 1 },
-                                _grid);
+                                _grid.Center with { X = _grid.Size.Width - 1 });
 
             _grid.Remove(_snake);
             _grid.Remove(_food);
