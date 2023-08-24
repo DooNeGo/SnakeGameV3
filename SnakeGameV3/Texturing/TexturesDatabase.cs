@@ -16,6 +16,7 @@ namespace SnakeGameV3.Texturing
         v,
         r,
         Space,
+        Grid
     }
 
     internal class TexturesDatabase
@@ -70,7 +71,7 @@ namespace SnakeGameV3.Texturing
                 DirectoryInfo directoryInfo = new($"..\\..\\..\\Textures\\{name}.bmp");
                 using Bitmap bitmap = (Bitmap)Image.FromFile(directoryInfo.FullName);
 
-                ConsoleColor[,] pixels = new ConsoleColor[_grid.CellSize.Height * 20, _grid.CellSize.Width * 20];
+                ConsoleColor[,] pixels = new ConsoleColor[_grid.CellSize.Height * 10, _grid.CellSize.Width * 10];
 
                 float offsetY = (float)bitmap.Size.Height / pixels.GetLength(0);
                 float offsetX = (float)bitmap.Size.Width / pixels.GetLength(1);
@@ -81,7 +82,7 @@ namespace SnakeGameV3.Texturing
                     {
                         Color pixel = bitmap.GetPixel((int)(x * offsetX), (int)(y * offsetY));
 
-                        if (pixel.R > 0 || pixel.B > 0 || pixel.G > 0)
+                        if (pixel.R == 255 && pixel.B == 255 && pixel.G == 255)
                         {
                             pixels[y, x] = ConsoleColor.White;
                         }

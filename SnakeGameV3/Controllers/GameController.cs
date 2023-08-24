@@ -1,6 +1,5 @@
 ﻿using SnakeGameV3.Model;
 using SnakeGameV3.Rendering;
-using SnakeGameV3.Texturing;
 using System.Drawing;
 using System.Numerics;
 using static SnakeGameV3.Config;
@@ -19,12 +18,9 @@ namespace SnakeGameV3.Controllers
             Size screenSize = new(ScreenWidth, ScreenHeight);
 
             _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
-            _food = new Food(_grid, 0.5f);
+            _food = new Food(_grid, 0.5f, FoodColor);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid);
-
-            _food.AddComponent(new TextureConfig(TextureName.Food, FoodColor));
-            _food.AddComponent(new ColliderConfig(ColliderType.Square));
         }
 
         public void StartGame()
@@ -37,6 +33,7 @@ namespace SnakeGameV3.Controllers
 
             _builder.Add(_food);
             _builder.Add(_snake);
+            //_builder.Add(_grid);
 
             _grid.Update();
             _food.RandCoordinates();
@@ -51,7 +48,11 @@ namespace SnakeGameV3.Controllers
                 }
             }
 
-            Text gameOver = new("Game Over", ConsoleColor.DarkRed, 2f, _grid.Center);
+            Text gameOver = new("Game Over",
+                                ConsoleColor.DarkRed,
+                                _grid.Center with { X = 0 },
+                                _grid.Center with { X = _grid.Size.Width - 1 },
+                                _grid);
 
             _grid.Remove(_snake);
             _grid.Remove(_food);

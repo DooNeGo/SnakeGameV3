@@ -1,17 +1,20 @@
 ﻿using SnakeGameV3.Interfaces;
+using SnakeGameV3.Texturing;
 using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Grid
+    internal class Grid : ICompositeObject
     {
-        private const float defaultScale = 1f;
         private const ColliderType defaultColliderType = ColliderType.Square;
 
         private readonly List<ICompositeObject> _compositeObjects = new();
         private readonly CollidersDatabase _collidersDatabase;
         private readonly Cell[,] _cells;
+        private readonly GameObject[,] _gameObjectCells;
+        private readonly TextureConfig _textureConfig;
+
 
         public Grid(Size screenSize, Size cellSize)
         {
@@ -20,7 +23,10 @@ namespace SnakeGameV3.Model
             _cells = new Cell[screenSize.Height, screenSize.Width];
             Center = new Vector2((Size.Width - 1) / 2f, (Size.Height - 1) / 2f);
             _collidersDatabase = new CollidersDatabase(this);
+            _gameObjectCells = new GameObject[Size.Height, Size.Width];
+            _textureConfig = new TextureConfig(TextureName.Grid, ConsoleColor.White);
             InitializeCells();
+            InitializeGameObjects();
         }
 
         public Size Size { get; }
@@ -28,6 +34,10 @@ namespace SnakeGameV3.Model
         public Size CellSize { get; }
 
         public Vector2 Center { get; }
+
+        public bool IsNeedToProject => false;
+
+        public float Scale => 1f;
 
         public bool IsPositionOccupied(Vector2 position, IReadOnlyGameObject? requester, float scale)
         {
@@ -141,8 +151,8 @@ namespace SnakeGameV3.Model
             Vector2 offset = new(CellSize.Width * scale - CellSize.Width,
                                  CellSize.Height * scale - CellSize.Height);
             offset /= 2f;
-            return new(MathF.Round(relativePosition.X * CellSize.Width - offset.X),
-                       MathF.Round(relativePosition.Y * CellSize.Height - offset.Y));
+            return new(relativePosition.X * CellSize.Width - offset.X,
+                       relativePosition.Y * CellSize.Height - offset.Y);
         }
 
         private void AddToGrid(Vector2 position, IReadOnlyGameObject entity, float scale)
@@ -175,30 +185,25 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private IEnumerator<Cell> GetEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester, float scale)
+        private IEnumerator<Cell> GetEachCellInPosition(Vector2 relativePosition, IReadOnlyGameObject? requester, float scale = 1f)
         {
-            ColliderConfig colliderConfig;
-
-            if (requester is not null)
+            ColliderConfig colliderConfig = requester switch
             {
-                colliderConfig = requester.GetComponent<ColliderConfig>()!;
-            }
-            else
-            {
-                scale = defaultScale;
-                colliderConfig = new ColliderConfig(defaultColliderType);
-            }
+                null => new ColliderConfig(defaultColliderType),
+                _ => requester.GetComponent<ColliderConfig>()
+                ?? new ColliderConfig(defaultColliderType),
+            };
 
             Collider collider = _collidersDatabase.GetTransformedCollider(colliderConfig, scale);
             Vector2 absolutePosition = GetAbsolutePosition(relativePosition, scale);
 
             for (var y = 0; y < collider.Size.Height; y++)
             {
-                float positionY = absolutePosition.Y + y;
+                int positionY = (int)(absolutePosition.Y + y);
 
                 for (var x = 0; x < collider.Size.Width; x++)
                 {
-                    float positionX = absolutePosition.X + x;
+                    int positionX = (int)(absolutePosition.X + x);
 
                     if (positionY >= _cells.GetLength(0)
                         || positionX >= _cells.GetLength(1)
@@ -207,7 +212,7 @@ namespace SnakeGameV3.Model
                         || !collider.GetValue(x, y))
                         continue;
 
-                    yield return _cells[(int)positionY, (int)positionX];
+                    yield return _cells[positionY, positionX];
                 }
             }
         }
@@ -219,6 +224,27 @@ namespace SnakeGameV3.Model
             while (enumerator.MoveNext())
             {
                 action(enumerator.Current);
+            }
+        }
+
+        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
+        {
+            foreach (GameObject gameObject in _gameObjectCells)
+            {
+                if (gameObject.GetComponent<T>() is not null)
+                    yield return gameObject;
+            }
+        }
+
+        private void InitializeGameObjects()
+        {
+            for (var y = 0; y < Size.Height; y++)
+            {
+                for (var x = 0; x < Size.Width; x++)
+                {
+                    _gameObjectCells[y, x] = new GameObject(new Vector2(x, y));
+                    _gameObjectCells[y, x].AddComponent(_textureConfig);
+                }    
             }
         }
 

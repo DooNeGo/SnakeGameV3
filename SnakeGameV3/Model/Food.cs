@@ -1,4 +1,5 @@
 ﻿using SnakeGameV3.Interfaces;
+using SnakeGameV3.Texturing;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
@@ -8,11 +9,14 @@ namespace SnakeGameV3.Model
         private readonly Random _random = new();
         private readonly Grid _grid;
 
-        public Food(Grid grid, float scale) :
+        public Food(Grid grid, float scale, ConsoleColor color) :
             base(Vector2.Zero)
         {
             _grid = grid;
             Scale = scale;
+
+            AddComponent(new TextureConfig(TextureName.Food, color));
+            AddComponent(new ColliderConfig(ColliderType.Square));
         }
 
         public bool IsNeedToProject => false;

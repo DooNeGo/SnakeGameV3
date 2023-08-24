@@ -38,11 +38,11 @@ namespace SnakeGameV3.Rendering
         {
             for (var y = 0; y < texture.Size.Height; y++)
             {
-                float positionY = position.Y + y;
+                int positionY = (int)(position.Y + y);
 
                 for (var x = 0; x < texture.Size.Width; x++)
                 {
-                    float positionX = position.X + x;
+                    int positionX = (int)(position.X + x);
 
                     if (positionY >= _frame.GetLength(0)
                         || positionX >= _frame.GetLength(1)
@@ -51,7 +51,7 @@ namespace SnakeGameV3.Rendering
                         || texture.GetPixel(x, y) == 0)
                         continue;
 
-                    _frame[(int)positionY, (int)positionX] = texture.GetPixel(x, y);
+                    _frame[positionY, positionX] = texture.GetPixel(x, y);
                 }
             }
         }

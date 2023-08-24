@@ -8,9 +8,7 @@ namespace SnakeGameV3.Model
     {
         private readonly List<GameObject> _body = new();
         private readonly Grid _grid;
-        private readonly TextureConfig _headTextureConfig;
         private readonly TextureConfig _bodyTextureConfig;
-        private readonly ColliderConfig _headColliderConfig;
         private readonly ColliderConfig _bodyColliderConfig;
 
         private DateTime _lastMoveTime;
@@ -19,19 +17,15 @@ namespace SnakeGameV3.Model
         {
             MoveSpeed = speed;
             _grid = grid;
-
-            _headTextureConfig = new TextureConfig(TextureName.SnakeHead, headColor);
             _bodyTextureConfig = new TextureConfig(TextureName.SnakeBody, bodyColor);
-
-            _headColliderConfig = new ColliderConfig(ColliderType.Circle);
             _bodyColliderConfig = new ColliderConfig(ColliderType.Circle);
 
             GameObject head = new(startPosition);
             GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale });
             GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale });
 
-            head.AddComponent(_headTextureConfig);
-            head.AddComponent(_headColliderConfig);
+            head.AddComponent(new TextureConfig(TextureName.SnakeHead, headColor));
+            head.AddComponent(new ColliderConfig(ColliderType.Circle));
             bodyPart1.AddComponent(_bodyTextureConfig);
             bodyPart2.AddComponent(_bodyTextureConfig);
             bodyPart2.AddComponent(_bodyColliderConfig);
@@ -49,7 +43,7 @@ namespace SnakeGameV3.Model
 
         public bool IsDied { get; private set; } = false;
 
-        public float Scale { get; private set; } = 1.0f;
+        public float Scale { get; private set; } = 1f;
 
         public bool IsNeedToProject => true;
 
@@ -68,7 +62,7 @@ namespace SnakeGameV3.Model
             for (var i = 3; i < _body.Count; i++)
             {
                 if (_body[i].GetComponent<ColliderConfig>() is null
-                    && Vector2.Distance(_body[i].Position, _body[i - 1].Position) <= 0.8f * Scale)
+                    && Vector2.Distance(_body[i].Position, _body[i - 1].Position) <= 0.7f * Scale)
                 {
                     _body[i].AddComponent(_bodyColliderConfig);
                 }

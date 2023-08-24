@@ -2,8 +2,8 @@
 {
     internal class Config
     {
-        public const int ScreenHeight = 96;
-        public const int ScreenWidth = 240;
+        public const int ScreenHeight = GridCellHeight * 9;
+        public const int ScreenWidth = GridCellWidth * 16;
 
         public const int GridCellHeight = (int)(ConsoleCharWidth * Scale);
         public const int GridCellWidth = (int)(ConsoleCharHeight * Scale);
@@ -11,7 +11,7 @@
         public const int ConsoleCharHeight = 6;
         public const int ConsoleCharWidth = 4;
 
-        public const float Scale = 2f;
+        public const float Scale = 2.5f;
 
         public const ConsoleColor SnakeHeadColor = ConsoleColor.DarkYellow;
         public const ConsoleColor SnakeBodyColor = ConsoleColor.Yellow;
