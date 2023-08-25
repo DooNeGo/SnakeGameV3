@@ -60,14 +60,15 @@ namespace SnakeGameV3.Rendering
                 while (enumerator.MoveNext())
                 {
                     IReadOnlyGameObject gameObject = enumerator.Current;
-                    Vector2 position = gameObject.Position;
+                    Vector2 position = entity.IsNeedToProject switch
+                    {
+                        true => _grid.Project(gameObject.Position),
+                        false => gameObject.Position
+                    };
 
-                    if (entity.IsNeedToProject)
-                        position = _grid.Project(position);
+                    position = _grid.GetAbsolutePosition(position, gameObject.Scale);
 
-                    position = _grid.GetAbsolutePosition(position, entity.Scale);
-
-                    Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!, entity.Scale);
+                    Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!, gameObject.Scale);
                     _frames[_activeFrame].Add(position, texture);
                 }
             }

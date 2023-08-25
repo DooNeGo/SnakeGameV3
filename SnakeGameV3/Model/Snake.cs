@@ -9,7 +9,9 @@ namespace SnakeGameV3.Model
         private readonly List<GameObject> _body = new();
         private readonly Grid _grid;
         private readonly TextureConfig _bodyTextureConfig;
+
         private float _scale = 1f;
+        private int _lastColliderIndex;
 
         private DateTime _lastMoveTime;
 
@@ -18,16 +20,17 @@ namespace SnakeGameV3.Model
             MoveSpeed = speed;
             _grid = grid;
             _bodyTextureConfig = new TextureConfig(TextureName.SnakeBody, bodyColor);
+            _lastColliderIndex = 3;
 
             GameObject head = new(startPosition, Scale);
             GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale }, Scale);
             GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale }, Scale);
 
-            Collider collider = new(ColliderType.Circle, head);
-            collider.OnCollisionEntry(OnCollisionEnter);
+            Collider headCollider = new(ColliderType.Circle, head);
+            headCollider.CollisionEntry += OnCollisionEnter;
 
             head.AddComponent(new TextureConfig(TextureName.SnakeHead, headColor));
-            head.AddComponent(collider);
+            head.AddComponent(headCollider);
             bodyPart1.AddComponent(_bodyTextureConfig);
             bodyPart2.AddComponent(_bodyTextureConfig);
             bodyPart2.AddComponent(new Collider(ColliderType.Circle, bodyPart2));
@@ -70,13 +73,18 @@ namespace SnakeGameV3.Model
                 return;
 
             ApplyOffsets(CalculateOffsets(nextPosition));
+            CheckColliders();
+        }
 
-            for (var i = 3; i < _body.Count; i++)
+        private void CheckColliders()
+        {
+            for (int i = _lastColliderIndex + 1; i < _body.Count; i++)
             {
                 if (_body[i].GetComponent<Collider>() is null
                     && Vector2.Distance(_body[i].Position, _body[i - 1].Position) <= 0.7f * Scale)
                 {
                     _body[i].AddComponent(new Collider(ColliderType.Circle, _body[i]));
+                    _lastColliderIndex = i;
                 }
             }
         }
@@ -101,21 +109,15 @@ namespace SnakeGameV3.Model
             Head.Position += offsets[0];
 
             for (var i = 1; i < offsets.Length; i++)
-            {
                 _body[i].Position += offsets[i] * offsets[0].Length();
-            }
         }
 
         private void OnCollisionEnter(Collider collider)
         {
             if (collider.Parent is Food food)
-            {
                 Eat(food);
-            }
             else
-            {
                 IsDied = true;
-            }
         }
 
         private void Eat(Food food)
@@ -125,33 +127,11 @@ namespace SnakeGameV3.Model
             Vector2 projectionOnTheEdge = _grid.GetTheClosestProjectionOnTheEdge(tailProjection);
 
             GameObject newBodyPart = new(projectionOnTheEdge + offset, Scale);
-
             newBodyPart.AddComponent(_bodyTextureConfig);
 
             _body.Add(newBodyPart);
-
             food.RandCoordinates();
         }
-
-        //private void CheckPosition(Vector2 position)
-        //{
-        //    Vector2 projection = _grid.Project(position);
-        //    IEnumerator<IReadOnlyGameObject> enumerator = _grid.GetEachObjectInPosition(projection, Head, Scale);
-
-        //    while (enumerator.MoveNext())
-        //    {
-        //        if (enumerator.Current is Food food)
-        //        {
-        //            Eat(food);
-        //            break;
-        //        }
-        //        else
-        //        {
-        //            IsDied = true;
-        //            break;
-        //        }
-        //    }
-        //}
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
         {

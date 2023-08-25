@@ -1,6 +1,6 @@
 ﻿namespace SnakeGameV3
 {
-    internal abstract record Component
+    internal abstract class Component
     {
     }
 }

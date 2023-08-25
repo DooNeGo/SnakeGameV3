@@ -22,10 +22,10 @@ namespace SnakeGameV3.Model
 
         public void RandCoordinates()
         {
-            //do
-            //{
+            do
+            {
                 Position = new Vector2(_random.Next(1, _grid.Size.Width - 2), _random.Next(1, _grid.Size.Height - 2));
-            //} while (_grid.IsPositionOccupied(Position, this, Scale));
+            } while (_grid.IsPositionOccupied(Position, Scale));
         }
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()

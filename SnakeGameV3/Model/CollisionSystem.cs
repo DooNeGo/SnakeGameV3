@@ -1,4 +1,5 @@
 ﻿using SnakeGameV3.Interfaces;
+using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
@@ -42,10 +43,16 @@ namespace SnakeGameV3.Model
         {
             for (var i = 0; i < _colliders.Count - 1; i++)
             {
+                float distanceToEdge1 = _colliders[i].GetDistanceToEdge(_colliders[i + 1]);
+
                 for (var j = i + 1; j < _colliders.Count; j++)
                 {
-                    if (_colliders[i].CheckCollision(_colliders[j]))
+                    float distanceToEdge2 = _colliders[j].GetDistanceToEdge(_colliders[i]);
+                    float distanceBeetween = Vector2.Distance(_colliders[i].Parent.Position, _colliders[j].Parent.Position);
+
+                    if (distanceToEdge1 + distanceToEdge2 >= distanceBeetween)
                     {
+                        _colliders[i].GetCollision(_colliders[j]);
                         _colliders[j].GetCollision(_colliders[i]);
                     }
                 }

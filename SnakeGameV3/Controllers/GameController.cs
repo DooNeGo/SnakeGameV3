@@ -54,9 +54,9 @@ namespace SnakeGameV3.Controllers
             }
 
             Text gameOver = new("Game Over",
-                                ConsoleColor.DarkRed,
-                                _grid.Center with { X = 0 },
-                                _grid.Center with { X = _grid.Size.Width - 1 });
+                ConsoleColor.DarkRed,
+                _grid.Center with { X = 0 },
+                _grid.Center with { X = _grid.Size.Width - 1 });
 
             _grid.Remove(_snake);
             _grid.Remove(_food);

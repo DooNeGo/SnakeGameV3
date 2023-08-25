@@ -9,9 +9,9 @@ namespace SnakeGameV3
         Circle
     }
 
-    internal record Collider : Component
+    internal class Collider : Component
     {
-        private event Action<Collider>? CollisionEntry;
+        public event Action<Collider>? CollisionEntry;
 
         public Collider(ColliderType colliderType, IReadOnlyGameObject parent)
         {
@@ -19,29 +19,9 @@ namespace SnakeGameV3
             Parent = parent;
         }
 
-        public ColliderType Type { get; init; }
+        public ColliderType Type { get; }
 
-        public IReadOnlyGameObject Parent { get; init; }
-
-        public void OnCollisionEntry(Action<Collider> action)
-        {
-            CollisionEntry += action;
-        }
-
-        public bool CheckCollision(Collider collider)
-        {
-            float distanceToEdge1 = GetDistanceToEdge(collider);
-            float distanceToEdge2 = collider.GetDistanceToEdge(this);
-            float distanceBeetween = Vector2.Distance(Parent.Position, collider.Parent.Position);
-
-            if (distanceToEdge1 + distanceToEdge2 >= distanceBeetween)
-            {
-                CollisionEntry?.Invoke(collider);
-                return true;
-            }
-
-            return false;
-        }
+        public IReadOnlyGameObject Parent { get; }
 
         public void GetCollision(Collider collider)
         {
@@ -57,31 +37,10 @@ namespace SnakeGameV3
             else if (Type == ColliderType.Square)
             {
                 Vector2 VectorToCollider = Vector2.Normalize(Parent.Position - collider.Parent.Position);
-                Vector2 UnitVector = Vector2.Zero;
 
-                if (VectorToCollider.X >= 0
-                    && VectorToCollider.Y >= 0)
-                {
-                    UnitVector = Vector2.UnitY;
-                }
-                else if (VectorToCollider.X >= 0
-                    && VectorToCollider.Y <= 0)
-                {
-                    UnitVector = -Vector2.UnitY;
-                }
-                else if (VectorToCollider.X < 0
-                    && VectorToCollider.Y < 0)
-                {
-                    UnitVector = -Vector2.UnitY;
-                }
-                else if (VectorToCollider.X < 0
-                    && VectorToCollider.Y > 0)
-                {
-                    UnitVector = Vector2.UnitY;
-                }
-
-                float cosBeetweenVectors = Vector2.Dot(UnitVector, VectorToCollider);
+                float cosBeetweenVectors = Vector2.Dot(Vector2.UnitY, VectorToCollider);
                 float angleBeetweenVectors = MathF.Acos(cosBeetweenVectors);
+
                 return Parent.Scale / 2 * MathF.Sin(angleBeetweenVectors);
             }
             else
