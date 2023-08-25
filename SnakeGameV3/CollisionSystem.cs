@@ -1,7 +1,7 @@
 ﻿using SnakeGameV3.Interfaces;
 using System.Numerics;
 
-namespace SnakeGameV3.Model
+namespace SnakeGameV3
 {
     internal class CollisionSystem
     {

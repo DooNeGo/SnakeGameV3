@@ -1,4 +1,4 @@
-﻿namespace SnakeGameV3.Model
+﻿namespace SnakeGameV3
 {
     internal class Indexer
     {
