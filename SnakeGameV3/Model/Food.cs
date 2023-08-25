@@ -10,25 +10,22 @@ namespace SnakeGameV3.Model
         private readonly Grid _grid;
 
         public Food(Grid grid, float scale, ConsoleColor color) :
-            base(Vector2.Zero)
+            base(Vector2.Zero, scale)
         {
             _grid = grid;
-            Scale = scale;
 
             AddComponent(new TextureConfig(TextureName.Food, color));
-            AddComponent(new ColliderConfig(ColliderType.Square));
+            AddComponent(new Collider(ColliderType.Square, this));
         }
 
-        public bool IsNeedToProject => false;
-
-        public float Scale { get; }
+        public bool IsNeedToProject => true;
 
         public void RandCoordinates()
         {
-            do
-            {
+            //do
+            //{
                 Position = new Vector2(_random.Next(1, _grid.Size.Width - 2), _random.Next(1, _grid.Size.Height - 2));
-            } while (_grid.IsPositionOccupied(Position, this, Scale));
+            //} while (_grid.IsPositionOccupied(Position, this, Scale));
         }
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()

@@ -9,7 +9,7 @@ namespace SnakeGameV3.Model
         private readonly List<GameObject> _body = new();
         private readonly Grid _grid;
         private readonly TextureConfig _bodyTextureConfig;
-        private readonly ColliderConfig _bodyColliderConfig;
+        private float _scale = 1f;
 
         private DateTime _lastMoveTime;
 
@@ -18,17 +18,19 @@ namespace SnakeGameV3.Model
             MoveSpeed = speed;
             _grid = grid;
             _bodyTextureConfig = new TextureConfig(TextureName.SnakeBody, bodyColor);
-            _bodyColliderConfig = new ColliderConfig(ColliderType.Circle);
 
-            GameObject head = new(startPosition);
-            GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale });
-            GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale });
+            GameObject head = new(startPosition, Scale);
+            GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale }, Scale);
+            GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale }, Scale);
+
+            Collider collider = new(ColliderType.Circle, head);
+            collider.OnCollisionEntry(OnCollisionEnter);
 
             head.AddComponent(new TextureConfig(TextureName.SnakeHead, headColor));
-            head.AddComponent(new ColliderConfig(ColliderType.Circle));
+            head.AddComponent(collider);
             bodyPart1.AddComponent(_bodyTextureConfig);
             bodyPart2.AddComponent(_bodyTextureConfig);
-            bodyPart2.AddComponent(_bodyColliderConfig);
+            bodyPart2.AddComponent(new Collider(ColliderType.Circle, bodyPart2));
 
             _body.Add(head);
             _body.Add(bodyPart1);
@@ -43,7 +45,18 @@ namespace SnakeGameV3.Model
 
         public bool IsDied { get; private set; } = false;
 
-        public float Scale { get; private set; } = 1f;
+        public float Scale
+        {
+            get { return _scale; }
+            set
+            {
+                _scale = value;
+                foreach (GameObject body in _body)
+                {
+                    body.Scale = _scale;
+                }
+            }
+        }
 
         public bool IsNeedToProject => true;
 
@@ -56,15 +69,14 @@ namespace SnakeGameV3.Model
             if (nextPosition == Position)
                 return;
 
-            CheckPosition(nextPosition);
             ApplyOffsets(CalculateOffsets(nextPosition));
 
             for (var i = 3; i < _body.Count; i++)
             {
-                if (_body[i].GetComponent<ColliderConfig>() is null
+                if (_body[i].GetComponent<Collider>() is null
                     && Vector2.Distance(_body[i].Position, _body[i - 1].Position) <= 0.7f * Scale)
                 {
-                    _body[i].AddComponent(_bodyColliderConfig);
+                    _body[i].AddComponent(new Collider(ColliderType.Circle, _body[i]));
                 }
             }
         }
@@ -94,13 +106,25 @@ namespace SnakeGameV3.Model
             }
         }
 
+        private void OnCollisionEnter(Collider collider)
+        {
+            if (collider.Parent is Food food)
+            {
+                Eat(food);
+            }
+            else
+            {
+                IsDied = true;
+            }
+        }
+
         private void Eat(Food food)
         {
             Vector2 tailProjection = _grid.Project(_body[^1].Position);
             Vector2 offset = new(_body[^1].Position.X - tailProjection.X, _body[^1].Position.Y - tailProjection.Y);
             Vector2 projectionOnTheEdge = _grid.GetTheClosestProjectionOnTheEdge(tailProjection);
 
-            GameObject newBodyPart = new(projectionOnTheEdge + offset);
+            GameObject newBodyPart = new(projectionOnTheEdge + offset, Scale);
 
             newBodyPart.AddComponent(_bodyTextureConfig);
 
@@ -109,25 +133,25 @@ namespace SnakeGameV3.Model
             food.RandCoordinates();
         }
 
-        private void CheckPosition(Vector2 position)
-        {
-            Vector2 projection = _grid.Project(position);
-            IEnumerator<IReadOnlyGameObject> enumerator = _grid.GetEachObjectInPosition(projection, Head, Scale);
+        //private void CheckPosition(Vector2 position)
+        //{
+        //    Vector2 projection = _grid.Project(position);
+        //    IEnumerator<IReadOnlyGameObject> enumerator = _grid.GetEachObjectInPosition(projection, Head, Scale);
 
-            while (enumerator.MoveNext())
-            {
-                if (enumerator.Current is Food food)
-                {
-                    Eat(food);
-                    break;
-                }
-                else
-                {
-                    IsDied = true;
-                    break;
-                }
-            }
-        }
+        //    while (enumerator.MoveNext())
+        //    {
+        //        if (enumerator.Current is Food food)
+        //        {
+        //            Eat(food);
+        //            break;
+        //        }
+        //        else
+        //        {
+        //            IsDied = true;
+        //            break;
+        //        }
+        //    }
+        //}
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
         {

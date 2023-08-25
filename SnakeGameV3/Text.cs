@@ -23,7 +23,7 @@ namespace SnakeGameV3
             _letters = new GameObject[text.Length];
             float distanceBeetweenStartAndEnd = end.X - start.X;
             Scale = distanceBeetweenStartAndEnd / text.Length;
-            _textPosition = start with { X = start.X + distanceBeetweenStartAndEnd / 2};
+            _textPosition = start with { X = start.X + distanceBeetweenStartAndEnd / 2 };
             InitializeLetters(text, color);
         }
 
@@ -53,7 +53,7 @@ namespace SnakeGameV3
 
                 TextureConfig textureInfo = new(Enum.Parse<TextureName>(textureName), color);
 
-                _letters[i] = new GameObject(position);
+                _letters[i] = new GameObject(position, Scale);
                 _letters[i].AddComponent(textureInfo);
             }
         }

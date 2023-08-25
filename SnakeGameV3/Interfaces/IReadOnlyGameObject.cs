@@ -2,7 +2,7 @@
 
 namespace SnakeGameV3.Interfaces
 {
-    internal interface IReadOnlyGameObject
+    internal interface IReadOnlyGameObject : IScalable
     {
         public Vector2 Position { get; }
 

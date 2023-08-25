@@ -12,6 +12,7 @@ namespace SnakeGameV3.Controllers
         private readonly Food _food;
         private readonly Snake _snake;
         private readonly ConsoleFrameBuilder _builder;
+        private readonly CollisionSystem _collisionSystem;
 
         public GameController()
         {
@@ -21,6 +22,7 @@ namespace SnakeGameV3.Controllers
             _food = new Food(_grid, 0.5f, FoodColor);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid);
+            _collisionSystem = new CollisionSystem();
         }
 
         public void StartGame()
@@ -28,12 +30,15 @@ namespace SnakeGameV3.Controllers
             PhysicsMovement snakeMovement = new(_snake);
             KeyboardInput input = new(snakeMovement);
 
+            _collisionSystem.Add(_snake);
+            _collisionSystem.Add(_food);
+
             _grid.Add(_snake);
             _grid.Add(_food);
 
             _builder.Add(_food);
             _builder.Add(_snake);
-            _builder.Add(_grid);
+            //_builder.Add(_grid);
 
             _grid.Update();
             _food.RandCoordinates();
@@ -44,7 +49,7 @@ namespace SnakeGameV3.Controllers
                 {
                     _builder.Update();
                     input.Update();
-                    _grid.Update();
+                    _collisionSystem.Update();
                 }
             }
 
