@@ -48,8 +48,8 @@ namespace SnakeGameV3.Controllers
                 {
                     input.Update();
                     _builder.Update();
-                    _collisionSystem.Update();
                 }
+                _collisionSystem.Update();
             }
 
             Text gameOver = new("Game Over",
