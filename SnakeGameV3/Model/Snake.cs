@@ -26,14 +26,14 @@ namespace SnakeGameV3.Model
             GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale }, Scale);
             GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale }, Scale);
 
-            Collider headCollider = new(ColliderType.Circle, head);
+            Collider headCollider = new(ColliderType.Square, head);
             headCollider.CollisionEntry += OnCollisionEnter;
 
-            head.AddComponent(new TextureConfig(TextureName.SnakeHead, headColor));
+            head.AddComponent(new TextureConfig(TextureName.Food, headColor));
             head.AddComponent(headCollider);
             bodyPart1.AddComponent(_bodyTextureConfig);
             bodyPart2.AddComponent(_bodyTextureConfig);
-            bodyPart2.AddComponent(new Collider(ColliderType.Circle, bodyPart2));
+            //bodyPart2.AddComponent(new Collider(ColliderType.Circle, bodyPart2));
 
             _body.Add(head);
             _body.Add(bodyPart1);

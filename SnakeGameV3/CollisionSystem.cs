@@ -43,10 +43,9 @@ namespace SnakeGameV3
         {
             for (var i = 0; i < _colliders.Count - 1; i++)
             {
-                float distanceToEdge1 = _colliders[i].GetDistanceToEdge(_colliders[i + 1]);
-
                 for (var j = i + 1; j < _colliders.Count; j++)
                 {
+                    float distanceToEdge1 = _colliders[i].GetDistanceToEdge(_colliders[j]);
                     float distanceToEdge2 = _colliders[j].GetDistanceToEdge(_colliders[i]);
                     float distanceBeetween = Vector2.Distance(_colliders[i].Position, _colliders[j].Position);
 
