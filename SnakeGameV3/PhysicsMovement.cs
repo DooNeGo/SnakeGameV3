@@ -19,13 +19,16 @@ namespace SnakeGameV3
         {
             Vector2 offset = Vector2.Zero;
 
-            //if ((int)_lastSmoothDirection.X == _lastDirection.X
-            //    && (int)_lastSmoothDirection.Y == _lastDirection.Y)
-            //    _lastDirection = direction;
-
-            if (direction != Vector2.Zero)
+            if (MathF.Abs(_lastSmoothDirection.X - _lastDirection.X) < 2e-3
+                && (MathF.Abs(_lastSmoothDirection.Y - _lastDirection.Y) < 2e-3)
+                && direction != -_lastDirection)
             {
-                _lastSmoothDirection = Vector2.Normalize(_lastSmoothDirection + direction / (10 / _body.MoveSpeed));
+                _lastDirection = direction;
+            }
+
+            if (_lastDirection != Vector2.Zero)
+            {
+                _lastSmoothDirection = Vector2.Normalize(_lastSmoothDirection + _lastDirection / (15 / _body.MoveSpeed));
                 offset = _lastSmoothDirection * (float)(_body.MoveSpeed * _body.DeltaTime.TotalSeconds);
             }
 

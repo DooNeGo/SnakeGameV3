@@ -105,7 +105,7 @@ namespace SnakeGameV3.Model
         {
             Vector2 offset = new(CellSize.Width * scale - CellSize.Width,
                                  CellSize.Height * scale - CellSize.Height);
-            offset /= 2f;
+            offset /= 2;
             return new(relativePosition.X * CellSize.Width - offset.X,
                        relativePosition.Y * CellSize.Height - offset.Y);
         }
@@ -121,6 +121,12 @@ namespace SnakeGameV3.Model
 
         private void AddToGrid(IReadOnlyGameObject gameObject)
         {
+            if (gameObject.Position.X >= _cells.GetLength(1)
+                || gameObject.Position.Y >= _cells.GetLength(0)
+                || gameObject.Position.X < 0
+                || gameObject.Position.Y < 0)
+                return;
+
             _cells[(int)gameObject.Position.Y, (int)gameObject.Position.X] = true;
         }
 
