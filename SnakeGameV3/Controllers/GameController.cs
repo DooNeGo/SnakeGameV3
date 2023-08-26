@@ -41,14 +41,13 @@ namespace SnakeGameV3.Controllers
             //_builder.Add(_grid);
 
             _grid.Update();
-            _food.RandCoordinates();
 
             while (!_snake.IsDied)
             {
                 if (_builder.DeltaTime.TotalMilliseconds >= FrameDelay)
                 {
-                    _builder.Update();
                     input.Update();
+                    _builder.Update();
                     _collisionSystem.Update();
                 }
             }

@@ -21,9 +21,11 @@ namespace SnakeGameV3
 
         public ColliderType Type { get; }
 
+        public Vector2 Position => Parent.Position;
+
         public IReadOnlyGameObject Parent { get; }
 
-        public void GetCollision(Collider collider)
+        public void InvokeCollision(Collider collider)
         {
             CollisionEntry?.Invoke(collider);
         }
@@ -36,12 +38,17 @@ namespace SnakeGameV3
             }
             else if (Type == ColliderType.Square)
             {
-                Vector2 VectorToCollider = Vector2.Normalize(Parent.Position - collider.Parent.Position);
+                Vector2 VectorToCollider = Vector2.Normalize(Position - collider.Position);
+                Vector2 UnitVector;
 
-                float cosBeetweenVectors = Vector2.Dot(Vector2.UnitY, VectorToCollider);
-                float angleBeetweenVectors = MathF.Acos(cosBeetweenVectors);
+                if (MathF.Abs(VectorToCollider.X) > MathF.Abs(VectorToCollider.Y))
+                    UnitVector = Vector2.UnitX;
+                else
+                    UnitVector = Vector2.UnitY;
 
-                return Parent.Scale / 2 * MathF.Sin(angleBeetweenVectors);
+                float cosBeetweenVectors = Vector2.Dot(UnitVector, VectorToCollider);
+
+                return Parent.Scale / 2 / MathF.Abs(cosBeetweenVectors);
             }
             else
             {

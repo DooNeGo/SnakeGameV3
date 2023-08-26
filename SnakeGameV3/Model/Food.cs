@@ -14,13 +14,26 @@ namespace SnakeGameV3.Model
         {
             _grid = grid;
 
+            Collider collider = new(ColliderType.Square, this);
+            collider.CollisionEntry += OnCollisionEnter;
+
             AddComponent(new TextureConfig(TextureName.Food, color));
-            AddComponent(new Collider(ColliderType.Square, this));
+            AddComponent(collider);
+
+            RandCoordinates();
         }
 
         public bool IsNeedToProject => true;
 
-        public void RandCoordinates()
+        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
+        {
+            if (GetComponent<T>() is not null)
+            {
+                yield return this;
+            }
+        }
+
+        private void RandCoordinates()
         {
             do
             {
@@ -28,12 +41,9 @@ namespace SnakeGameV3.Model
             } while (_grid.IsPositionOccupied(Position, Scale));
         }
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
+        private void OnCollisionEnter(Collider collider)
         {
-            if (GetComponent<T>() != null)
-            {
-                yield return this;
-            }
+            RandCoordinates();
         }
     }
 }

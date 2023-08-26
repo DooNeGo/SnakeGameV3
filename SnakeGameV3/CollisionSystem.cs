@@ -48,12 +48,12 @@ namespace SnakeGameV3
                 for (var j = i + 1; j < _colliders.Count; j++)
                 {
                     float distanceToEdge2 = _colliders[j].GetDistanceToEdge(_colliders[i]);
-                    float distanceBeetween = Vector2.Distance(_colliders[i].Parent.Position, _colliders[j].Parent.Position);
+                    float distanceBeetween = Vector2.Distance(_colliders[i].Position, _colliders[j].Position);
 
-                    if (distanceToEdge1 + distanceToEdge2 >= distanceBeetween)
+                    if (distanceBeetween <= distanceToEdge1 + distanceToEdge2)
                     {
-                        _colliders[i].GetCollision(_colliders[j]);
-                        _colliders[j].GetCollision(_colliders[i]);
+                        _colliders[i].InvokeCollision(_colliders[j]);
+                        _colliders[j].InvokeCollision(_colliders[i]);
                     }
                 }
             }
