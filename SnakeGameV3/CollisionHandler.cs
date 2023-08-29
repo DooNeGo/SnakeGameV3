@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace SnakeGameV3
 {
-    internal class CollisionSystem
+    internal class CollisionHandler
     {
         private readonly List<ICompositeObject> _compositeObjects = new();
         private readonly List<Collider> _colliders = new();

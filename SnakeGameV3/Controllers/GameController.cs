@@ -12,17 +12,17 @@ namespace SnakeGameV3.Controllers
         private readonly Food _food;
         private readonly Snake _snake;
         private readonly ConsoleFrameBuilder _builder;
-        private readonly CollisionSystem _collisionSystem;
+        private readonly CollisionHandler _collisionHandler;
 
         public GameController()
         {
             Size screenSize = new(ScreenWidth, ScreenHeight);
 
             _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
-            _food = new Food(_grid, 1f, FoodColor);
+            _food = new Food(_grid, 0.5f, FoodColor);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid);
-            _collisionSystem = new CollisionSystem();
+            _collisionHandler = new CollisionHandler();
         }
 
         public void StartGame()
@@ -30,8 +30,8 @@ namespace SnakeGameV3.Controllers
             PhysicsMovement snakeMovement = new(_snake);
             KeyboardInput input = new(snakeMovement);
 
-            _collisionSystem.Add(_snake);
-            _collisionSystem.Add(_food);
+            _collisionHandler.Add(_snake);
+            _collisionHandler.Add(_food);
 
             _grid.Add(_snake);
             _grid.Add(_food);
@@ -49,7 +49,7 @@ namespace SnakeGameV3.Controllers
                     input.Update();
                     _builder.Update();
                 }
-                _collisionSystem.Update();
+                _collisionHandler.Update();
             }
 
             Text gameOver = new("Game Over",
