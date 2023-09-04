@@ -2,7 +2,6 @@
 using SnakeGameV3.Model;
 using SnakeGameV3.Texturing;
 using System.Drawing;
-using System.Numerics;
 
 namespace SnakeGameV3.Rendering
 {
@@ -11,7 +10,6 @@ namespace SnakeGameV3.Rendering
         private const char ConsolePixel = '█';
 
         private readonly ConsoleFrame[] _frames;
-        private readonly List<ICompositeObject> _entities = new();
         private readonly TexturesDatabase _textureDatabase;
         private readonly Grid _grid;
 
@@ -20,16 +18,19 @@ namespace SnakeGameV3.Rendering
 
         private DateTime _lastFrameTime;
 
-        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, Grid grid)
+        public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, Grid grid, Scene initialScene)
         {
+            _grid = grid;
+            ActiveScene = initialScene;
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(screenSize, backgroundColor);
             _frames[1] = new ConsoleFrame(screenSize, backgroundColor);
-            _grid = grid;
             _textureDatabase = new TexturesDatabase(_grid);
         }
 
         public TimeSpan DeltaTime => DateTime.UtcNow - _lastFrameTime;
+
+        public Scene ActiveScene { get; set; }
 
         public void Update()
         {
@@ -39,46 +40,25 @@ namespace SnakeGameV3.Rendering
             DrawImage();
         }
 
-        public void Add(ICompositeObject gameObject)
-        {
-            _entities.Add(gameObject);
-        }
-
-        public void Remove(ICompositeObject gameObject)
-        {
-            _entities.Remove(gameObject);
-        }
-
         private void BuildImage()
         {
             _frames[_activeFrame].Clear();
 
-            foreach (ICompositeObject entity in _entities)
+            IEnumerator<IReadOnlyGameObject> enumerator = ActiveScene.GetGameObjectsWithComponent<TextureConfig>();
+
+            while (enumerator.MoveNext())
             {
-                IEnumerator<IReadOnlyGameObject> enumerator = entity.GetGameObjectsWithComponent<TextureConfig>();
-
-                while (enumerator.MoveNext())
-                {
-                    IReadOnlyGameObject gameObject = enumerator.Current;
-                    Vector2 position = entity.IsNeedToProject switch
-                    {
-                        true => _grid.Project(gameObject.Position),
-                        false => gameObject.Position
-                    };
-
-                    position = _grid.GetAbsolutePosition(position, gameObject.Scale);
-
-                    Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!, gameObject.Scale);
-                    _frames[_activeFrame].Add(position, texture);
-                }
+                IReadOnlyGameObject gameObject = enumerator.Current;
+                Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!, gameObject.Scale);
+                _frames[_activeFrame].Add(_grid.GetAbsolutePosition(gameObject.Position, gameObject.Scale), texture);
             }
         }
 
         private void DrawImage()
         {
-            for (var y = 0; y < _frames[_activeFrame].Size.Height; y++)
+            for (var y = 0; y < _frames[_activeFrame].Height; y++)
             {
-                for (var x = 0; x < _frames[_activeFrame].Size.Width; x++)
+                for (var x = 0; x < _frames[_activeFrame].Width; x++)
                 {
                     if (_frames[_activeFrame].GetPixel(x, y) != _frames[_inactiveFrame].GetPixel(x, y))
                     {

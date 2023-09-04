@@ -9,8 +9,8 @@ namespace SnakeGameV3.Model
         private readonly Random _random = new();
         private readonly Grid _grid;
 
-        public Food(Grid grid, float scale, ConsoleColor color) :
-            base(Vector2.Zero, scale)
+        public Food(Grid grid, float scale, ConsoleColor color, Indexer indexer) :
+            base(Vector2.Zero, scale, indexer.GetUniqueIndex())
         {
             _grid = grid;
 
@@ -25,7 +25,7 @@ namespace SnakeGameV3.Model
 
         public bool IsNeedToProject => true;
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
+        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
             if (GetComponent<T>() is not null)
             {
@@ -41,7 +41,7 @@ namespace SnakeGameV3.Model
             } while (_grid.IsPositionOccupied(Position, Scale));
         }
 
-        private void OnCollisionEnter(Collider collider)
+        private void OnCollisionEnter(IReadOnlyGameObject gameObject)
         {
             RandCoordinates();
         }

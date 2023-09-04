@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace SnakeGameV3.Texturing
+﻿namespace SnakeGameV3.Texturing
 {
     internal class Texture
     {
@@ -9,10 +7,11 @@ namespace SnakeGameV3.Texturing
         public Texture(ConsoleColor[,] pixels)
         {
             _pixels = pixels;
-            Size = new Size(_pixels.GetLength(1), _pixels.GetLength(0));
         }
 
-        public Size Size { get; }
+        public int Width => _pixels.GetLength(1);
+
+        public int Height => _pixels.GetLength(0);
 
         public ConsoleColor GetPixel(int x, int y)
         {

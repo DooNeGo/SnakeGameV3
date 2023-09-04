@@ -42,8 +42,8 @@ namespace SnakeGameV3.Texturing
             var transfomedTextureWidth = (int)(_grid.CellSize.Width * scale);
             var pixels = new ConsoleColor[transformedTextureHeight, transfomedTextureWidth];
 
-            float offsetY = (float)texture.Size.Height / pixels.GetLength(0);
-            float offsetX = (float)texture.Size.Width / pixels.GetLength(1);
+            var offsetY = (float)texture.Height / pixels.GetLength(0);
+            var offsetX = (float)texture.Width / pixels.GetLength(1);
 
             for (var y = 0; y < transformedTextureHeight; y++)
             {

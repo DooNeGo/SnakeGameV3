@@ -12,7 +12,7 @@ namespace SnakeGameV3.Model
         private readonly GameObject[,] _gameObjectCells;
         private readonly TextureConfig _textureConfig;
 
-        public Grid(Size screenSize, Size cellSize)
+        public Grid(Size screenSize, Size cellSize, Indexer indexer)
         {
             CellSize = cellSize;
             Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
@@ -20,7 +20,7 @@ namespace SnakeGameV3.Model
             Center = new Vector2((Size.Width - 1) / 2f, (Size.Height - 1) / 2f);
             _gameObjectCells = new GameObject[Size.Height, Size.Width];
             _textureConfig = new TextureConfig(TextureName.Grid, ConsoleColor.White);
-            InitializeGameObjects();
+            InitializeGameObjects(indexer);
         }
 
         public Size Size { get; }
@@ -110,7 +110,7 @@ namespace SnakeGameV3.Model
                        relativePosition.Y * CellSize.Height - offset.Y);
         }
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
+        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
             foreach (GameObject gameObject in _gameObjectCells)
             {
@@ -141,13 +141,13 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void InitializeGameObjects()
+        private void InitializeGameObjects(Indexer indexer)
         {
             for (var y = 0; y < Size.Height; y++)
             {
                 for (var x = 0; x < Size.Width; x++)
                 {
-                    _gameObjectCells[y, x] = new GameObject(new Vector2(x, y), Scale);
+                    _gameObjectCells[y, x] = new GameObject(new Vector2(x, y), Scale, indexer.GetUniqueIndex());
                     _gameObjectCells[y, x].AddComponent(_textureConfig);
                 }
             }

@@ -11,20 +11,21 @@ namespace SnakeGameV3.Rendering
 
         public ConsoleFrame(Size screenSize, ConsoleColor backGroundColor)
         {
-            Size = screenSize;
+            _frame = new ConsoleColor[screenSize.Height, screenSize.Width];
             _backgroundColor = backGroundColor;
-            _frame = new ConsoleColor[Size.Height, Size.Width];
         }
 
-        public Size Size { get; }
+        public int Height => _frame.GetLength(0);
+
+        public int Width => _frame.GetLength(1);
 
         public ConsoleColor GetPixel(int x, int y) => _frame[y, x];
 
         public void Clear()
         {
-            for (var y = 0; y < Size.Height; y++)
+            for (var y = 0; y < Height; y++)
             {
-                for (var x = 0; x < Size.Width; x++)
+                for (var x = 0; x < Width; x++)
                 {
                     if (_frame[y, x] != _backgroundColor)
                     {
@@ -36,22 +37,24 @@ namespace SnakeGameV3.Rendering
 
         public void Add(Vector2 position, Texture texture)
         {
-            for (var y = 0; y < texture.Size.Height; y++)
+            for (var y = 0; y < texture.Height; y++)
             {
-                int positionY = (int)(position.Y + y);
+                var pixelPositionY = (int)(position.Y + y);
 
-                for (var x = 0; x < texture.Size.Width; x++)
+                if (pixelPositionY >= Height
+                    || pixelPositionY < 0)
+                    continue;
+
+                for (var x = 0; x < texture.Width; x++)
                 {
-                    int positionX = (int)(position.X + x);
+                    var pixelPositionX = (int)(position.X + x);
 
-                    if (positionY >= _frame.GetLength(0)
-                        || positionX >= _frame.GetLength(1)
-                        || positionX < 0
-                        || positionY < 0
+                    if (pixelPositionX >= Width
+                        || pixelPositionX < 0
                         || texture.GetPixel(x, y) == 0)
                         continue;
 
-                    _frame[positionY, positionX] = texture.GetPixel(x, y);
+                    _frame[pixelPositionY, pixelPositionX] = texture.GetPixel(x, y);
                 }
             }
         }

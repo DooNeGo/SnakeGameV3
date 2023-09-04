@@ -11,34 +11,32 @@ namespace SnakeGameV3
 
     internal class Collider : Component
     {
-        public event Action<Collider>? CollisionEntry;
+        public event Action<IReadOnlyGameObject>? CollisionEntry;
+
+        private readonly IReadOnlyGameObject _parent;
 
         public Collider(ColliderType colliderType, IReadOnlyGameObject parent)
         {
             Type = colliderType;
-            Parent = parent;
+            _parent = parent;
         }
 
         public ColliderType Type { get; }
 
-        public Vector2 Position => Parent.Position;
-
-        public IReadOnlyGameObject Parent { get; }
-
-        public void InvokeCollision(Collider collider)
+        public void InvokeCollision(IReadOnlyGameObject gameObject)
         {
-            CollisionEntry?.Invoke(collider);
+            CollisionEntry?.Invoke(gameObject);
         }
 
-        public float GetDistanceToEdge(Collider collider)
+        public float GetDistanceToEdge(Vector2 position)
         {
             if (Type == ColliderType.Circle)
             {
-                return Parent.Scale / 2;
+                return _parent.Scale / 2;
             }
             else if (Type == ColliderType.Square)
             {
-                Vector2 VectorToCollider = Vector2.Normalize(Position - collider.Position);
+                Vector2 VectorToCollider = Vector2.Normalize(_parent.Position - position);
                 VectorToCollider = Vector2.Abs(VectorToCollider);
                 Vector2 UnitVector;
 
@@ -49,7 +47,7 @@ namespace SnakeGameV3
 
                 float cosBeetweenVectors = Vector2.Dot(UnitVector, VectorToCollider);
 
-                return Parent.Scale / 2 / cosBeetweenVectors;
+                return _parent.Scale / 2 / cosBeetweenVectors;
             }
             else
             {

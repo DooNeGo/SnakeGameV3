@@ -10,28 +10,30 @@ namespace SnakeGameV3
         private readonly GameObject[] _letters;
         private readonly Vector2 _textPosition;
 
-        public Text(string text, ConsoleColor color, float scale, Vector2 position)
+        public Text(string text, ConsoleColor color, float scale, Vector2 position, Indexer indexer) : this(text, color, indexer)
         {
-            _letters = new GameObject[text.Length];
             Scale = scale;
             _textPosition = position;
-            InitializeLetters(text, color);
         }
 
-        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end)
+        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end, Indexer indexer) : this(text, color, indexer)
         {
-            _letters = new GameObject[text.Length];
             float distanceBeetweenStartAndEnd = end.X - start.X;
             Scale = distanceBeetweenStartAndEnd / text.Length;
             _textPosition = start with { X = start.X + distanceBeetweenStartAndEnd / 2 };
-            InitializeLetters(text, color);
+        }
+
+        private Text(string text, ConsoleColor color, Indexer indexer)
+        {
+            _letters = new GameObject[text.Length];
+            InitializeLetters(text, color, indexer);
         }
 
         public float Scale { get; }
 
         public bool IsNeedToProject => false;
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>()
+        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
             foreach (IReadOnlyGameObject gameObject in _letters)
             {
@@ -40,7 +42,7 @@ namespace SnakeGameV3
             }
         }
 
-        private void InitializeLetters(string text, ConsoleColor color)
+        private void InitializeLetters(string text, ConsoleColor color, Indexer indexer)
         {
             for (var i = 0; i < text.Length; i++)
             {
@@ -51,10 +53,10 @@ namespace SnakeGameV3
                 if (textureName == " ")
                     textureName = "Space";
 
-                TextureConfig textureInfo = new(Enum.Parse<TextureName>(textureName), color);
+                TextureConfig textureConfig = new(Enum.Parse<TextureName>(textureName), color);
 
-                _letters[i] = new GameObject(position, Scale);
-                _letters[i].AddComponent(textureInfo);
+                _letters[i] = new GameObject(position, Scale, indexer.GetUniqueIndex());
+                _letters[i].AddComponent(textureConfig);
             }
         }
     }

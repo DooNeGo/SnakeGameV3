@@ -7,15 +7,18 @@ namespace SnakeGameV3.Model
     {
         private readonly List<Component> _components = new();
 
-        public GameObject(Vector2 position, float scale)
+        public GameObject(Vector2 position, float scale, int id)
         {
             Position = position;
             Scale = scale;
+            Id = id;
         }
 
         public Vector2 Position { get; set; }
 
         public float Scale { get; set; }
+
+        public int Id { get; set; }
 
         public void AddComponent(Component component)
         {
@@ -27,7 +30,7 @@ namespace SnakeGameV3.Model
             _components.Remove(component);
         }
 
-        public T? GetComponent<T>()
+        public T? GetComponent<T>() where T : Component
         {
             foreach (Component component in _components)
             {
@@ -36,6 +39,14 @@ namespace SnakeGameV3.Model
             }
 
             return default;
+        }
+
+        public IReadOnlyGameObject Clone(Vector2 position)
+        {
+            var clone = (GameObject)MemberwiseClone();
+            clone.Position = position;
+
+            return clone;
         }
     }
 }

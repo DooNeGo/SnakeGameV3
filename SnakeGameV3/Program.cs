@@ -6,8 +6,8 @@ internal class Program
     private static void Main()
     {
         PrepareConsole();
-        GameController controller = new();
-        controller.StartGame();
+        Game game = new();
+        game.Start();
     }
 
     private static void PrepareConsole()

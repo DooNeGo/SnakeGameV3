@@ -1,12 +1,19 @@
 ﻿using SnakeGameV3.Interfaces;
+using SnakeGameV3.Model;
 using System.Numerics;
 
 namespace SnakeGameV3
 {
     internal class CollisionHandler
     {
-        private readonly List<ICompositeObject> _compositeObjects = new();
-        private readonly List<Collider> _colliders = new();
+        private readonly List<IReadOnlyGameObject> _gameObjects = new();
+
+        public CollisionHandler(Scene initialScene)
+        {
+            ActiveScene = initialScene;
+        }
+
+        public Scene ActiveScene { get; set; }
 
         public void Update()
         {
@@ -14,45 +21,37 @@ namespace SnakeGameV3
             CheckCollisions();
         }
 
-        public void Add(ICompositeObject compositeObject)
-        {
-            _compositeObjects.Add(compositeObject);
-        }
-
-        public void Remove(ICompositeObject compositeObject)
-        {
-            _compositeObjects.Remove(compositeObject);
-        }
-
         private void UpdateCollidersList()
         {
-            _colliders.Clear();
+            _gameObjects.Clear();
 
-            foreach (ICompositeObject compositeObject in _compositeObjects)
+            IEnumerator<IReadOnlyGameObject> enumerator = ActiveScene.GetGameObjectsWithComponent<Collider>();
+
+            while (enumerator.MoveNext())
             {
-                IEnumerator<IReadOnlyGameObject> enumerator = compositeObject.GetGameObjectsWithComponent<Collider>();
-
-                while (enumerator.MoveNext())
-                {
-                    _colliders.Add(enumerator.Current.GetComponent<Collider>()!);
-                }
+                _gameObjects.Add(enumerator.Current);
             }
         }
 
         private void CheckCollisions()
         {
-            for (var i = 0; i < _colliders.Count - 1; i++)
+            for (var i = 0; i < _gameObjects.Count - 1; i++)
             {
-                for (var j = i + 1; j < _colliders.Count; j++)
+                Collider collider1 = _gameObjects[i].GetComponent<Collider>()!;
+
+                for (var j = i + 1; j < _gameObjects.Count; j++)
                 {
-                    float distanceToEdge1 = _colliders[i].GetDistanceToEdge(_colliders[j]);
-                    float distanceToEdge2 = _colliders[j].GetDistanceToEdge(_colliders[i]);
-                    float distanceBeetween = Vector2.Distance(_colliders[i].Position, _colliders[j].Position);
+                    Collider collider2 = _gameObjects[j].GetComponent<Collider>()!;
+
+                    float distanceToEdge1 = collider1.GetDistanceToEdge(_gameObjects[j].Position);
+                    float distanceToEdge2 = collider2.GetDistanceToEdge(_gameObjects[i].Position);
+
+                    float distanceBeetween = Vector2.Distance(_gameObjects[i].Position, _gameObjects[j].Position);
 
                     if (distanceBeetween <= distanceToEdge1 + distanceToEdge2)
                     {
-                        _colliders[i].InvokeCollision(_colliders[j]);
-                        _colliders[j].InvokeCollision(_colliders[i]);
+                        collider1.InvokeCollision(_gameObjects[j]);
+                        collider2.InvokeCollision(_gameObjects[i]);
                     }
                 }
             }

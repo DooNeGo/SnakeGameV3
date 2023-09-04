@@ -6,39 +6,39 @@ using static SnakeGameV3.Config;
 
 namespace SnakeGameV3.Controllers
 {
-    internal class GameController
+    internal class Game
     {
         private readonly Grid _grid;
         private readonly Food _food;
         private readonly Snake _snake;
         private readonly ConsoleFrameBuilder _builder;
         private readonly CollisionHandler _collisionHandler;
+        private readonly Indexer _indexer;
+        private readonly Scene _mainScene;
 
-        public GameController()
+        public Game()
         {
             Size screenSize = new(ScreenWidth, ScreenHeight);
 
-            _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
-            _food = new Food(_grid, 0.5f, FoodColor);
-            _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
-            _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid);
-            _collisionHandler = new CollisionHandler();
+            _indexer = new Indexer();
+            _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight), _indexer);
+            _mainScene = new Scene(_grid);
+            _food = new Food(_grid, 0.5f, FoodColor, _indexer);
+            _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid, _indexer);
+            _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid, _mainScene);
+            _collisionHandler = new CollisionHandler(_mainScene);
         }
 
-        public void StartGame()
+        public void Start()
         {
             PhysicsMovement snakeMovement = new(_snake);
             KeyboardInput input = new(snakeMovement);
 
-            _collisionHandler.Add(_snake);
-            _collisionHandler.Add(_food);
+            _mainScene.Add(_food);
+            _mainScene.Add(_snake);
 
             _grid.Add(_snake);
             _grid.Add(_food);
-
-            _builder.Add(_food);
-            _builder.Add(_snake);
-            //_builder.Add(_grid);
 
             _grid.Update();
 
@@ -55,14 +55,16 @@ namespace SnakeGameV3.Controllers
             Text gameOver = new("Game Over",
                 ConsoleColor.DarkRed,
                 _grid.Center with { X = 0 },
-                _grid.Center with { X = _grid.Size.Width - 1 });
+                _grid.Center with { X = _grid.Size.Width - 1 },
+                _indexer);
 
             _grid.Remove(_snake);
             _grid.Remove(_food);
-            _builder.Remove(_snake);
-            _builder.Remove(_food);
 
-            _builder.Add(gameOver);
+            _mainScene.Remove(_food);
+            _mainScene.Remove(_snake);
+            _mainScene.Add(gameOver);
+
             _builder.Update();
 
             Console.ReadKey();
