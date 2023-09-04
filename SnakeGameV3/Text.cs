@@ -10,21 +10,19 @@ namespace SnakeGameV3
         private readonly GameObject[] _letters;
         private readonly Vector2 _textPosition;
 
-        public Text(string text, ConsoleColor color, float scale, Vector2 position, Indexer indexer) : this(text, color, indexer)
+        public Text(string text, ConsoleColor color, float scale, Vector2 position, Indexer indexer)
         {
             Scale = scale;
             _textPosition = position;
+            _letters = new GameObject[text.Length];
+            InitializeLetters(text, color, indexer);
         }
 
-        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end, Indexer indexer) : this(text, color, indexer)
+        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end, Indexer indexer)
         {
             float distanceBeetweenStartAndEnd = end.X - start.X;
             Scale = distanceBeetweenStartAndEnd / text.Length;
             _textPosition = start with { X = start.X + distanceBeetweenStartAndEnd / 2 };
-        }
-
-        private Text(string text, ConsoleColor color, Indexer indexer)
-        {
             _letters = new GameObject[text.Length];
             InitializeLetters(text, color, indexer);
         }
