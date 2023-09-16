@@ -68,6 +68,18 @@ namespace SnakeGameV3.Controllers
             _builder.Update();
 
             Console.ReadKey();
+
+            Text score = new($"Score: {_snake.Score}",
+                ConsoleColor.White,
+                _grid.Center with { X = 0 },
+                _grid.Center with { X = _grid.Size.Width - 1 },
+                _indexer);
+
+            _mainScene.Remove(gameOver);
+            _mainScene.Add(score);
+
+            _builder.Update();
+
             Console.ReadKey();
         }
     }

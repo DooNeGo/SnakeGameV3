@@ -50,6 +50,8 @@ namespace SnakeGameV3.Model
 
         public bool IsDied { get; private set; } = false;
 
+        public int Score { get; private set; } = 0;
+
         public float Scale
         {
             get { return _scale; }
@@ -62,8 +64,6 @@ namespace SnakeGameV3.Model
                 }
             }
         }
-
-        public bool IsNeedToProject => true;
 
         private GameObject Head => _body[0];
 
@@ -132,6 +132,8 @@ namespace SnakeGameV3.Model
             newBodyPart.AddComponent(_bodyTextureConfig);
 
             _body.Add(newBodyPart);
+
+            Score++;
         }
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component

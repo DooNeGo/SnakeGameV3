@@ -17,11 +17,11 @@ namespace SnakeGameV3
 
         public void Update()
         {
-            UpdateCollidersList();
+            UpdateGameObjectsList();
             CheckCollisions();
         }
 
-        private void UpdateCollidersList()
+        private void UpdateGameObjectsList()
         {
             _gameObjects.Clear();
 
@@ -45,7 +45,6 @@ namespace SnakeGameV3
 
                     float distanceToEdge1 = collider1.GetDistanceToEdge(_gameObjects[j].Position);
                     float distanceToEdge2 = collider2.GetDistanceToEdge(_gameObjects[i].Position);
-
                     float distanceBeetween = Vector2.Distance(_gameObjects[i].Position, _gameObjects[j].Position);
 
                     if (distanceBeetween <= distanceToEdge1 + distanceToEdge2)

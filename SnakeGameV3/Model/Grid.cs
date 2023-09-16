@@ -29,8 +29,6 @@ namespace SnakeGameV3.Model
 
         public Vector2 Center { get; }
 
-        public bool IsNeedToProject => false;
-
         public float Scale => 1f;
 
         public bool IsPositionOccupied(Vector2 position, float scale)

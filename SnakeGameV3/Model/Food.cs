@@ -23,8 +23,6 @@ namespace SnakeGameV3.Model
             RandCoordinates();
         }
 
-        public bool IsNeedToProject => true;
-
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
             if (GetComponent<T>() is not null)

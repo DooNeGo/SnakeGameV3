@@ -19,8 +19,8 @@ namespace SnakeGameV3
         {
             Vector2 offset = Vector2.Zero;
 
-            if (MathF.Abs(_lastSmoothDirection.X - _lastDirection.X) < 2e-3
-                && (MathF.Abs(_lastSmoothDirection.Y - _lastDirection.Y) < 2e-3)
+            if (MathF.Abs(_lastSmoothDirection.X - _lastDirection.X) < 3e-3
+                && (MathF.Abs(_lastSmoothDirection.Y - _lastDirection.Y) < 3e-3)
                 && direction != -_lastDirection)
             {
                 _lastDirection = direction;

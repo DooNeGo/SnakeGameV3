@@ -14,14 +14,13 @@ namespace SnakeGameV3
         public event Action<IReadOnlyGameObject>? CollisionEntry;
 
         private readonly IReadOnlyGameObject _parent;
+        private readonly ColliderType _type;
 
         public Collider(ColliderType colliderType, IReadOnlyGameObject parent)
         {
-            Type = colliderType;
+            _type = colliderType;
             _parent = parent;
         }
-
-        public ColliderType Type { get; }
 
         public void InvokeCollision(IReadOnlyGameObject gameObject)
         {
@@ -30,28 +29,27 @@ namespace SnakeGameV3
 
         public float GetDistanceToEdge(Vector2 position)
         {
-            if (Type == ColliderType.Circle)
+            switch(_type)
             {
-                return _parent.Scale / 2;
-            }
-            else if (Type == ColliderType.Square)
-            {
-                Vector2 VectorToCollider = Vector2.Normalize(_parent.Position - position);
-                VectorToCollider = Vector2.Abs(VectorToCollider);
-                Vector2 UnitVector;
+                case ColliderType.Square:
+                    Vector2 VectorToCollider = Vector2.Normalize(_parent.Position - position);
+                    VectorToCollider = Vector2.Abs(VectorToCollider);
+                    Vector2 UnitVector;
 
-                if (VectorToCollider.X > VectorToCollider.Y)
-                    UnitVector = Vector2.UnitX;
-                else
-                    UnitVector = Vector2.UnitY;
+                    if (VectorToCollider.X > VectorToCollider.Y)
+                        UnitVector = Vector2.UnitX;
+                    else
+                        UnitVector = Vector2.UnitY;
 
-                float cosBeetweenVectors = Vector2.Dot(UnitVector, VectorToCollider);
+                    float cosBeetweenVectors = Vector2.Dot(UnitVector, VectorToCollider);
 
-                return _parent.Scale / 2 / cosBeetweenVectors;
-            }
-            else
-            {
-                throw new NotImplementedException();
+                    return _parent.Scale / 2 / cosBeetweenVectors;
+
+                case ColliderType.Circle:
+                    return _parent.Scale / 2;
+
+                default:
+                    throw new NotImplementedException();
             }
         }
     }

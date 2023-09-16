@@ -1,6 +1,7 @@
 ﻿using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using SnakeGameV3.Texturing;
+using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGameV3
@@ -50,6 +51,32 @@ namespace SnakeGameV3
 
                 if (textureName == " ")
                     textureName = "Space";
+                else if (textureName == ":")
+                    textureName = "Colon";
+                else if (textureName == "0")
+                    textureName = "Zero";
+                else if (textureName == "1")
+                    textureName = "One";
+                else if (textureName == "2")
+                    textureName = "Two";
+                else if (textureName == "3")
+                    textureName = "Three";
+                else if (textureName == "4")
+                    textureName = "Four";
+                else if (textureName == "5")
+                    textureName = "Five";
+                else if (textureName == "6")
+                    textureName = "Six";
+                else if (textureName == "7")
+                    textureName = "Seven";
+                else if (textureName == "8")
+                    textureName = "Eight";
+                else if (textureName == "9")
+                    textureName = "Nine";
+                else if (textureName == textureName.ToLower())
+                    textureName += "Low";
+                else
+                    textureName += "High";
 
                 TextureConfig textureConfig = new(Enum.Parse<TextureName>(textureName), color);
 

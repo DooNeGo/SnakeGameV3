@@ -30,15 +30,8 @@ namespace SnakeGameV3.Model
 
                 while (enumerator.MoveNext())
                 {
-                    if (compositeObject.IsNeedToProject)
-                    {
-                        IReadOnlyGameObject gameObject = enumerator.Current;
-                        yield return gameObject.Clone(_grid.Project(gameObject.Position));
-                    }
-                    else
-                    {
-                        yield return enumerator.Current;
-                    }
+                    IReadOnlyGameObject gameObject = enumerator.Current;
+                    yield return gameObject.Clone(_grid.Project(gameObject.Position));
                 }
             }
         }
