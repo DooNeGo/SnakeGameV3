@@ -30,8 +30,6 @@ namespace SnakeGameV3
 
         public float Scale { get; }
 
-        public bool IsNeedToProject => false;
-
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
             foreach (IReadOnlyGameObject gameObject in _letters)
@@ -78,9 +76,8 @@ namespace SnakeGameV3
                 else
                     textureName += "High";
 
-                TextureConfig textureConfig = new(Enum.Parse<TextureName>(textureName), color);
-
                 _letters[i] = new GameObject(position, Scale, indexer.GetUniqueIndex());
+                TextureConfig textureConfig = new(Enum.Parse<TextureName>(textureName), color, _letters[i]);
                 _letters[i].AddComponent(textureConfig);
             }
         }

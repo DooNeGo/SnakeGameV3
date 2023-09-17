@@ -4,22 +4,13 @@ namespace SnakeGameV3.Model
 {
     internal class Scene
     {
-        private readonly List<ICompositeObject> _compositeObjects = new();
+        private readonly ICompositeObject[] _compositeObjects;
         private readonly Grid _grid;
 
-        public Scene(Grid grid)
+        public Scene(Grid grid, params ICompositeObject[] compositeObjects)
         {
+            _compositeObjects = compositeObjects;
             _grid = grid;
-        }
-
-        public void Add(ICompositeObject compositeObject)
-        {
-            _compositeObjects.Add(compositeObject);
-        }
-
-        public void Remove(ICompositeObject compositeObject)
-        {
-            _compositeObjects.Remove(compositeObject);
         }
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component

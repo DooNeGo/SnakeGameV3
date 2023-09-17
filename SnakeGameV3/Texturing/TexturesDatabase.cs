@@ -1,4 +1,5 @@
-﻿using SnakeGameV3.Model;
+﻿using SnakeGameV3.Interfaces;
+using SnakeGameV3.Model;
 using System.Drawing;
 
 namespace SnakeGameV3.Texturing
@@ -37,23 +38,22 @@ namespace SnakeGameV3.Texturing
     {
         private readonly Grid _grid;
         private readonly Dictionary<TextureName, Texture> _textures = new();
-        private readonly Dictionary<ValueTuple<TextureConfig, float>, Texture> _transformedTextures = new();
+        private readonly Dictionary<TextureConfig, Texture> _transformedTextures = new();
 
         public TexturesDatabase(Grid grid)
         {
             _grid = grid;
-            LoadTextures();
         }
 
-        public Texture GetTransformedTexture(TextureConfig textureConfig, float scale)
+        public Texture GetTransformedTexture(TextureConfig textureConfig)
         {
-            if (_transformedTextures.ContainsKey((textureConfig, scale)))
-                return _transformedTextures[(textureConfig, scale)];
+            if (_transformedTextures.ContainsKey(textureConfig))
+                return _transformedTextures[textureConfig];
 
             Texture texture = _textures[textureConfig.Name];
 
-            var transformedTextureHeight = (int)(_grid.CellSize.Height * scale);
-            var transfomedTextureWidth = (int)(_grid.CellSize.Width * scale);
+            var transformedTextureHeight = (int)(_grid.CellSize.Height * textureConfig.Scale);
+            var transfomedTextureWidth = (int)(_grid.CellSize.Width * textureConfig.Scale);
             var pixels = new ConsoleColor[transformedTextureHeight, transfomedTextureWidth];
 
             var offsetY = (float)texture.Height / pixels.GetLength(0);
@@ -71,16 +71,24 @@ namespace SnakeGameV3.Texturing
             }
 
             Texture transformedTexture = new(pixels);
-            _transformedTextures.Add((textureConfig, scale), transformedTexture);
+            _transformedTextures.Add(textureConfig, transformedTexture);
 
             return transformedTexture;
         }
 
-        private void LoadTextures()
+        public void LoadSceneTextures(Scene scene)
         {
-            TextureName[] names = Enum.GetValues<TextureName>();
+            _textures.Clear();
+            _transformedTextures.Clear();
 
-            foreach (TextureName name in names)
+            HashSet<TextureName> textureNames = new();
+            IEnumerator<IReadOnlyGameObject> enumerator = scene.GetGameObjectsWithComponent<TextureConfig>();
+            while (enumerator.MoveNext())
+            {
+                textureNames.Add(enumerator.Current.GetComponent<TextureConfig>()!.Name);
+            }
+
+            foreach (TextureName name in textureNames)
             {
                 DirectoryInfo directoryInfo = new($"..\\..\\..\\Textures\\{name}.bmp");
                 using Bitmap bitmap = (Bitmap)Image.FromFile(directoryInfo.FullName);

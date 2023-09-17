@@ -22,9 +22,9 @@ namespace SnakeGameV3.Controllers
 
             _indexer = new Indexer();
             _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight), _indexer);
-            _mainScene = new Scene(_grid);
             _food = new Food(_grid, 0.5f, FoodColor, _indexer);
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid, _indexer);
+            _mainScene = new Scene(_grid, _food, _snake);
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid, _mainScene);
             _collisionHandler = new CollisionHandler(_mainScene);
         }
@@ -33,9 +33,6 @@ namespace SnakeGameV3.Controllers
         {
             PhysicsMovement snakeMovement = new(_snake);
             KeyboardInput input = new(snakeMovement);
-
-            _mainScene.Add(_food);
-            _mainScene.Add(_snake);
 
             _grid.Add(_snake);
             _grid.Add(_food);
@@ -61,10 +58,9 @@ namespace SnakeGameV3.Controllers
             _grid.Remove(_snake);
             _grid.Remove(_food);
 
-            _mainScene.Remove(_food);
-            _mainScene.Remove(_snake);
-            _mainScene.Add(gameOver);
+            Scene gameOverScene = new(_grid, gameOver);
 
+            _builder.ActiveScene = gameOverScene;
             _builder.Update();
 
             Console.ReadKey();
@@ -75,11 +71,12 @@ namespace SnakeGameV3.Controllers
                 _grid.Center with { X = _grid.Size.Width - 1 },
                 _indexer);
 
-            _mainScene.Remove(gameOver);
-            _mainScene.Add(score);
+            Scene scoreScene = new(_grid, score);
 
+            _builder.ActiveScene = scoreScene;
             _builder.Update();
 
+            Console.ReadKey();
             Console.ReadKey();
         }
     }

@@ -13,13 +13,11 @@ namespace SnakeGameV3
     {
         public event Action<IReadOnlyGameObject>? CollisionEntry;
 
-        private readonly IReadOnlyGameObject _parent;
         private readonly ColliderType _type;
 
-        public Collider(ColliderType colliderType, IReadOnlyGameObject parent)
+        public Collider(ColliderType colliderType, IReadOnlyGameObject parent) : base(parent)
         {
             _type = colliderType;
-            _parent = parent;
         }
 
         public void InvokeCollision(IReadOnlyGameObject gameObject)

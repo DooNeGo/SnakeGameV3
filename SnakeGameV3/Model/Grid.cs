@@ -19,7 +19,7 @@ namespace SnakeGameV3.Model
             _cells = new bool[Size.Height, Size.Width];
             Center = new Vector2((Size.Width - 1) / 2f, (Size.Height - 1) / 2f);
             _gameObjectCells = new GameObject[Size.Height, Size.Width];
-            _textureConfig = new TextureConfig(TextureName.Grid, ConsoleColor.White);
+            _textureConfig = new TextureConfig(TextureName.Grid, ConsoleColor.White, _gameObjectCells[0, 0]);
             InitializeGameObjects(indexer);
         }
 

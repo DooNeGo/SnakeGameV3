@@ -17,7 +17,7 @@ namespace SnakeGameV3.Model
             Collider collider = new(ColliderType.Square, this);
             collider.CollisionEntry += OnCollisionEnter;
 
-            AddComponent(new TextureConfig(TextureName.Food, color));
+            AddComponent(new TextureConfig(TextureName.Food, color, this));
             AddComponent(collider);
 
             RandCoordinates();

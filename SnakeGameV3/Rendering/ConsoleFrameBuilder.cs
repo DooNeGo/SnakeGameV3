@@ -18,19 +18,30 @@ namespace SnakeGameV3.Rendering
 
         private DateTime _lastFrameTime;
 
+        private Scene _activeScene;
+
         public ConsoleFrameBuilder(Size screenSize, ConsoleColor backgroundColor, Grid grid, Scene initialScene)
         {
             _grid = grid;
-            ActiveScene = initialScene;
+            _activeScene = initialScene;
             _frames = new ConsoleFrame[2];
             _frames[0] = new ConsoleFrame(screenSize, backgroundColor);
             _frames[1] = new ConsoleFrame(screenSize, backgroundColor);
             _textureDatabase = new TexturesDatabase(_grid);
+            _textureDatabase.LoadSceneTextures(ActiveScene);
         }
 
         public TimeSpan DeltaTime => DateTime.UtcNow - _lastFrameTime;
 
-        public Scene ActiveScene { get; set; }
+        public Scene ActiveScene
+        {
+            get { return _activeScene; }
+            set
+            {
+                _activeScene = value;
+                _textureDatabase.LoadSceneTextures(_activeScene);
+            }
+        }
 
         public void Update()
         {
@@ -49,7 +60,7 @@ namespace SnakeGameV3.Rendering
             while (enumerator.MoveNext())
             {
                 IReadOnlyGameObject gameObject = enumerator.Current;
-                Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!, gameObject.Scale);
+                Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!);
                 _frames[_activeFrame].Add(_grid.GetAbsolutePosition(gameObject.Position, gameObject.Scale), texture);
             }
         }
