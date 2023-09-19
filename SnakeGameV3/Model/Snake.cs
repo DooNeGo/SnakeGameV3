@@ -9,23 +9,21 @@ namespace SnakeGameV3.Model
         private readonly List<GameObject> _body = new();
         private readonly Grid _grid;
         private readonly TextureConfig _bodyTextureConfig;
-        private readonly Indexer _indexer;
 
         private float _scale = 1f;
         private int _lastColliderIndex;
 
         private DateTime _lastMoveTime;
 
-        public Snake(Vector2 startPosition, ConsoleColor headColor, ConsoleColor bodyColor, float speed, Grid grid, Indexer indexer)
+        public Snake(Vector2 startPosition, ConsoleColor headColor, ConsoleColor bodyColor, float speed, Grid grid)
         {
             MoveSpeed = speed;
             _grid = grid;
-            _indexer = indexer;
             _lastColliderIndex = 2;
 
-            GameObject head = new(startPosition, Scale, _indexer.GetUniqueIndex());
-            GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale }, Scale, _indexer.GetUniqueIndex());
-            GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale }, Scale, _indexer.GetUniqueIndex());
+            GameObject head = new(startPosition, Scale);
+            GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale }, Scale);
+            GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale }, Scale);
 
             _bodyTextureConfig = new TextureConfig(TextureName.SnakeBody, bodyColor, bodyPart1);
 
@@ -45,7 +43,7 @@ namespace SnakeGameV3.Model
 
         public Vector2 Position => Head.Position;
 
-        public float MoveSpeed { get; }
+        public float MoveSpeed { get; private set; }
 
         public TimeSpan DeltaTime => DateTime.UtcNow - _lastMoveTime;
 
@@ -117,24 +115,47 @@ namespace SnakeGameV3.Model
 
         private void OnCollisionEnter(IReadOnlyGameObject gameObject)
         {
-            if (gameObject is Food)
-                Eat();
+            if (gameObject is Food food)
+                Eat(food);
             else
                 IsDied = true;
         }
 
-        private void Eat()
+        private void Eat(Food food)
+        {
+            switch (food.Effect.Type)
+            {
+                case EffectType.Speed:
+                    if (MoveSpeed + food.Effect.Value > 2)
+                        MoveSpeed += food.Effect.Value;
+                    break;
+
+                case EffectType.Scale:
+                    if (Scale + food.Effect.Value > 0.5f)
+                        Scale += food.Effect.Value;
+                    break;
+
+                case EffectType.Length:
+                    if (food.Effect.Value > 0)
+                        AddNewBodyPart();
+                    else if (_body.Count - 1 > 2)
+                        _body.RemoveAt(_body.Count - 1);
+                    break;
+            }
+
+            Score++;
+        }
+
+        private void AddNewBodyPart()
         {
             Vector2 tailProjection = _grid.Project(_body[^1].Position);
             Vector2 offset = new(_body[^1].Position.X - tailProjection.X, _body[^1].Position.Y - tailProjection.Y);
             Vector2 projectionOnTheEdge = _grid.GetTheClosestProjectionOnTheEdge(tailProjection);
 
-            GameObject newBodyPart = new(projectionOnTheEdge + offset, Scale, _indexer.GetUniqueIndex());
+            GameObject newBodyPart = new(projectionOnTheEdge + offset, Scale);
             newBodyPart.AddComponent(_bodyTextureConfig);
 
             _body.Add(newBodyPart);
-
-            Score++;
         }
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component

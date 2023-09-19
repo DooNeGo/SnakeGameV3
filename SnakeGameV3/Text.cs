@@ -1,7 +1,6 @@
 ﻿using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using SnakeGameV3.Texturing;
-using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGameV3
@@ -11,21 +10,21 @@ namespace SnakeGameV3
         private readonly GameObject[] _letters;
         private readonly Vector2 _textPosition;
 
-        public Text(string text, ConsoleColor color, float scale, Vector2 position, Indexer indexer)
+        public Text(string text, ConsoleColor color, float scale, Vector2 position)
         {
             Scale = scale;
             _textPosition = position;
             _letters = new GameObject[text.Length];
-            InitializeLetters(text, color, indexer);
+            InitializeLetters(text, color);
         }
 
-        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end, Indexer indexer)
+        public Text(string text, ConsoleColor color, Vector2 start, Vector2 end)
         {
             float distanceBeetweenStartAndEnd = end.X - start.X;
             Scale = distanceBeetweenStartAndEnd / text.Length;
             _textPosition = start with { X = start.X + distanceBeetweenStartAndEnd / 2 };
             _letters = new GameObject[text.Length];
-            InitializeLetters(text, color, indexer);
+            InitializeLetters(text, color);
         }
 
         public float Scale { get; }
@@ -39,7 +38,7 @@ namespace SnakeGameV3
             }
         }
 
-        private void InitializeLetters(string text, ConsoleColor color, Indexer indexer)
+        private void InitializeLetters(string text, ConsoleColor color)
         {
             for (var i = 0; i < text.Length; i++)
             {
@@ -76,7 +75,7 @@ namespace SnakeGameV3
                 else
                     textureName += "High";
 
-                _letters[i] = new GameObject(position, Scale, indexer.GetUniqueIndex());
+                _letters[i] = new GameObject(position, Scale);
                 TextureConfig textureConfig = new(Enum.Parse<TextureName>(textureName), color, _letters[i]);
                 _letters[i].AddComponent(textureConfig);
             }

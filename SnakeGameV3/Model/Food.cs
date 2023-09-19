@@ -6,13 +6,11 @@ namespace SnakeGameV3.Model
 {
     internal class Food : GameObject, ICompositeObject
     {
-        private readonly Random _random = new();
-        private readonly Grid _grid;
+        public event Action<IReadOnlyGameObject>? Collect;
 
-        public Food(Grid grid, float scale, ConsoleColor color, Indexer indexer) :
-            base(Vector2.Zero, scale, indexer.GetUniqueIndex())
+        public Food(Vector2 position, float scale, ConsoleColor color, Effect effect, int lifeTime) :
+            base(position, scale)
         {
-            _grid = grid;
 
             Collider collider = new(ColliderType.Square, this);
             collider.CollisionEntry += OnCollisionEnter;
@@ -20,8 +18,13 @@ namespace SnakeGameV3.Model
             AddComponent(new TextureConfig(TextureName.Food, color, this));
             AddComponent(collider);
 
-            RandCoordinates();
+            Effect = effect;
+            LifeTime = lifeTime;
         }
+
+        public Effect Effect { get; }
+
+        public int LifeTime { get; }
 
         public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
@@ -31,17 +34,9 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void RandCoordinates()
-        {
-            do
-            {
-                Position = new Vector2(_random.Next(1, _grid.Size.Width - 2), _random.Next(1, _grid.Size.Height - 2));
-            } while (_grid.IsPositionOccupied(Position, Scale));
-        }
-
         private void OnCollisionEnter(IReadOnlyGameObject gameObject)
         {
-            RandCoordinates();
+            Collect?.Invoke(gameObject);
         }
     }
 }

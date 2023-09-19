@@ -12,15 +12,15 @@ namespace SnakeGameV3.Model
         private readonly GameObject[,] _gameObjectCells;
         private readonly TextureConfig _textureConfig;
 
-        public Grid(Size screenSize, Size cellSize, Indexer indexer)
+        public Grid(Size screenSize, Size cellSize)
         {
             CellSize = cellSize;
             Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
             _cells = new bool[Size.Height, Size.Width];
             Center = new Vector2((Size.Width - 1) / 2f, (Size.Height - 1) / 2f);
             _gameObjectCells = new GameObject[Size.Height, Size.Width];
-            _textureConfig = new TextureConfig(TextureName.Grid, ConsoleColor.White, _gameObjectCells[0, 0]);
-            InitializeGameObjects(indexer);
+            _textureConfig = new TextureConfig(TextureName.Grid, ConsoleColor.White, null);
+            InitializeGameObjects();
         }
 
         public Size Size { get; }
@@ -65,12 +65,12 @@ namespace SnakeGameV3.Model
 
         public Vector2 Project(Vector2 position)
         {
-            Vector2 projection = new(position.X % Size.Width, position.Y % Size.Height);
+            Vector2 projection = new(position.X % (Size.Width - 1), position.Y % (Size.Height - 1));
 
-            if (position.X < 0)
+            if (projection.X < 0)
                 projection.X += Size.Width - 1;
 
-            if (position.Y < 0)
+            if (projection.Y < 0)
                 projection.Y += Size.Height - 1;
 
             return projection;
@@ -139,13 +139,13 @@ namespace SnakeGameV3.Model
             }
         }
 
-        private void InitializeGameObjects(Indexer indexer)
+        private void InitializeGameObjects()
         {
             for (var y = 0; y < Size.Height; y++)
             {
                 for (var x = 0; x < Size.Width; x++)
                 {
-                    _gameObjectCells[y, x] = new GameObject(new Vector2(x, y), Scale, indexer.GetUniqueIndex());
+                    _gameObjectCells[y, x] = new GameObject(new Vector2(x, y), Scale);
                     _gameObjectCells[y, x].AddComponent(_textureConfig);
                 }
             }

@@ -6,8 +6,6 @@ namespace SnakeGameV3.Interfaces
     {
         public Vector2 Position { get; }
 
-        public int Id { get; }
-
         public T? GetComponent<T>() where T : Component;
 
         public IReadOnlyGameObject Clone(Vector2 position);

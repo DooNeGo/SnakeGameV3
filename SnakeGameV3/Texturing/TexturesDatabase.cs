@@ -52,8 +52,8 @@ namespace SnakeGameV3.Texturing
 
             Texture texture = _textures[textureConfig.Name];
 
-            var transformedTextureHeight = (int)(_grid.CellSize.Height * textureConfig.Scale);
-            var transfomedTextureWidth = (int)(_grid.CellSize.Width * textureConfig.Scale);
+            var transformedTextureHeight = (int)MathF.Round(_grid.CellSize.Height * textureConfig.Scale);
+            var transfomedTextureWidth = (int)MathF.Round(_grid.CellSize.Width * textureConfig.Scale);
             var pixels = new ConsoleColor[transformedTextureHeight, transfomedTextureWidth];
 
             var offsetY = (float)texture.Height / pixels.GetLength(0);
@@ -63,7 +63,7 @@ namespace SnakeGameV3.Texturing
             {
                 for (var x = 0; x < transfomedTextureWidth; x++)
                 {
-                    ConsoleColor color = texture.GetPixel((int)(x * offsetX), (int)(y * offsetY));
+                    ConsoleColor color = texture.GetPixel((int)MathF.Round(x * offsetX), (int)MathF.Round(y * offsetY));
 
                     if (color == ConsoleColor.White)
                         pixels[y, x] = textureConfig.Color;
