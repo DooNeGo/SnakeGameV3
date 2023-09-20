@@ -35,9 +35,9 @@ namespace SnakeGameV3.Controllers
             }
         }
 
-        public Food ActiveFood => _foods[_activeFoodIndex];
-
         public float Scale => foodScale;
+
+        private Food ActiveFood => _foods[_activeFoodIndex];
 
         public void Update()
         {

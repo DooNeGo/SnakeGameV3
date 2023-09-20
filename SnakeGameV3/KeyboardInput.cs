@@ -28,10 +28,10 @@ namespace SnakeGameV3
 
             return pressedKey switch
             {
-                ConsoleKey.UpArrow when _lastDirection != Vector2.UnitY => -Vector2.UnitY,
-                ConsoleKey.DownArrow when _lastDirection != -Vector2.UnitY => Vector2.UnitY,
-                ConsoleKey.LeftArrow when _lastDirection != Vector2.UnitX => -Vector2.UnitX,
-                ConsoleKey.RightArrow when _lastDirection != -Vector2.UnitX => Vector2.UnitX,
+                ConsoleKey.UpArrow => -Vector2.UnitY,
+                ConsoleKey.DownArrow => Vector2.UnitY,
+                ConsoleKey.LeftArrow => -Vector2.UnitX,
+                ConsoleKey.RightArrow => Vector2.UnitX,
                 ConsoleKey.Spacebar => Vector2.Zero,
                 _ => _lastDirection
             };
