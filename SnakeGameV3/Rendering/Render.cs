@@ -45,16 +45,16 @@ namespace SnakeGameV3.Rendering
         //    };
 
         private float[] _colorArray;
-            //{
-            //    0.5f, 0.0f, 0.5f, 1.0f,
-            //    1.0f, 0.0f, 0.0f, 1.0f,
-            //    0.0f, 1.0f, 0.0f, 1.0f,
-            //    0.0f, 0.0f, 1.0f, 1.0f,
-            //    0.5f, 0.0f, 0.5f, 1.0f,
-            //    1.0f, 0.0f, 0.0f, 1.0f,
-            //    0.0f, 1.0f, 0.0f, 1.0f,
-            //    1.0f, 0.0f, 0.0f, 1.0f,
-            //};
+        //{
+        //    0.5f, 0.0f, 0.5f, 1.0f,
+        //    1.0f, 0.0f, 0.0f, 1.0f,
+        //    0.0f, 1.0f, 0.0f, 1.0f,
+        //    0.0f, 0.0f, 1.0f, 1.0f,
+        //    0.5f, 0.0f, 0.5f, 1.0f,
+        //    1.0f, 0.0f, 0.0f, 1.0f,
+        //    0.0f, 1.0f, 0.0f, 1.0f,
+        //    1.0f, 0.0f, 0.0f, 1.0f,
+        //};
 
         private uint[] _indexArray;
 
@@ -152,7 +152,7 @@ namespace SnakeGameV3.Rendering
             _openGL.BindVertexArray(_vao);
             _openGL.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
             _openGL.BufferData<float>(BufferTargetARB.ArrayBuffer, GetTransformedVertexArray(), BufferUsageARB.StreamDraw);
-            
+
             _openGL.UseProgram(_shader);
             _openGL.DrawArrays(PrimitiveType.Points, 0, (uint)_indexArray.Length);
         }
@@ -162,7 +162,7 @@ namespace SnakeGameV3.Rendering
             _counter++;
             Vector2D<float> offset = new((MathF.Cos(_counter / 15f)) / 50, (MathF.Sin(_counter / 15f)) / 50);
             ApplyOffset(offset);
-            
+
         }
 
         private void OnResize(Vector2D<int> screenSize)

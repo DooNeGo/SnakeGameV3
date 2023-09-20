@@ -27,7 +27,7 @@ namespace SnakeGameV3
 
         public float GetDistanceToEdge(Vector2 position)
         {
-            switch(_type)
+            switch (_type)
             {
                 case ColliderType.Square:
                     Vector2 VectorToCollider = Vector2.Normalize(_parent.Position - position);

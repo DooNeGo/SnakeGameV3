@@ -55,8 +55,7 @@ namespace SnakeGameV3.Controllers
             _grid.Remove(_foodController);
 
             Scene gameOverScene = new(_grid, gameOver);
-
-            _builder.ActiveScene = gameOverScene;
+            ChangeActiveScene(gameOverScene);
             _builder.Update();
 
             Console.ReadKey();
@@ -67,12 +66,17 @@ namespace SnakeGameV3.Controllers
                 _grid.Center with { X = _grid.Size.Width - 1 });
 
             Scene scoreScene = new(_grid, score);
-
-            _builder.ActiveScene = scoreScene;
+            ChangeActiveScene(scoreScene);
             _builder.Update();
 
             Console.ReadKey();
             Console.ReadKey();
+        }
+
+        private void ChangeActiveScene(Scene scene)
+        {
+            _builder.ActiveScene = scene;
+            _collisionHandler.ActiveScene = scene;
         }
     }
 }
