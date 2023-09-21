@@ -1,4 +1,6 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
+using SnakeGameV3.Components.Colliders;
+using SnakeGameV3.Interfaces;
 using SnakeGameV3.Texturing;
 using System.Numerics;
 
@@ -8,11 +10,11 @@ namespace SnakeGameV3.Model
     {
         private readonly List<GameObject> _body = new();
         private readonly Grid _grid;
-        private readonly TextureConfig _bodyTextureConfig;
+        private readonly ConsoleColor _headColor;
+        private readonly ConsoleColor _bodyColor;
 
         private float _scale = 1f;
         private int _lastColliderIndex;
-
         private DateTime _lastMoveTime;
 
         public Snake(Vector2 startPosition, ConsoleColor headColor, ConsoleColor bodyColor, float speed, Grid grid)
@@ -20,28 +22,42 @@ namespace SnakeGameV3.Model
             MoveSpeed = speed;
             _grid = grid;
             _lastColliderIndex = 2;
+            _headColor = headColor;
+            _bodyColor = bodyColor;
 
-            GameObject head = new(startPosition, Scale);
-            GameObject bodyPart1 = new(head.Position with { X = head.Position.X - 1 * Scale }, Scale);
-            GameObject bodyPart2 = new(head.Position with { X = head.Position.X - 2 * Scale }, Scale);
-
-            _bodyTextureConfig = new TextureConfig(TextureName.SnakeBody, bodyColor, bodyPart1);
-
-            Collider headCollider = new(ColliderType.Circle, head);
+            GameObject head = new();
+            Transform headTransform = head.AddComponent<Transform>();
+            Collider headCollider = head.AddComponent<CircleCollider>();
+            TextureConfig headTexture = head.AddComponent<TextureConfig>();
+            headTransform.Position = startPosition;
+            headTransform.Scale = Scale;
             headCollider.CollisionEntry += OnCollisionEnter;
+            headTexture.Color = _headColor;
+            headTexture.Name = TextureName.SnakeHead;
 
-            head.AddComponent(new TextureConfig(TextureName.SnakeHead, headColor, head));
-            head.AddComponent(headCollider);
-            bodyPart1.AddComponent(_bodyTextureConfig);
-            bodyPart2.AddComponent(_bodyTextureConfig);
-            bodyPart2.AddComponent(new Collider(ColliderType.Circle, bodyPart2));
+            GameObject bodyPart1 = new();
+            Transform bodyPart1Transform = bodyPart1.AddComponent<Transform>();
+            TextureConfig bodyPart1Texture = bodyPart1.AddComponent<TextureConfig>();
+            bodyPart1Transform.Position = headTransform.Position - Vector2.UnitX * Scale;
+            bodyPart1Transform.Scale = Scale;
+            bodyPart1Texture.Color = _bodyColor;
+            bodyPart1Texture.Name = TextureName.SnakeBody;
+
+            GameObject bodyPart2 = new();
+            Transform bodyPart2Transform = bodyPart2.AddComponent<Transform>();
+            TextureConfig bodyPart2Texture = bodyPart2.AddComponent<TextureConfig>();
+            bodyPart2.AddComponent<CircleCollider>();
+            bodyPart2Transform.Position = bodyPart1Transform.Position - Vector2.UnitX * Scale;
+            bodyPart2Transform.Scale = Scale;
+            bodyPart2Texture.Color = _bodyColor;
+            bodyPart2Texture.Name = TextureName.SnakeBody;
 
             _body.Add(head);
             _body.Add(bodyPart1);
             _body.Add(bodyPart2);
         }
 
-        public Vector2 Position => Head.Position;
+        public Vector2 Position => Head.GetComponent<Transform>().Position;
 
         public float MoveSpeed { get; private set; }
 
@@ -51,7 +67,7 @@ namespace SnakeGameV3.Model
 
         public int Score { get; private set; } = 0;
 
-        public float Scale
+        private float Scale
         {
             get { return _scale; }
             set
@@ -59,7 +75,7 @@ namespace SnakeGameV3.Model
                 _scale = value;
                 foreach (GameObject body in _body)
                 {
-                    body.Scale = _scale;
+                    body.GetComponent<Transform>().Scale = _scale;
                 }
             }
         }
@@ -81,10 +97,13 @@ namespace SnakeGameV3.Model
         {
             for (int i = _lastColliderIndex + 1; i < _body.Count; i++)
             {
-                if (_body[i].GetComponent<Collider>() is null
-                    && Vector2.Distance(_body[i].Position, _body[i - 1].Position) <= 0.6f * Scale)
+                Transform transform1 = _body[i].GetComponent<Transform>();
+                Transform transform2 = _body[i - 1].GetComponent<Transform>();
+
+                if (_body[i].TryGetComponent<Collider>() is null
+                    && Vector2.Distance(transform1.Position, transform2.Position) <= 0.6f * Scale)
                 {
-                    _body[i].AddComponent(new Collider(ColliderType.Circle, _body[i]));
+                    _body[i].AddComponent<CircleCollider>();
                     _lastColliderIndex = i;
                 }
             }
@@ -98,7 +117,10 @@ namespace SnakeGameV3.Model
 
             for (var i = 1; i < _body.Count; i++)
             {
-                offsets[i] = _body[i - 1].Position - _body[i].Position;
+                Transform transform1 = _body[i].GetComponent<Transform>();
+                Transform transform2 = _body[i - 1].GetComponent<Transform>();
+
+                offsets[i] = transform2.Position - transform1.Position;
                 offsets[i] /= Scale;
             }
 
@@ -107,13 +129,15 @@ namespace SnakeGameV3.Model
 
         private void ApplyOffsets(Vector2[] offsets)
         {
-            Head.Position += offsets[0];
+            Head.GetComponent<Transform>().Position += offsets[0];
 
             for (var i = 1; i < offsets.Length; i++)
-                _body[i].Position += offsets[i] * offsets[0].Length();
+            {
+                _body[i].GetComponent<Transform>().Position += offsets[i] * offsets[0].Length();
+            }
         }
 
-        private void OnCollisionEnter(IReadOnlyGameObject gameObject)
+        private void OnCollisionEnter(GameObject gameObject)
         {
             if (gameObject is Food food)
                 Eat(food);
@@ -123,20 +147,22 @@ namespace SnakeGameV3.Model
 
         private void Eat(Food food)
         {
-            switch (food.Effect.Type)
+            float effectValue = food.GetComponent<Effect>().Value;
+            switch (food.GetComponent<Effect>().Type)
             {
+
                 case EffectType.Speed:
-                    if (MoveSpeed + food.Effect.Value > 2)
-                        MoveSpeed += food.Effect.Value;
+                    if (MoveSpeed + effectValue > 2)
+                        MoveSpeed += effectValue;
                     break;
 
                 case EffectType.Scale:
-                    if (Scale + food.Effect.Value > 0.5f)
-                        Scale += food.Effect.Value;
+                    if (Scale + effectValue > 0.5f)
+                        Scale += effectValue;
                     break;
 
                 case EffectType.Length:
-                    if (food.Effect.Value > 0)
+                    if (effectValue > 0)
                         AddNewBodyPart();
                     else if (_body.Count - 1 > 2)
                         _body.RemoveAt(_body.Count - 1);
@@ -148,22 +174,59 @@ namespace SnakeGameV3.Model
 
         private void AddNewBodyPart()
         {
-            Vector2 tailProjection = _grid.Project(_body[^1].Position);
-            Vector2 offset = new(_body[^1].Position.X - tailProjection.X, _body[^1].Position.Y - tailProjection.Y);
+            Transform transform = _body[^1].GetComponent<Transform>();
+
+            Vector2 tailProjection = _grid.Project(transform.Position);
+            Vector2 offset = new(transform.Position.X - tailProjection.X, transform.Position.Y - tailProjection.Y);
             Vector2 projectionOnTheEdge = _grid.GetTheClosestProjectionOnTheEdge(tailProjection);
 
-            GameObject newBodyPart = new(projectionOnTheEdge + offset, Scale);
-            newBodyPart.AddComponent(_bodyTextureConfig);
+            GameObject newBodyPart = new();
+            Transform newBodyPartTransform = newBodyPart.AddComponent<Transform>();
+            TextureConfig newBodyPartTexture = newBodyPart.AddComponent<TextureConfig>();
+            newBodyPartTransform.Position = projectionOnTheEdge + offset;
+            newBodyPartTransform.Scale = Scale;
+            newBodyPartTexture.Color = _bodyColor;
+            newBodyPartTexture.Name = TextureName.SnakeBody;
 
             _body.Add(newBodyPart);
         }
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
+        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
-            foreach (IReadOnlyGameObject gameObject in _body)
+            for (var i = 0; i < _body.Count; i++)
             {
-                if (gameObject.GetComponent<T>() is not null)
+                if (_body[i].TryGetComponent<T>() is not null)
+                {
+                    Transform bodyTransform = _body[i].GetComponent<Transform>();
+                    Collider? bodyCollider = _body[i].TryGetComponent<Collider>();
+                    TextureConfig bodyTexture = _body[i].GetComponent<TextureConfig>();
+
+                    GameObject gameObject = new();
+
+                    Transform transform = gameObject.AddComponent<Transform>();
+                    transform.Rotation = bodyTransform.Rotation;
+                    transform.Position = _grid.Project(bodyTransform.Position);
+                    transform.Scale = bodyTransform.Scale;
+
+                    if (bodyCollider != null)
+                    {
+                        Collider collider = bodyCollider switch
+                        {
+                            BoxCollider => gameObject.AddComponent<BoxCollider>(),
+                            CircleCollider => gameObject.AddComponent<CircleCollider>(),
+                            _ => throw new NotImplementedException()
+                        };
+
+                        if (_body[i] == Head)
+                            collider.CollisionEntry += OnCollisionEnter;
+                    }
+
+                    TextureConfig texture = gameObject.AddComponent<TextureConfig>();
+                    texture.Color = bodyTexture.Color;
+                    texture.Name = bodyTexture.Name;
+
                     yield return gameObject;
+                }
             }
         }
     }

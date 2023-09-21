@@ -1,4 +1,4 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
 using SnakeGameV3.Model;
 using System.Drawing;
 
@@ -82,10 +82,11 @@ namespace SnakeGameV3.Texturing
             _transformedTextures.Clear();
 
             HashSet<TextureName> textureNames = new();
-            IEnumerator<IReadOnlyGameObject> enumerator = scene.GetGameObjectsWithComponent<TextureConfig>();
+            IEnumerator<GameObject> enumerator = scene.GetGameObjectsWithComponent<TextureConfig>();
+
             while (enumerator.MoveNext())
             {
-                textureNames.Add(enumerator.Current.GetComponent<TextureConfig>()!.Name);
+                textureNames.Add(enumerator.Current.GetComponent<TextureConfig>().Name);
             }
 
             foreach (TextureName name in textureNames)

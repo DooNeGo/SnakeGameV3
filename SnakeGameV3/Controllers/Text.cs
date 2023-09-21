@@ -1,22 +1,15 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
+using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using SnakeGameV3.Texturing;
 using System.Numerics;
 
-namespace SnakeGameV3
+namespace SnakeGameV3.Controllers
 {
     internal class Text : ICompositeObject
     {
         private readonly GameObject[] _letters;
         private readonly Vector2 _textPosition;
-
-        public Text(string text, ConsoleColor color, float scale, Vector2 position)
-        {
-            Scale = scale;
-            _textPosition = position;
-            _letters = new GameObject[text.Length];
-            InitializeLetters(text, color);
-        }
 
         public Text(string text, ConsoleColor color, Vector2 start, Vector2 end)
         {
@@ -29,9 +22,9 @@ namespace SnakeGameV3
 
         public float Scale { get; }
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
+        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
-            foreach (IReadOnlyGameObject gameObject in _letters)
+            foreach (GameObject gameObject in _letters)
             {
                 if (gameObject.GetComponent<T>() is not null)
                     yield return gameObject;
@@ -75,9 +68,14 @@ namespace SnakeGameV3
                 else
                     textureName += "High";
 
-                _letters[i] = new GameObject(position, Scale);
-                TextureConfig textureConfig = new(Enum.Parse<TextureName>(textureName), color, _letters[i]);
-                _letters[i].AddComponent(textureConfig);
+                _letters[i] = new GameObject();
+                TextureConfig textureConfig = _letters[i].AddComponent<TextureConfig>();
+                textureConfig.Color = color;
+                textureConfig.Name = Enum.Parse<TextureName>(textureName);
+
+                Transform transform = _letters[i].AddComponent<Transform>();
+                transform.Position = position;
+                transform.Scale = Scale;
             }
         }
     }

@@ -1,49 +1,67 @@
-﻿using SnakeGameV3.Interfaces;
-using System.Numerics;
+﻿using SnakeGameV3.Components;
 
 namespace SnakeGameV3.Model
 {
-    internal class GameObject : IReadOnlyGameObject
+    internal class GameObject : Component
     {
         private readonly List<Component> _components = new();
 
-        public GameObject(Vector2 position, float scale)
+        public new T AddComponent<T>() where T : Component, new()
         {
-            Position = position;
-            Scale = scale;
-        }
-
-        public Vector2 Position { get; set; }
-
-        public float Scale { get; set; }
-
-        public void AddComponent(Component component)
-        {
-            _components.Add(component);
-        }
-
-        public void RemoveComponent(Component component)
-        {
-            _components.Remove(component);
-        }
-
-        public T? GetComponent<T>() where T : Component
-        {
-            foreach (Component component in _components)
+            //ConstructorInfo? info = typeof(T).GetConstructor(new Type[] { typeof(GameObject) });
+            //T component = (T)info!.Invoke(new object?[] { this });
+            T component = new()
             {
-                if (component is T value)
+                Parent = this
+            };
+            _components.Add(component);
+            return component;
+        }
+
+        public void RemoveComponent<T>()
+        {
+            for (int i = 0; i < _components.Count; i++)
+            {
+                if (_components[i] is T)
+                    _components.RemoveAt(i);
+            }
+        }
+
+        public new T GetComponent<T>() where T : Component
+        {
+            for (int i = 0; i < _components.Count; i++)
+            {
+                if (_components[i] is T value)
                     return value;
             }
 
-            return default;
+            throw new Exception();
         }
 
-        public IReadOnlyGameObject Clone(Vector2 position)
+        public T? TryGetComponent<T>() where T : Component
         {
-            var clone = (GameObject)MemberwiseClone();
-            clone.Position = position;
+            for (int i = 0; i < _components.Count; i++)
+            {
+                if (_components[i] is T value)
+                    return value;
+            }
 
-            return clone;
+            return null;
+        }
+
+        public List<T> GetComponents<T>() where T : Component
+        {
+            List<T> components = new();
+
+            for (int i = 0; i < _components.Count; i++)
+            {
+                if (_components[i] is T component)
+                {
+                    components.Add(component);
+                }
+            }
+
+            return components;
         }
     }
 }

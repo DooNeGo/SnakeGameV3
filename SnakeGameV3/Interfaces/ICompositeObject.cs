@@ -1,7 +1,10 @@
-﻿namespace SnakeGameV3.Interfaces
+﻿using SnakeGameV3.Components;
+using SnakeGameV3.Model;
+
+namespace SnakeGameV3.Interfaces
 {
-    internal interface ICompositeObject : IScalable
+    internal interface ICompositeObject
     {
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component;
+        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component;
     }
 }

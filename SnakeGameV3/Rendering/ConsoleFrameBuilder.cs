@@ -1,4 +1,4 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
 using SnakeGameV3.Model;
 using SnakeGameV3.Texturing;
 using System.Drawing;
@@ -55,13 +55,15 @@ namespace SnakeGameV3.Rendering
         {
             _frames[_activeFrame].Clear();
 
-            IEnumerator<IReadOnlyGameObject> enumerator = ActiveScene.GetGameObjectsWithComponent<TextureConfig>();
+            IEnumerator<GameObject> enumerator = ActiveScene.GetGameObjectsWithComponent<TextureConfig>();
 
             while (enumerator.MoveNext())
             {
-                IReadOnlyGameObject gameObject = enumerator.Current;
-                Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>()!);
-                _frames[_activeFrame].Add(_grid.GetAbsolutePosition(gameObject.Position, gameObject.Scale), texture);
+                GameObject gameObject = enumerator.Current;
+                Texture texture = _textureDatabase.GetTransformedTexture(gameObject.GetComponent<TextureConfig>());
+                Transform transform = gameObject.GetComponent<Transform>();
+
+                _frames[_activeFrame].Add(_grid.GetAbsolutePosition(transform.Position, transform.Scale), texture);
             }
         }
 

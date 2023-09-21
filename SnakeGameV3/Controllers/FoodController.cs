@@ -1,4 +1,6 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
+using SnakeGameV3.Components.Colliders;
+using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using System.Numerics;
 
@@ -21,21 +23,39 @@ namespace SnakeGameV3.Controllers
 
             _foods = new Food[]
             {
-                new Food(_grid.Center, foodScale, ConsoleColor.DarkRed, new Effect(1, EffectType.Length), 15),
-                new Food(_grid.Center, foodScale, ConsoleColor.Blue, new Effect(0.5f, EffectType.Speed), 10),
-                new Food(_grid.Center, foodScale, ConsoleColor.Blue, new Effect(-0.5f, EffectType.Speed), 10),
-                new Food(_grid.Center, foodScale, ConsoleColor.DarkGreen, new Effect(0.1f, EffectType.Scale), 10),
-                new Food(_grid.Center, foodScale, ConsoleColor.DarkGreen, new Effect(-0.1f, EffectType.Scale), 10),
-                new Food(_grid.Center, foodScale, ConsoleColor.Magenta, new Effect(-1, EffectType.Length), 5),
+                new Food(_grid.Center, foodScale, ConsoleColor.DarkRed, 15),
+                new Food(_grid.Center, foodScale, ConsoleColor.Blue, 10),
+                new Food(_grid.Center, foodScale, ConsoleColor.Blue, 10),
+                new Food(_grid.Center, foodScale, ConsoleColor.DarkGreen, 10),
+                new Food(_grid.Center, foodScale, ConsoleColor.DarkGreen, 10),
+                new Food(_grid.Center, foodScale, ConsoleColor.Magenta, 5),
             };
+
+            Effect effect0 = _foods[0].AddComponent<Effect>();
+            Effect effect1 = _foods[1].AddComponent<Effect>();
+            Effect effect2 = _foods[2].AddComponent<Effect>();
+            Effect effect3 = _foods[3].AddComponent<Effect>();
+            Effect effect4 = _foods[4].AddComponent<Effect>();
+            Effect effect5 = _foods[5].AddComponent<Effect>();
+
+            effect0.Type = EffectType.Length;
+            effect0.Value = 1;
+            effect1.Type = EffectType.Speed;
+            effect1.Value = 0.5f;
+            effect2.Type = EffectType.Speed;
+            effect2.Value = 0.5f;
+            effect3.Type = EffectType.Scale;
+            effect3.Value = 0.1f;
+            effect4.Type = EffectType.Scale;
+            effect4.Value = -0.1f;
+            effect5.Type = EffectType.Length;
+            effect5.Value = -1;
 
             for (int i = 0; i < _foods.Length; i++)
             {
-                _foods[i].Collect += OnCollect;
+                _foods[i].GetComponent<Collider>().CollisionEntry += OnCollisionEntry;
             }
         }
-
-        public float Scale => foodScale;
 
         private Food ActiveFood => _foods[_activeFoodIndex];
 
@@ -47,15 +67,7 @@ namespace SnakeGameV3.Controllers
             }
         }
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
-        {
-            if (ActiveFood.GetComponent<T>() is not null)
-            {
-                yield return ActiveFood;
-            }
-        }
-
-        public void OnCollect(IReadOnlyGameObject gameObject)
+        public void OnCollisionEntry(GameObject gameObject)
         {
             RandFood();
         }
@@ -80,10 +92,18 @@ namespace SnakeGameV3.Controllers
             do
             {
                 Vector2 position = new(_random.Next(0, _grid.Size.Width), _random.Next(0, _grid.Size.Height));
-                _foods[_activeFoodIndex].Position = position;
-            } while (_grid.IsPositionOccupied(_foods[_activeFoodIndex].Position, foodScale));
+                ActiveFood.GetComponent<Transform>().Position = position;
+            } while (_grid.IsPositionOccupied(ActiveFood.GetComponent<Transform>().Position, foodScale));
 
             _activeFoodTime = DateTime.UtcNow;
+        }
+
+        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
+        {
+            if (ActiveFood.TryGetComponent<T>() is not null)
+            {
+                yield return ActiveFood;
+            }
         }
     }
 }

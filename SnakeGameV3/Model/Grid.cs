@@ -1,4 +1,6 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
+using SnakeGameV3.Components.Colliders;
+using SnakeGameV3.Interfaces;
 using SnakeGameV3.Texturing;
 using System.Drawing;
 using System.Numerics;
@@ -9,8 +11,7 @@ namespace SnakeGameV3.Model
     {
         private readonly List<ICompositeObject> _compositeObjects = new();
         private readonly bool[,] _cells;
-        private readonly GameObject[,] _gameObjectCells;
-        private readonly TextureConfig _textureConfig;
+        private readonly GameObject[,] _gameObjects;
 
         public Grid(Size screenSize, Size cellSize)
         {
@@ -18,8 +19,7 @@ namespace SnakeGameV3.Model
             Size = new Size(screenSize.Width / CellSize.Width, screenSize.Height / CellSize.Height);
             _cells = new bool[Size.Height, Size.Width];
             Center = new Vector2((Size.Width - 1) / 2f, (Size.Height - 1) / 2f);
-            _gameObjectCells = new GameObject[Size.Height, Size.Width];
-            _textureConfig = new TextureConfig(TextureName.Grid, ConsoleColor.White, null);
+            _gameObjects = new GameObject[Size.Height, Size.Width];
             InitializeGameObjects();
         }
 
@@ -44,7 +44,7 @@ namespace SnakeGameV3.Model
 
             foreach (ICompositeObject compositeObject in _compositeObjects)
             {
-                IEnumerator<IReadOnlyGameObject> enumerator = compositeObject.GetGameObjectsWithComponent<Collider>();
+                IEnumerator<GameObject> enumerator = compositeObject.GetGameObjectsWithComponent<Collider>();
 
                 while (enumerator.MoveNext())
                 {
@@ -104,28 +104,23 @@ namespace SnakeGameV3.Model
             Vector2 offset = new(CellSize.Width * scale - CellSize.Width,
                                  CellSize.Height * scale - CellSize.Height);
             offset /= 2;
+
             return new(relativePosition.X * CellSize.Width - offset.X,
                        relativePosition.Y * CellSize.Height - offset.Y);
         }
 
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
+        private void AddToGrid(GameObject gameObject)
         {
-            foreach (GameObject gameObject in _gameObjectCells)
-            {
-                if (gameObject.GetComponent<T>() is not null)
-                    yield return gameObject;
-            }
-        }
+            Transform? transform = gameObject.TryGetComponent<Transform>();
 
-        private void AddToGrid(IReadOnlyGameObject gameObject)
-        {
-            if (gameObject.Position.X >= _cells.GetLength(1)
-                || gameObject.Position.Y >= _cells.GetLength(0)
-                || gameObject.Position.X < 0
-                || gameObject.Position.Y < 0)
+            if (transform == null
+                || transform.Position.X >= _cells.GetLength(1)
+                || transform.Position.Y >= _cells.GetLength(0)
+                || transform.Position.X < 0
+                || transform.Position.Y < 0)
                 return;
 
-            _cells[(int)gameObject.Position.Y, (int)gameObject.Position.X] = true;
+            _cells[(int)transform.Position.Y, (int)transform.Position.X] = true;
         }
 
         private void Clear()
@@ -145,9 +140,25 @@ namespace SnakeGameV3.Model
             {
                 for (var x = 0; x < Size.Width; x++)
                 {
-                    _gameObjectCells[y, x] = new GameObject(new Vector2(x, y), Scale);
-                    _gameObjectCells[y, x].AddComponent(_textureConfig);
+                    _gameObjects[y, x] = new GameObject();
+
+                    Transform transform = _gameObjects[y, x].AddComponent<Transform>();
+                    transform.Position = new Vector2(x, y);
+                    transform.Scale = Scale;
+
+                    TextureConfig textureConfig = _gameObjects[y, x].AddComponent<TextureConfig>();
+                    textureConfig.Name = TextureName.Grid;
+                    textureConfig.Color = ConsoleColor.White;
                 }
+            }
+        }
+
+        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
+        {
+            foreach (GameObject gameObject in _gameObjects)
+            {
+                if (gameObject.TryGetComponent<T>() is not null)
+                    yield return gameObject;
             }
         }
     }

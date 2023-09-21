@@ -1,42 +1,26 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
+using SnakeGameV3.Components.Colliders;
 using SnakeGameV3.Texturing;
 using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Food : GameObject, ICompositeObject
+    internal class Food : GameObject
     {
-        public event Action<IReadOnlyGameObject>? Collect;
-
-        public Food(Vector2 position, float scale, ConsoleColor color, Effect effect, int lifeTime) :
-            base(position, scale)
+        public Food(Vector2 position, float scale, ConsoleColor color, int lifeTime)
         {
-
-            Collider collider = new(ColliderType.Square, this);
-            collider.CollisionEntry += OnCollisionEnter;
-
-            AddComponent(new TextureConfig(TextureName.Food, color, this));
-            AddComponent(collider);
-
-            Effect = effect;
             LifeTime = lifeTime;
-        }
+            Transform transform = AddComponent<Transform>();
+            transform.Position = position;
+            transform.Scale = scale;
 
-        public Effect Effect { get; }
+            TextureConfig textureConfig = AddComponent<TextureConfig>();
+            textureConfig.Color = color;
+            textureConfig.Name = TextureName.Food;
+
+            AddComponent<BoxCollider>();
+        }
 
         public int LifeTime { get; }
-
-        public IEnumerator<IReadOnlyGameObject> GetGameObjectsWithComponent<T>() where T : Component
-        {
-            if (GetComponent<T>() is not null)
-            {
-                yield return this;
-            }
-        }
-
-        private void OnCollisionEnter(IReadOnlyGameObject gameObject)
-        {
-            Collect?.Invoke(gameObject);
-        }
     }
 }

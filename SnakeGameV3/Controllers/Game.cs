@@ -22,7 +22,7 @@ namespace SnakeGameV3.Controllers
             _grid = new Grid(screenSize, new Size(GridCellWidth, GridCellHeight));
             _snake = new Snake(new Vector2(3, 4), SnakeHeadColor, SnakeBodyColor, SnakeSpeed, _grid);
             _foodController = new FoodController(_grid);
-            _mainScene = new Scene(_grid, _foodController, _snake);
+            _mainScene = new Scene(_foodController, _snake);
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid, _mainScene);
             _collisionHandler = new CollisionHandler(_mainScene);
         }
@@ -54,7 +54,7 @@ namespace SnakeGameV3.Controllers
             _grid.Remove(_snake);
             _grid.Remove(_foodController);
 
-            Scene gameOverScene = new(_grid, gameOver);
+            Scene gameOverScene = new(gameOver);
             ChangeActiveScene(gameOverScene);
             _builder.Update();
 
@@ -65,7 +65,7 @@ namespace SnakeGameV3.Controllers
                 _grid.Center with { X = 0 },
                 _grid.Center with { X = _grid.Size.Width - 1 });
 
-            Scene scoreScene = new(_grid, score);
+            Scene scoreScene = new(score);
             ChangeActiveScene(scoreScene);
             _builder.Update();
 

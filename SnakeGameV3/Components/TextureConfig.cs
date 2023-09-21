@@ -1,20 +1,14 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Texturing;
 
-namespace SnakeGameV3.Texturing
+namespace SnakeGameV3.Components
 {
     internal class TextureConfig : Component
     {
-        public TextureConfig(TextureName name, ConsoleColor color, IReadOnlyGameObject parent) : base(parent)
-        {
-            Name = name;
-            Color = color;
-        }
+        public TextureName Name { get; set; }
 
-        public TextureName Name { get; }
+        public ConsoleColor Color { get; set; }
 
-        public ConsoleColor Color { get; }
-
-        public float Scale => _parent.Scale;
+        public float Scale => GetComponent<Transform>().Scale;
 
         public static bool operator ==(TextureConfig left, TextureConfig right)
         {

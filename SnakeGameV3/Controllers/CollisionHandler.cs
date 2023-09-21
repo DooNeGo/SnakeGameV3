@@ -1,12 +1,13 @@
-﻿using SnakeGameV3.Interfaces;
+﻿using SnakeGameV3.Components;
+using SnakeGameV3.Components.Colliders;
 using SnakeGameV3.Model;
 using System.Numerics;
 
-namespace SnakeGameV3
+namespace SnakeGameV3.Controllers
 {
     internal class CollisionHandler
     {
-        private readonly List<IReadOnlyGameObject> _gameObjects = new();
+        private readonly List<GameObject> _gameObjects = new();
 
         public CollisionHandler(Scene initialScene)
         {
@@ -25,7 +26,7 @@ namespace SnakeGameV3
         {
             _gameObjects.Clear();
 
-            IEnumerator<IReadOnlyGameObject> enumerator = ActiveScene.GetGameObjectsWithComponent<Collider>();
+            IEnumerator<GameObject> enumerator = ActiveScene.GetGameObjectsWithComponent<Collider>();
 
             while (enumerator.MoveNext())
             {
@@ -37,15 +38,17 @@ namespace SnakeGameV3
         {
             for (var i = 0; i < _gameObjects.Count - 1; i++)
             {
-                Collider collider1 = _gameObjects[i].GetComponent<Collider>()!;
+                Collider collider1 = _gameObjects[i].GetComponent<Collider>();
+                Transform transform1 = _gameObjects[i].GetComponent<Transform>();
 
                 for (var j = i + 1; j < _gameObjects.Count; j++)
                 {
-                    Collider collider2 = _gameObjects[j].GetComponent<Collider>()!;
+                    Collider collider2 = _gameObjects[j].GetComponent<Collider>();
+                    Transform transform2 = _gameObjects[j].GetComponent<Transform>();
 
-                    float distanceToEdge1 = collider1.GetDistanceToEdge(_gameObjects[j].Position);
-                    float distanceToEdge2 = collider2.GetDistanceToEdge(_gameObjects[i].Position);
-                    float distanceBeetween = Vector2.Distance(_gameObjects[i].Position, _gameObjects[j].Position);
+                    float distanceToEdge1 = collider1.GetDistanceToEdge(transform2.Position);
+                    float distanceToEdge2 = collider2.GetDistanceToEdge(transform1.Position);
+                    float distanceBeetween = Vector2.Distance(transform1.Position, transform2.Position);
 
                     if (distanceBeetween <= distanceToEdge1 + distanceToEdge2)
                     {
