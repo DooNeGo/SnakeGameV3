@@ -26,11 +26,12 @@ namespace SnakeGameV3.Controllers
         {
             _gameObjects.Clear();
 
-            IEnumerator<GameObject> enumerator = ActiveScene.GetGameObjectsWithComponent<Collider>();
-
-            while (enumerator.MoveNext())
+            foreach (GameObject gameObject in ActiveScene)
             {
-                _gameObjects.Add(enumerator.Current);
+                if (gameObject.TryGetComponent<Collider>() is not null)
+                {
+                    _gameObjects.Add(gameObject);
+                }
             }
         }
 

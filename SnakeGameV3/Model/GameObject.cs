@@ -8,12 +8,7 @@ namespace SnakeGameV3.Model
 
         public new T AddComponent<T>() where T : Component, new()
         {
-            //ConstructorInfo? info = typeof(T).GetConstructor(new Type[] { typeof(GameObject) });
-            //T component = (T)info!.Invoke(new object?[] { this });
-            T component = new()
-            {
-                Parent = this
-            };
+            T component = new() { Parent = this };
             _components.Add(component);
             return component;
         }
@@ -49,19 +44,13 @@ namespace SnakeGameV3.Model
             return null;
         }
 
-        public List<T> GetComponents<T>() where T : Component
+        public IEnumerator<T> GetComponents<T>() where T : Component
         {
-            List<T> components = new();
-
             for (int i = 0; i < _components.Count; i++)
             {
                 if (_components[i] is T component)
-                {
-                    components.Add(component);
-                }
+                    yield return component;
             }
-
-            return components;
         }
     }
 }

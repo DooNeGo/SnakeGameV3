@@ -2,6 +2,7 @@
 using SnakeGameV3.Components.Colliders;
 using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
+using System.Collections;
 using System.Numerics;
 
 namespace SnakeGameV3.Controllers
@@ -104,6 +105,16 @@ namespace SnakeGameV3.Controllers
             {
                 yield return ActiveFood;
             }
+        }
+
+        public IEnumerator<GameObject> GetEnumerator()
+        {
+            yield return ActiveFood;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _foods.GetEnumerator();
         }
     }
 }

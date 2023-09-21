@@ -1,7 +1,7 @@
 ﻿using SnakeGameV3.Components;
-using SnakeGameV3.Components.Colliders;
 using SnakeGameV3.Interfaces;
 using SnakeGameV3.Texturing;
+using System.Collections;
 using System.Drawing;
 using System.Numerics;
 
@@ -9,7 +9,6 @@ namespace SnakeGameV3.Model
 {
     internal class Grid : ICompositeObject
     {
-        private readonly List<ICompositeObject> _compositeObjects = new();
         private readonly bool[,] _cells;
         private readonly GameObject[,] _gameObjects;
 
@@ -31,36 +30,24 @@ namespace SnakeGameV3.Model
 
         public float Scale => 1f;
 
+        public Scene? ActiveScene { get; set; }
+
         public bool IsPositionOccupied(Vector2 position, float scale)
         {
-            if (scale <= 1)
-                return _cells[(int)position.Y, (int)position.X];
-            return false;
+            return _cells[(int)position.Y, (int)position.X];
         }
 
         public void Update()
         {
             Clear();
 
-            foreach (ICompositeObject compositeObject in _compositeObjects)
+            if (ActiveScene is null)
+                throw new NullReferenceException(nameof(ActiveScene));
+
+            foreach (GameObject gameObject in ActiveScene)
             {
-                IEnumerator<GameObject> enumerator = compositeObject.GetGameObjectsWithComponent<Collider>();
-
-                while (enumerator.MoveNext())
-                {
-                    AddToGrid(enumerator.Current);
-                }
+                TryAddToGrid(gameObject);
             }
-        }
-
-        public void Add(ICompositeObject compositeObject)
-        {
-            _compositeObjects.Add(compositeObject);
-        }
-
-        public void Remove(ICompositeObject compositeObject)
-        {
-            _compositeObjects.Remove(compositeObject);
         }
 
         public Vector2 Project(Vector2 position)
@@ -109,11 +96,11 @@ namespace SnakeGameV3.Model
                        relativePosition.Y * CellSize.Height - offset.Y);
         }
 
-        private void AddToGrid(GameObject gameObject)
+        private void TryAddToGrid(GameObject gameObject)
         {
             Transform? transform = gameObject.TryGetComponent<Transform>();
 
-            if (transform == null
+            if (transform is null
                 || transform.Position.X >= _cells.GetLength(1)
                 || transform.Position.Y >= _cells.GetLength(0)
                 || transform.Position.X < 0
@@ -129,7 +116,8 @@ namespace SnakeGameV3.Model
             {
                 for (var x = 0; x < _cells.GetLength(1); x++)
                 {
-                    _cells[y, x] = false;
+                    if (_cells[y, x] is true)
+                        _cells[y, x] = false;
                 }
             }
         }
@@ -160,6 +148,16 @@ namespace SnakeGameV3.Model
                 if (gameObject.TryGetComponent<T>() is not null)
                     yield return gameObject;
             }
+        }
+
+        public IEnumerator<GameObject> GetEnumerator()
+        {
+            return (IEnumerator<GameObject>)_gameObjects.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _gameObjects.GetEnumerator();
         }
     }
 }

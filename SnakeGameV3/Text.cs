@@ -2,9 +2,10 @@
 using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using SnakeGameV3.Texturing;
+using System.Collections;
 using System.Numerics;
 
-namespace SnakeGameV3.Controllers
+namespace SnakeGameV3
 {
     internal class Text : ICompositeObject
     {
@@ -22,6 +23,11 @@ namespace SnakeGameV3.Controllers
 
         public float Scale { get; }
 
+        public IEnumerator<GameObject> GetEnumerator()
+        {
+            return (IEnumerator<GameObject>)_letters.GetEnumerator();
+        }
+
         public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
         {
             foreach (GameObject gameObject in _letters)
@@ -29,6 +35,11 @@ namespace SnakeGameV3.Controllers
                 if (gameObject.GetComponent<T>() is not null)
                     yield return gameObject;
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _letters.GetEnumerator();
         }
 
         private void InitializeLetters(string text, ConsoleColor color)

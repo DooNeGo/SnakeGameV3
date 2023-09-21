@@ -82,11 +82,13 @@ namespace SnakeGameV3.Texturing
             _transformedTextures.Clear();
 
             HashSet<TextureName> textureNames = new();
-            IEnumerator<GameObject> enumerator = scene.GetGameObjectsWithComponent<TextureConfig>();
 
-            while (enumerator.MoveNext())
+            foreach (GameObject gameObject in scene)
             {
-                textureNames.Add(enumerator.Current.GetComponent<TextureConfig>().Name);
+                TextureConfig? textureConfig = gameObject.TryGetComponent<TextureConfig>();
+
+                if (textureConfig is not null)
+                    textureNames.Add(textureConfig.Name);
             }
 
             foreach (TextureName name in textureNames)

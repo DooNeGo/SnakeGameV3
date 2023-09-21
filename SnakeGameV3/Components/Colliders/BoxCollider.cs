@@ -6,7 +6,7 @@ namespace SnakeGameV3.Components.Colliders
     {
         public override float GetDistanceToEdge(Vector2 position)
         {
-            Vector2 VectorToCollider = Vector2.Normalize(Parent!.GetComponent<Transform>()!.Position - position);
+            Vector2 VectorToCollider = Vector2.Normalize(GetComponent<Transform>().Position - position);
             VectorToCollider = Vector2.Abs(VectorToCollider);
             Vector2 UnitVector;
 
@@ -17,7 +17,7 @@ namespace SnakeGameV3.Components.Colliders
 
             float cosBeetweenVectors = Vector2.Dot(UnitVector, VectorToCollider);
 
-            return GetComponent<Transform>()!.Scale / 2 / cosBeetweenVectors;
+            return GetComponent<Transform>().Scale / 2 / cosBeetweenVectors;
         }
     }
 }

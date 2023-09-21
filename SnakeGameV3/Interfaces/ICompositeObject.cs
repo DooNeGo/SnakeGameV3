@@ -3,7 +3,7 @@ using SnakeGameV3.Model;
 
 namespace SnakeGameV3.Interfaces
 {
-    internal interface ICompositeObject
+    internal interface ICompositeObject : IEnumerable<GameObject>
     {
         public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component;
     }
