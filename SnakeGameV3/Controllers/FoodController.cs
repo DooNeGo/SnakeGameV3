@@ -1,13 +1,12 @@
 ﻿using SnakeGameV3.Components;
 using SnakeGameV3.Components.Colliders;
-using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using System.Collections;
 using System.Numerics;
 
 namespace SnakeGameV3.Controllers
 {
-    internal class FoodController : ICompositeObject
+    internal class FoodController : IEnumerable<GameObject>
     {
         private const float foodScale = 0.5f;
 
@@ -90,21 +89,17 @@ namespace SnakeGameV3.Controllers
                 _activeFoodIndex = ^1;
             }
 
-            do
+            while (true)
             {
                 Vector2 position = new(_random.Next(0, _grid.Size.Width), _random.Next(0, _grid.Size.Height));
-                ActiveFood.GetComponent<Transform>().Position = position;
-            } while (_grid.IsPositionOccupied(ActiveFood.GetComponent<Transform>().Position, foodScale));
+                if (_grid.IsPositionOccupied(position, foodScale) is false)
+                {
+                    ActiveFood.GetComponent<Transform>().Position = position;
+                    break;
+                }
+            }
 
             _activeFoodTime = DateTime.UtcNow;
-        }
-
-        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
-        {
-            if (ActiveFood.TryGetComponent<T>() is not null)
-            {
-                yield return ActiveFood;
-            }
         }
 
         public IEnumerator<GameObject> GetEnumerator()

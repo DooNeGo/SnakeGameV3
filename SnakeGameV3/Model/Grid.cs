@@ -1,5 +1,4 @@
 ﻿using SnakeGameV3.Components;
-using SnakeGameV3.Interfaces;
 using SnakeGameV3.Texturing;
 using System.Collections;
 using System.Drawing;
@@ -7,8 +6,10 @@ using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Grid : ICompositeObject
+    internal class Grid : IEnumerable<GameObject>
     {
+        private const float Scale = 1.0f;
+
         private readonly bool[,] _cells;
         private readonly GameObject[,] _gameObjects;
 
@@ -28,16 +29,22 @@ namespace SnakeGameV3.Model
 
         public Vector2 Center { get; }
 
-        public float Scale => 1f;
-
         public Scene? ActiveScene { get; set; }
 
         public bool IsPositionOccupied(Vector2 position, float scale)
         {
-            return _cells[(int)position.Y, (int)position.X];
+            if (position.X >= _cells.GetLength(1)
+                || position.Y >= _cells.GetLength(0)
+                || position.X < 0
+                || position.Y < 0)
+                return false;
+
+            Update();
+
+            return _cells[(int)MathF.Round(position.Y), (int)MathF.Round(position.X)];
         }
 
-        public void Update()
+        private void Update()
         {
             Clear();
 
@@ -141,18 +148,12 @@ namespace SnakeGameV3.Model
             }
         }
 
-        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
+        public IEnumerator<GameObject> GetEnumerator()
         {
             foreach (GameObject gameObject in _gameObjects)
             {
-                if (gameObject.TryGetComponent<T>() is not null)
-                    yield return gameObject;
+                yield return gameObject;
             }
-        }
-
-        public IEnumerator<GameObject> GetEnumerator()
-        {
-            return (IEnumerator<GameObject>)_gameObjects.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -5,9 +5,13 @@ internal class Program
 {
     private static void Main()
     {
-        PrepareConsole();
-        Game game = new();
-        game.Start();
+        while (true)
+        {
+            PrepareConsole();
+            Game game = new();
+            game.Start();
+            Console.Clear();
+        }
     }
 
     private static void PrepareConsole()

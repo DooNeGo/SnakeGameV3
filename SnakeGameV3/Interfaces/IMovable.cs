@@ -8,7 +8,7 @@ namespace SnakeGameV3.Interfaces
 
         public Vector2 Position { get; }
 
-        public TimeSpan DeltaTime { get; }
+        public float Scale { get; }
 
         public void MoveTo(Vector2 position);
     }

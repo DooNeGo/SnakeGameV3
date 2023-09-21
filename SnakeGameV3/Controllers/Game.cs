@@ -30,38 +30,38 @@ namespace SnakeGameV3.Controllers
 
         public void Start()
         {
-            PhysicsMovement snakeMovement = new(_snake);
-            KeyboardInput input = new(snakeMovement);
+            PhysicsMovement snakeMovement = new(_snake, SnakeSlewingTime);
+            KeyboardInput input = new();
 
             while (!_snake.IsDied)
             {
                 if (_builder.DeltaTime.TotalMilliseconds >= FrameDelay)
+                {
+                    snakeMovement.Move(input.ReadMovement(), _builder.DeltaTime);
+                    _mainScene.Update();
+                    _foodController.Update();
+                    _collisionHandler.Update();
                     _builder.Update();
-
-                input.Update();
-                _mainScene.Update();
-                _grid.Update();
-                _foodController.Update();
-                _collisionHandler.Update();
+                }
             }
 
-            Text gameOver = new("Game Over",
+            Text gameOverText = new("Game Over",
                 ConsoleColor.DarkRed,
                 _grid.Center with { X = 0 },
                 _grid.Center with { X = _grid.Size.Width - 1 });
 
-            Scene gameOverScene = new(gameOver);
+            Scene gameOverScene = new(gameOverText);
             ChangeActiveScene(gameOverScene);
             _builder.Update();
 
             Console.ReadKey();
 
-            Text score = new($"Score: {_snake.Score}",
+            Text scoreText = new($"Score: {_snake.Score}",
                 ConsoleColor.White,
                 _grid.Center with { X = 0 },
                 _grid.Center with { X = _grid.Size.Width - 1 });
 
-            Scene scoreScene = new(score);
+            Scene scoreScene = new(scoreText);
             ChangeActiveScene(scoreScene);
             _builder.Update();
 
@@ -73,6 +73,7 @@ namespace SnakeGameV3.Controllers
         {
             _builder.ActiveScene = scene;
             _collisionHandler.ActiveScene = scene;
+            _grid.ActiveScene = scene;
         }
     }
 }

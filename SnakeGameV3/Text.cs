@@ -1,5 +1,4 @@
 ﻿using SnakeGameV3.Components;
-using SnakeGameV3.Interfaces;
 using SnakeGameV3.Model;
 using SnakeGameV3.Texturing;
 using System.Collections;
@@ -7,7 +6,7 @@ using System.Numerics;
 
 namespace SnakeGameV3
 {
-    internal class Text : ICompositeObject
+    internal class Text : IEnumerable<GameObject>
     {
         private readonly GameObject[] _letters;
         private readonly Vector2 _textPosition;
@@ -25,15 +24,9 @@ namespace SnakeGameV3
 
         public IEnumerator<GameObject> GetEnumerator()
         {
-            return (IEnumerator<GameObject>)_letters.GetEnumerator();
-        }
-
-        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
-        {
-            foreach (GameObject gameObject in _letters)
+            for (var i = 0; i < _letters.Length; i++)
             {
-                if (gameObject.GetComponent<T>() is not null)
-                    yield return gameObject;
+                yield return _letters[i];
             }
         }
 

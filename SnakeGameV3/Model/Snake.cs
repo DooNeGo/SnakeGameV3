@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SnakeGameV3.Model
 {
-    internal class Snake : IMovable, ICompositeObject
+    internal class Snake : IMovable, IEnumerable<GameObject>
     {
         private readonly List<GameObject> _body = new();
         private readonly Grid _grid;
@@ -62,16 +62,14 @@ namespace SnakeGameV3.Model
 
         public float MoveSpeed { get; private set; }
 
-        public TimeSpan DeltaTime => DateTime.UtcNow - _lastMoveTime;
-
         public bool IsDied { get; private set; } = false;
 
         public int Score { get; private set; } = 0;
 
-        private float Scale
+        public float Scale
         {
             get { return _scale; }
-            set
+            private set
             {
                 _scale = value;
                 foreach (GameObject body in _body)
@@ -152,7 +150,6 @@ namespace SnakeGameV3.Model
 
             switch (food.GetComponent<Effect>().Type)
             {
-
                 case EffectType.Speed:
                     if (MoveSpeed + effectValue > 2)
                         MoveSpeed += effectValue;
@@ -226,17 +223,6 @@ namespace SnakeGameV3.Model
             texture.Name = bodyTexture.Name;
 
             return clone;
-        }
-
-        public IEnumerator<GameObject> GetGameObjectsWithComponent<T>() where T : Component
-        {
-            for (var i = 0; i < _body.Count; i++)
-            {
-                if (_body[i].TryGetComponent<T>() is not null)
-                {
-                    yield return CloneWithProjection(_body[i]);
-                }
-            }
         }
 
         public IEnumerator<GameObject> GetEnumerator()

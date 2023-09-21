@@ -20,6 +20,7 @@
         public const ConsoleColor BoarderColor = ConsoleColor.White;
 
         public const float SnakeSpeed = 4f;
+        public const float SnakeSlewingTime = 0.5f;
 
         public const int FramePerSecond = 60;
         public const double FrameDelay = 1000 / FramePerSecond;

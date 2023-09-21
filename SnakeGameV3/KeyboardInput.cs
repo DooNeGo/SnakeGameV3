@@ -4,14 +4,11 @@ namespace SnakeGameV3
 {
     internal class KeyboardInput
     {
-        private readonly PhysicsMovement _movement;
-
         private Vector2 _lastDirection = Vector2.Zero;
         private ConsoleKey _pressedKey = new();
 
-        public KeyboardInput(PhysicsMovement movement)
+        public KeyboardInput()
         {
-            _movement = movement;
             Task.Run(() =>
             {
                 while (true)
@@ -21,13 +18,7 @@ namespace SnakeGameV3
             });
         }
 
-        public void Update()
-        {
-            _lastDirection = ReadMovement();
-            _movement.Move(_lastDirection);
-        }
-
-        private Vector2 ReadMovement()
+        public Vector2 ReadMovement()
         {
             //if (Console.KeyAvailable)
             //    _pressedKey = Console.ReadKey().Key;
