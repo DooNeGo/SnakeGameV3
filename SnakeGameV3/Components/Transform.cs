@@ -9,5 +9,12 @@ namespace SnakeGameV3.Components
         public Quaternion Rotation { get; set; }
 
         public float Scale { get; set; }
+
+        public void CopyTo(Transform component)
+        {
+            component.Position = Position;
+            component.Rotation = Rotation;
+            component.Scale = Scale;
+        }
     }
 }

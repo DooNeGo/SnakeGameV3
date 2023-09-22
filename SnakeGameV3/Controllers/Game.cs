@@ -35,14 +35,16 @@ namespace SnakeGameV3.Controllers
 
             while (!_snake.IsDied)
             {
-                if (_builder.DeltaTime.TotalMilliseconds >= FrameDelay)
-                {
-                    snakeMovement.Move(input.ReadMovement(), _builder.DeltaTime);
-                    _mainScene.Update();
-                    _foodController.Update();
-                    _collisionHandler.Update();
-                    _builder.Update();
-                }
+                snakeMovement.Move(input.ReadMovement(), _builder.DeltaTime);
+                _mainScene.Update();
+                _foodController.Update();
+                _collisionHandler.Update();
+                _builder.Update();
+
+                TimeSpan timeSpan = _builder.DeltaTime;
+
+                if (FrameDelay > timeSpan.TotalMilliseconds)
+                    Thread.Sleep((int)(FrameDelay - timeSpan.TotalMilliseconds));
             }
 
             Text gameOverText = new("Game Over",

@@ -10,6 +10,12 @@ namespace SnakeGameV3.Components
 
         public float Scale => GetComponent<Transform>().Scale;
 
+        public void CopyTo(TextureConfig component)
+        {
+            component.Name = Name;
+            component.Color = Color;
+        }
+
         public static bool operator ==(TextureConfig left, TextureConfig right)
         {
             if (left.Color == right.Color
