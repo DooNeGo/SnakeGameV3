@@ -4,34 +4,32 @@ namespace SnakeGameV3
 {
     internal class KeyboardInput
     {
+        public event Action<ConsoleKey>? KeyDown;
+
         private Vector2 _lastDirection = Vector2.Zero;
         private ConsoleKey _pressedKey = new();
 
-        public KeyboardInput()
+        public void Update()
         {
-            Task.Run(() =>
+            if (Console.KeyAvailable)
             {
-                while (true)
-                {
-                    _pressedKey = Console.ReadKey().Key;
-                }
-            });
+                _pressedKey = Console.ReadKey().Key;
+                KeyDown?.Invoke(_pressedKey);
+            }
         }
 
         public Vector2 ReadMovement()
         {
-            //if (Console.KeyAvailable)
-            //    _pressedKey = Console.ReadKey().Key;
-
-            return _pressedKey switch
+            _lastDirection = _pressedKey switch
             {
                 ConsoleKey.UpArrow => -Vector2.UnitY,
                 ConsoleKey.DownArrow => Vector2.UnitY,
                 ConsoleKey.LeftArrow => -Vector2.UnitX,
                 ConsoleKey.RightArrow => Vector2.UnitX,
-                ConsoleKey.Spacebar => Vector2.Zero,
                 _ => _lastDirection
             };
+
+            return _lastDirection;
         }
     }
 }

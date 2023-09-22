@@ -15,7 +15,7 @@ namespace SnakeGameV3.Controllers
         private readonly Grid _grid;
 
         private Index _activeFoodIndex = 0;
-        private DateTime _activeFoodTime = DateTime.UtcNow;
+        private TimeSpan _remainTime;
 
         public FoodController(Grid grid)
         {
@@ -55,13 +55,17 @@ namespace SnakeGameV3.Controllers
             {
                 _foods[i].GetComponent<Collider>().CollisionEntry += OnCollisionEntry;
             }
+
+            _remainTime = TimeSpan.FromSeconds(ActiveFood.LifeTime);
         }
 
         private Food ActiveFood => _foods[_activeFoodIndex];
 
-        public void Update()
+        public void Update(TimeSpan delta)
         {
-            if ((DateTime.UtcNow - _activeFoodTime).TotalSeconds >= ActiveFood.LifeTime)
+            _remainTime -= delta;
+
+            if (_remainTime.TotalSeconds <= 0)
             {
                 RandFood();
             }
@@ -99,7 +103,7 @@ namespace SnakeGameV3.Controllers
                 }
             }
 
-            _activeFoodTime = DateTime.UtcNow;
+            _remainTime = TimeSpan.FromSeconds(ActiveFood.LifeTime);
         }
 
         public IEnumerator<GameObject> GetEnumerator()

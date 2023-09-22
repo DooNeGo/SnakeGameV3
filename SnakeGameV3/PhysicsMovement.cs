@@ -21,7 +21,6 @@ namespace SnakeGameV3
         public void Move(Vector2 direction, TimeSpan delta)
         {
             if (_lastDirection == Vector2.Zero
-                && direction != Vector2.Zero
                 && _penultimateDirection + direction != Vector2.Zero
                 || _lastDirection != Vector2.Zero
                 && MathF.Abs(_lastDirection.X - _smoothDirection.X) < 1e-1
@@ -32,8 +31,10 @@ namespace SnakeGameV3
                 _lastDirection = direction;
             }
 
+            float lastDirectionImpact = (float)delta.TotalSeconds / _slewingTime * _body.MoveSpeed / _body.Scale;
+
             if (_lastDirection != Vector2.Zero)
-                _smoothDirection = Vector2.Normalize(_smoothDirection + _lastDirection * ((float)delta.TotalSeconds / _slewingTime * _body.MoveSpeed / _body.Scale));
+                _smoothDirection = Vector2.Normalize(_smoothDirection + _lastDirection * lastDirectionImpact);
             else
                 _smoothDirection = Vector2.Zero;
 

@@ -15,6 +15,8 @@ namespace SnakeGameV3.Controllers
         private readonly CollisionHandler _collisionHandler;
         private readonly Scene _mainScene;
 
+        private float _timeRatio = 1;
+
         public Game()
         {
             Size screenSize = new(ScreenWidth, ScreenHeight);
@@ -32,16 +34,21 @@ namespace SnakeGameV3.Controllers
         {
             PhysicsMovement snakeMovement = new(_snake, SnakeSlewingTime);
             KeyboardInput input = new();
+            input.KeyDown += OnKeyDown;
+            TimeSpan timeSpan;
 
             while (!_snake.IsDied)
             {
-                snakeMovement.Move(input.ReadMovement(), _builder.DeltaTime);
+                timeSpan = _builder.DeltaTime;
+
+                input.Update();
+                snakeMovement.Move(input.ReadMovement(), timeSpan * _timeRatio);
                 _mainScene.Update();
-                _foodController.Update();
+                _foodController.Update(timeSpan);
                 _collisionHandler.Update();
                 _builder.Update();
 
-                TimeSpan timeSpan = _builder.DeltaTime;
+                timeSpan = _builder.DeltaTime;
 
                 if (FrameDelay > timeSpan.TotalMilliseconds)
                     Thread.Sleep((int)(FrameDelay - timeSpan.TotalMilliseconds));
@@ -68,7 +75,14 @@ namespace SnakeGameV3.Controllers
             _builder.Update();
 
             Console.ReadKey();
-            Console.ReadKey();
+        }
+
+        private void OnKeyDown(ConsoleKey key)
+        {
+            if (key == ConsoleKey.Spacebar && _timeRatio == 1)
+                _timeRatio = 0;
+            else if (key == ConsoleKey.Spacebar && _timeRatio == 0)
+                _timeRatio = 1;
         }
 
         private void ChangeActiveScene(Scene scene)
