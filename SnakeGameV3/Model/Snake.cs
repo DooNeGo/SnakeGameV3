@@ -10,13 +10,13 @@ namespace SnakeGameV3.Model
     internal class Snake : IMovable, IEnumerable<GameObject>
     {
         private readonly List<GameObject> _body = new();
+        private readonly List<GameObject> _projectedBody = new();
         private readonly Grid _grid;
         private readonly ConsoleColor _headColor;
         private readonly ConsoleColor _bodyColor;
 
         private float _scale = 1f;
         private int _lastColliderIndex;
-        private DateTime _lastMoveTime;
 
         public Snake(Vector2 startPosition, ConsoleColor headColor, ConsoleColor bodyColor, float speed, Grid grid)
         {
@@ -28,11 +28,10 @@ namespace SnakeGameV3.Model
 
             GameObject head = new();
             Transform headTransform = head.AddComponent<Transform>();
-            Collider headCollider = head.AddComponent<CircleCollider>();
             TextureConfig headTexture = head.AddComponent<TextureConfig>();
+            head.AddComponent<CircleCollider>();
             headTransform.Position = startPosition;
             headTransform.Scale = Scale;
-            headCollider.CollisionEntry += OnCollisionEnter;
             headTexture.Color = _headColor;
             headTexture.Name = TextureName.SnakeHead;
 
@@ -56,6 +55,8 @@ namespace SnakeGameV3.Model
             _body.Add(head);
             _body.Add(bodyPart1);
             _body.Add(bodyPart2);
+
+            UpdateProjectedBody();
         }
 
         public Vector2 Position => Head.GetComponent<Transform>().Position;
@@ -83,13 +84,60 @@ namespace SnakeGameV3.Model
 
         public void MoveTo(Vector2 nextPosition)
         {
-            _lastMoveTime = DateTime.UtcNow;
-
             if (nextPosition == Position)
                 return;
 
             ApplyOffsets(CalculateOffsets(nextPosition));
             CheckColliders();
+            UpdateProjectedBody();
+        }
+
+        private void UpdateProjectedBody()
+        {
+            if (_body.Count > _projectedBody.Count)
+            {
+                for (var i = _projectedBody.Count; i < _body.Count; i++)
+                {
+                    _projectedBody.Add(CloneWithProjection(_body[i]));
+                }
+            }
+            else if (_body.Count < _projectedBody.Count)
+            {
+                for (var i = _body.Count; i < _projectedBody.Count; i++)
+                {
+                    _projectedBody.RemoveAt(i);
+                }
+            }
+
+            for (int i = 0; i < _projectedBody.Count; i++)
+            {
+                Transform transform1 = _body[i].GetComponent<Transform>();
+                Transform transform2 = _projectedBody[i].GetComponent<Transform>();
+                Collider? collider1 = _body[i].TryGetComponent<Collider>();
+                Collider? collider2 = _projectedBody[i].TryGetComponent<Collider>();
+
+                if (collider2 is null && collider1 is not null)
+                {
+                    switch (collider1)
+                    {
+                        case BoxCollider:
+                            _projectedBody[i].AddComponent<BoxCollider>();
+                            break;
+                        case CircleCollider:
+                            _projectedBody[i].AddComponent<CircleCollider>();
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+
+                if (transform2.Scale != transform1.Scale)
+                    transform2.Scale = transform1.Scale;
+                if (transform2.Rotation != transform1.Rotation)
+                    transform2.Rotation = transform1.Rotation;
+
+                transform2.Position = _grid.Project(transform1.Position);
+            }
         }
 
         private void CheckColliders()
@@ -227,18 +275,12 @@ namespace SnakeGameV3.Model
 
         public IEnumerator<GameObject> GetEnumerator()
         {
-            for (int i = 0; i < _body.Count; i++)
-            {
-                yield return CloneWithProjection(_body[i]);
-            }
+            return _projectedBody.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            for (int i = 0; i < _body.Count; i++)
-            {
-                yield return CloneWithProjection(_body[i]);
-            }
+            return _projectedBody.GetEnumerator();
         }
     }
 }
