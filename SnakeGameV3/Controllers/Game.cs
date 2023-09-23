@@ -35,7 +35,7 @@ namespace SnakeGameV3.Controllers
             PhysicsMovement snakeMovement = new(_snake, SnakeSlewingTime);
             KeyboardInput input = new();
             input.KeyDown += OnKeyDown;
-            TimeSpan timeSpan;
+            TimeSpan timeSpan = TimeSpan.Zero;
 
             while (!_snake.IsDied)
             {
@@ -51,7 +51,7 @@ namespace SnakeGameV3.Controllers
                 timeSpan = _builder.DeltaTime;
 
                 if (FrameDelay > timeSpan.TotalMilliseconds)
-                    Thread.Sleep((int)(FrameDelay - timeSpan.TotalMilliseconds));
+                    Thread.Sleep((int)Math.Round(FrameDelay - timeSpan.TotalMilliseconds));
             }
 
             Text gameOverText = new("Game Over",

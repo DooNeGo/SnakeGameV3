@@ -6,6 +6,15 @@ namespace SnakeGameV3.Model
     {
         private readonly List<Component> _components = new();
 
+        public GameObject() { }
+
+        public GameObject(string name)
+        {
+            Name = name;
+        }
+
+        public string? Name { get; }
+
         public new T AddComponent<T>() where T : Component, new()
         {
             T component = new() { Parent = this };

@@ -28,7 +28,11 @@ namespace SnakeGameV3.Model
 
             for (var i = 0; i <= InitialBodyLength; i++)
             {
-                GameObject bodyPart = new();
+                GameObject bodyPart = i switch
+                {
+                    0 => new("Snake head"),
+                    _ => new()
+                };
                 Transform bodyPartTransform = bodyPart.AddComponent<Transform>();
                 TextureConfig bodyPartTexture = bodyPart.AddComponent<TextureConfig>();
                 bodyPartTransform.Scale = Scale;
@@ -36,6 +40,7 @@ namespace SnakeGameV3.Model
 
                 if (i == 0)
                 {
+
                     bodyPartTexture.Color = headColor;
                     bodyPartTexture.Name = TextureName.SnakeHead;
                 }
@@ -111,7 +116,7 @@ namespace SnakeGameV3.Model
                 Transform transform1 = _body[i].GetComponent<Transform>();
                 Transform transform2 = _projectedBody[i].GetComponent<Transform>();
 
-                TryAddCollider(_projectedBody[i], _body[i]);
+                TryCloneCollider(_projectedBody[i], _body[i]);
                 transform1.CopyTo(transform2);
                 transform2.Position = _grid.Project(transform2.Position);
             }
@@ -222,12 +227,17 @@ namespace SnakeGameV3.Model
             Transform bodyTransform = gameObject.GetComponent<Transform>();
             TextureConfig bodyTexture = gameObject.GetComponent<TextureConfig>();
 
-            GameObject clone = new();
+            GameObject clone = gameObject.Name switch
+            {
+                null => new(),
+                _ => new(gameObject.Name)
+            };
 
             Transform transform = clone.AddComponent<Transform>();
             bodyTransform.CopyTo(transform);
             transform.Position = _grid.Project(transform.Position);
-            TryAddCollider(clone, gameObject);
+
+            TryCloneCollider(clone, gameObject);
 
             TextureConfig texture = clone.AddComponent<TextureConfig>();
             bodyTexture.CopyTo(texture);
@@ -235,7 +245,7 @@ namespace SnakeGameV3.Model
             return clone;
         }
 
-        private void TryAddCollider(GameObject dest, GameObject source)
+        private void TryCloneCollider(GameObject dest, GameObject source)
         {
             Collider? collider1 = source.TryGetComponent<Collider>();
             Collider? collider2 = dest.TryGetComponent<Collider>();

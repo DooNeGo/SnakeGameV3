@@ -39,7 +39,7 @@ namespace SnakeGameV3.Rendering
         {
             for (var y = 0; y < texture.Height; y++)
             {
-                var pixelPositionY = (int)(position.Y + y);
+                var pixelPositionY = (int)MathF.Round(position.Y + y);
 
                 if (pixelPositionY >= Height
                     || pixelPositionY < 0)
@@ -47,7 +47,7 @@ namespace SnakeGameV3.Rendering
 
                 for (var x = 0; x < texture.Width; x++)
                 {
-                    var pixelPositionX = (int)(position.X + x);
+                    var pixelPositionX = (int)MathF.Round(position.X + x);
 
                     if (pixelPositionX >= Width
                         || pixelPositionX < 0

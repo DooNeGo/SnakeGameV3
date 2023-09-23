@@ -107,7 +107,7 @@ namespace SnakeGameV3.Texturing
                     {
                         Color pixel = bitmap.GetPixel((int)(x * offsetX), (int)(y * offsetY));
 
-                        if (pixel.R == 255 && pixel.B == 255 && pixel.G == 255)
+                        if (pixel.R > 0 || pixel.B > 0 || pixel.G > 0)
                         {
                             pixels[y, x] = ConsoleColor.White;
                         }

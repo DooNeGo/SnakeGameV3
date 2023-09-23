@@ -1,4 +1,5 @@
 ﻿using SnakeGameV3.Components;
+using SnakeGameV3.Components.Colliders;
 using SnakeGameV3.Texturing;
 using System.Collections;
 using System.Drawing;
@@ -106,15 +107,17 @@ namespace SnakeGameV3.Model
         private void TryAddToGrid(GameObject gameObject)
         {
             Transform? transform = gameObject.TryGetComponent<Transform>();
+            Collider? collider = gameObject.TryGetComponent<Collider>();
 
             if (transform is null
+                || collider is null
                 || transform.Position.X >= _cells.GetLength(1)
                 || transform.Position.Y >= _cells.GetLength(0)
                 || transform.Position.X < 0
                 || transform.Position.Y < 0)
                 return;
 
-            _cells[(int)transform.Position.Y, (int)transform.Position.X] = true;
+            _cells[(int)MathF.Round(transform.Position.Y), (int)MathF.Round(transform.Position.X)] = true;
         }
 
         private void Clear()

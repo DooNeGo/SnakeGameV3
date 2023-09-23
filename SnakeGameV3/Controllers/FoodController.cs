@@ -73,7 +73,8 @@ namespace SnakeGameV3.Controllers
 
         public void OnCollisionEntry(GameObject gameObject)
         {
-            RandFood();
+            if (gameObject.Name == "Snake head")
+                RandFood();
         }
 
         private void RandFood()
