@@ -34,15 +34,15 @@ namespace SnakeGameV3.Rendering
         }";
 
         private float[] _vertexArray;
-        //    {
-        //        0.0f, 0.0f, 1.0f,
-        //        -0.5f, 0.5f, 1.0f,
-        //        -0.5f, -0.5f, 1.0f,
-        //        0.0f, -0.5f, 1.0f,
-        //        0.5f, -0.5f, 1.0f,
-        //        0.5f, 0.5f, 1.0f,
-        //        -0.5f, 0.5f, 1.0f,
-        //    };
+            //{
+            //    0.0f, 0.0f, 1.0f,
+            //    -0.5f, 0.5f, 1.0f,
+            //    -0.5f, -0.5f, 1.0f,
+            //    0.0f, -0.5f, 1.0f,
+            //    0.5f, -0.5f, 1.0f,
+            //    0.5f, 0.5f, 1.0f,
+            //    -0.5f, 0.5f, 1.0f,
+            //};
 
         private float[] _colorArray;
         //{
@@ -57,21 +57,24 @@ namespace SnakeGameV3.Rendering
         //};
 
         private uint[] _indexArray;
+        //{
+        //    0, 1, 2, 3, 4, 5, 6
+        //};
 
         private int _counter = 0;
         private float _aspectRatio;
-        private Vector3D<float> _circlePosition = new(0.5f, 0, 1);
+        private Vector3D<float> _circlePosition = new(0, 0, 1);
 
         public IWindow ActiveWindow { get; }
 
         private GL _openGL;
         private IInputContext _input;
 
-        private uint _vao;
-        private uint _vbo;
-        private uint _ebo;
-        private uint _color;
-        private uint _shader;
+        private uint _vao = 0;
+        private uint _vbo = 0;
+        private uint _ebo = 0;
+        private uint _color = 0;
+        private uint _shader = 0;
 
         public Render(int screenWidth, int screenHeight)
         {
@@ -92,11 +95,13 @@ namespace SnakeGameV3.Rendering
             ActiveWindow.Render += OnRender;
             ActiveWindow.Resize += OnResize;
             ActiveWindow.Closing += OnClosing;
+
+            ActiveWindow.Run();
         }
 
         private unsafe void OnLoad()
         {
-            CreateCircle(_circlePosition, Color.Azure);
+            CreateCircle(_circlePosition, Color.Orange, 0.2f);
 
             _input = ActiveWindow.CreateInput();
             _openGL = ActiveWindow.CreateOpenGL();
@@ -106,7 +111,7 @@ namespace SnakeGameV3.Rendering
                 keyboard.KeyDown += OnKeyDown;
             }
 
-            _openGL.ClearColor(Color.Cyan);
+            _openGL.ClearColor(Color.DarkSeaGreen);
 
             _vao = _openGL.GenVertexArray();
             _vbo = _openGL.GenBuffer();
@@ -144,6 +149,8 @@ namespace SnakeGameV3.Rendering
             _openGL.DetachShader(_shader, fragmentShader);
             _openGL.DeleteShader(vertexShader);
             _openGL.DeleteShader(fragmentShader);
+
+            //ApplyOffset(new Vector2D<float>(0, -0.25f));
         }
 
         private unsafe void OnRender(double deltaTime)
@@ -154,7 +161,7 @@ namespace SnakeGameV3.Rendering
             _openGL.BufferData<float>(BufferTargetARB.ArrayBuffer, GetTransformedVertexArray(), BufferUsageARB.StreamDraw);
 
             _openGL.UseProgram(_shader);
-            _openGL.DrawArrays(PrimitiveType.Points, 0, (uint)_indexArray.Length);
+            _openGL.DrawArrays(PrimitiveType.LineLoop, 0, (uint)_indexArray.Length);
         }
 
         private unsafe void OnUpdate(double deltaTime)
@@ -162,7 +169,6 @@ namespace SnakeGameV3.Rendering
             _counter++;
             Vector2D<float> offset = new((MathF.Cos(_counter / 15f)) / 50, (MathF.Sin(_counter / 15f)) / 50);
             ApplyOffset(offset);
-
         }
 
         private void OnResize(Vector2D<int> screenSize)
@@ -212,26 +218,22 @@ namespace SnakeGameV3.Rendering
             return transformedArray;
         }
 
-        private void CreateCircle(Vector3D<float> circlePosition, Color color)
+        private void CreateCircle(Vector3D<float> circlePosition, Color color, float radius)
         {
-            _vertexArray = new float[360 * 3];
-            _colorArray = new float[360 * 4];
+            _vertexArray = new float[361 * 3];
+            _colorArray = new float[361 * 4];
             _indexArray = new uint[_vertexArray.Length];
 
-            float radian = 0;
+            _vertexArray[0] = circlePosition.X;
+            _vertexArray[1] = circlePosition.Y;
+            _vertexArray[2] = circlePosition.Z;
 
-            for (var i = 0; i < _vertexArray.Length; i += 3)
+            var counter = 0;
+
+            for (var i = 3; i < _vertexArray.Length; i += 3, counter++)
             {
-                float angle = 0;
-
-                if (i % 3 == 0)
-                {
-                    radian += 0.1f;
-                    angle = radian * 180 / MathF.PI;
-                }
-
-                _vertexArray[i] = MathF.Cos(angle) / 2;
-                _vertexArray[i + 1] = MathF.Sin(angle) / 2;
+                _vertexArray[i] = circlePosition.X + MathF.Cos(counter) * radius;
+                _vertexArray[i + 1] = circlePosition.Y + MathF.Sin(counter) * radius;
                 _vertexArray[i + 2] = 1;
             }
 
