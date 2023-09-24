@@ -9,6 +9,8 @@ namespace SnakeGameV3.Model
 {
     internal class Snake : IMovable, IEnumerable<GameObject>
     {
+        public event Action? Die;
+
         private const int InitialBodyLength = 2;
 
         private readonly List<GameObject> _body = new();
@@ -64,8 +66,6 @@ namespace SnakeGameV3.Model
         public Vector2 Position => Head.GetComponent<Transform>().Position;
 
         public float MoveSpeed { get; private set; }
-
-        public bool IsDied { get; private set; } = false;
 
         public int Score { get; private set; } = 0;
 
@@ -171,7 +171,7 @@ namespace SnakeGameV3.Model
             if (gameObject is Food food)
                 Eat(food);
             else
-                IsDied = true;
+                Die?.Invoke();
         }
 
         private void Eat(Food food)

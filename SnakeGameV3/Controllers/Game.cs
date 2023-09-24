@@ -16,6 +16,7 @@ namespace SnakeGameV3.Controllers
         private readonly Scene _mainScene;
 
         private float _timeRatio = 1;
+        private bool _isActive = true;
 
         public Game()
         {
@@ -28,6 +29,8 @@ namespace SnakeGameV3.Controllers
             _grid.ActiveScene = _mainScene;
             _builder = new ConsoleFrameBuilder(screenSize, BackgroundColor, _grid, _mainScene);
             _collisionHandler = new CollisionHandler(_mainScene);
+
+            _snake.Die += Exit;
         }
 
         public void Start()
@@ -37,14 +40,17 @@ namespace SnakeGameV3.Controllers
             input.KeyDown += OnKeyDown;
             TimeSpan timeSpan = TimeSpan.Zero;
 
-            while (!_snake.IsDied)
+            while (true)
             {
+                if (_isActive is false)
+                    break;
+
                 timeSpan = _builder.DeltaTime;
 
                 input.Update();
                 snakeMovement.Move(input.ReadMovement(), timeSpan * _timeRatio);
-                _mainScene.Update();
                 _foodController.Update(timeSpan);
+                _mainScene.Update();
                 _collisionHandler.Update();
                 _builder.Update();
 
@@ -90,6 +96,11 @@ namespace SnakeGameV3.Controllers
             _builder.ActiveScene = scene;
             _collisionHandler.ActiveScene = scene;
             _grid.ActiveScene = scene;
+        }
+
+        private void Exit()
+        {
+            _isActive = false;
         }
     }
 }
